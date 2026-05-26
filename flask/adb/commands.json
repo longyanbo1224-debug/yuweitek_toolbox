@@ -1,0 +1,18 @@
+[
+  {
+    "name": "获取第一中心鉴权码",
+    "cmd": "shell cmd yw_set -c 1 get connection_authentication_code"
+  },
+  {
+    "name": "查询版本号",
+    "cmd": "shell getprop persist.yw.soft.version"
+  },
+  {
+    "name": "设置0200汇报间隔1s一条",
+    "cmd": "shell cmd yw_set set location_default_interval 1"
+  },
+  {
+    "name": "获取终端ID",
+    "cmd": "shell cmd yw_set get global_support_808_2019check"
+  }
+]

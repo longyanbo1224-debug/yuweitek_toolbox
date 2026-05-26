@@ -1,0 +1,63 @@
+# -*- coding: utf-8 -*-
+"""
+.NET 后端管理：启动、停止 JTTools.exe
+"""
+
+import subprocess
+import os
+import sys
+from config import LOG_DIR
+from state import dotnet_process
+
+def start_dotnet_backend():
+    global dotnet_process
+    if getattr(sys, 'frozen', False):
+        base_dir = sys._MEIPASS
+    else:
+        # 开发环境：当前文件位于 flask/adb/services，需要向上取两级到 flask 根目录
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        base_dir = os.path.dirname(os.path.dirname(script_dir))   # flask 根目录
+    
+    dotnet_exe = os.path.join(base_dir, 'JTTools.exe')
+    if not os.path.exists(dotnet_exe):
+        print(f"错误：未找到 {dotnet_exe}，交通协议解析功能将不可用")
+        return
+    
+    config_file = os.path.join(base_dir, 'appsettings.json')
+    if os.path.exists(config_file):
+        print(f"找到配置文件: {config_file}")
+    else:
+        print(f"警告：配置文件 {config_file} 不存在，.NET 后端将使用默认端口 5000")
+    
+    # 构建命令，强制指定端口（确保 --urls 参数正确传递）
+    cmd = [dotnet_exe, "--urls", "http://127.0.0.1:18889"]
+    print(f"启动命令: {' '.join(cmd)}")
+    
+    # 隐藏窗口启动子进程
+    startupinfo = None
+    if sys.platform == 'win32':
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+    
+    # 将输出写入日志文件
+    log_file = open(os.path.join(LOG_DIR, 'dotnet.log'), 'w')
+    dotnet_process = subprocess.Popen(
+        cmd,
+        startupinfo=startupinfo,
+        stdout=log_file,
+        stderr=subprocess.STDOUT,
+        cwd=base_dir  # 重要：设置工作目录为临时目录，确保配置文件被找到
+    )
+    print(f".NET 后端已启动，PID: {dotnet_process.pid}，日志：{log_file.name}")
+
+def cleanup_dotnet():
+    """程序退出时关闭 .NET 子进程"""
+    global dotnet_process
+    if dotnet_process and dotnet_process.poll() is None:
+        print("正在关闭 .NET 后端...")
+        dotnet_process.terminate()
+        try:
+            dotnet_process.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            dotnet_process.kill()

@@ -1,0 +1,25 @@
+{
+    "hmiConfVersion": 28,
+    "requestId": "",
+    "responseId": "",
+    "netType": 1,
+    "channel": 1,
+    "otaMode": 1,
+    "driverNum": 2,
+    "driverList": [
+        {
+            "displayCode": 1,
+            "requestId": "18EF4A17",
+            "responseId": "18EF174A",
+            "netType": 1,
+            "channel": 1
+        },
+        {
+            "displayCode": 2,
+            "requestId": "18EF4A17",
+            "responseId": "18EF174A",
+            "netType": 1,
+            "channel": 3
+        }
+    ]
+}

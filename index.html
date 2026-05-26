@@ -1,0 +1,1475 @@
+﻿<!doctype html>
+<html lang="zh-CN" class="h-100">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <meta name="keywords"
+        content="JT808|gb808|JT809|gb809|JT1078|JTT1078|JT19056|gb19056|JT905|GB905|808|809|905|hex|ipc|安防|camera|timestamp|在线时间戳|在线解析工具" />
+    <meta name="description" content="道路运输车辆卫星定位协议在线解析工具" />
+    <title>YUWEITEK工具箱</title>
+    <meta name="author" content="SmallChi(Koike)" />
+    <link rel="stylesheet" href="./lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./lib/bootstrap-icons/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="./css/site.css?v=1.0.1" />
+    <link rel="icon" href="./img/favicon.png" type="image/png">
+    <script src="./lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
+    <script src="./lib/axios@1.7.9.min.js" type="text/javascript"></script>
+    <script src="/lib/clipboard@2.0.11.min.js" type="text/javascript"></script>
+    <script src="./lib/sortable.min.js" type="text/javascript"></script>
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header>
+        <!-- ==================== 桌面端固定侧边栏 ==================== -->
+        <nav class="desktop-sidebar d-none d-md-flex" id="desktopSidebar">
+            <!-- 搜索框 -->
+            <div class="sidebar-search" id="sidebarSearch">
+                <i class="bi bi-search sidebar-search-icon" id="searchToggle"></i>
+                <input type="text" class="sidebar-search-input" id="searchInput" placeholder="搜索工具..." autocomplete="off">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+            <!-- 导航菜单 -->
+            <div class="sidebar-nav">
+                <!-- 交通解析工具 -->
+                <div class="sidebar-menu-item" data-group="parse">
+                    <div class="sidebar-menu-label">
+                        <i class="bi bi-code-square"></i>
+                        <span>交通解析工具</span>
+                        <i class="bi bi-chevron-right sidebar-arrow"></i>
+                    </div>
+                    <div class="sidebar-flyout">
+                        <div class="sidebar-flyout-title">交通解析工具</div>
+                        <a class="sidebar-flyout-item" menu-type="JT808Parse" href="#JT808Parse">
+                            <i class="bi bi-hdd-network"></i>JT808解析工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="JT809Parse" href="#JT809Parse">
+                            <i class="bi bi-hdd-rack"></i>JT809解析工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="JT1078Parse" href="#JT1078Parse">
+                            <i class="bi bi-camera-video"></i>JT1078解析工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="JT19056Parse" href="#JT19056Parse">
+                            <i class="bi bi-card-text"></i>JT19056解析工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="JT905Parse" href="#JT905Parse">
+                            <i class="bi bi-geo-alt"></i>JT905解析工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="JTSBParse" href="#JTSBParse">
+                            <i class="bi bi-shield-exclamation"></i>主动安全解析工具
+                        </a>
+                    </div>
+                </div>
+                <!-- 数据处理工具 -->
+                <div class="sidebar-menu-item divider-top" data-group="data">
+                    <div class="sidebar-menu-label">
+                        <i class="bi bi-calculator"></i>
+                        <span>数据处理工具</span>
+                        <i class="bi bi-chevron-right sidebar-arrow"></i>
+                    </div>
+                    <div class="sidebar-flyout">
+                        <div class="sidebar-flyout-title">数据处理工具</div>
+                        <a class="sidebar-flyout-item" menu-type="HexParse" href="#HexParse">
+                            <i class="bi bi-hash"></i>Hex工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="DataTools" href="#DataTools">
+                            <i class="bi bi-file-spreadsheet"></i>数据字段处理工具V5.2
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="LatLngQuery" href="#LatLngQuery">
+                            <i class="bi bi-map"></i>经纬度坐标查询工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="H264Convert" href="#H264Convert">
+                            <i class="bi bi-film"></i>H264转MP4工具
+                        </a>
+                    </div>
+                </div>
+                <!-- 终端命令调试工具 -->
+                <div class="sidebar-menu-item divider-top" data-group="cmd">
+                    <div class="sidebar-menu-label">
+                        <i class="bi bi-terminal"></i>
+                        <span>终端命令调试工具</span>
+                        <i class="bi bi-chevron-right sidebar-arrow"></i>
+                    </div>
+                    <div class="sidebar-flyout">
+                        <div class="sidebar-flyout-title">终端命令调试工具</div>
+                        <a class="sidebar-flyout-item" href="http://yuweicloud.com:8990/server/mainIndex.action;cm=E73E06307A2BD318BFB317ADEF280CCC" target="_blank">
+                            <i class="bi bi-cloud"></i>云Monitor
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="AdbTool" href="#AdbTool">
+                            <i class="bi bi-usb-plug"></i>ADB命令调试工具
+                        </a>
+                        <a class="sidebar-flyout-item" menu-type="RareCharTool" href="#RareCharTool">
+                            <i class="bi bi-vector-pen"></i>生僻字指令生成器
+                        </a>
+                    </div>
+                </div>
+                <!-- 其他工具 -->
+                <div class="sidebar-menu-item divider-top" data-group="other">
+                    <div class="sidebar-menu-label">
+                        <i class="bi bi-link-45deg"></i>
+                        <span>其他工具(友情链接)</span>
+                        <i class="bi bi-chevron-right sidebar-arrow"></i>
+                    </div>
+                    <div class="sidebar-flyout">
+                        <div class="sidebar-flyout-title">其他工具(友情链接)</div>
+                        <a class="sidebar-flyout-item" href="https://www.shijianjisuanqi.com/" target="_blank">
+                            <i class="bi bi-clock"></i>时间计算工具
+                        </a>
+                        <a class="sidebar-flyout-item" href="https://convertlive.com/zh/u/%E8%BD%AC%E6%8D%A2/%E5%85%AC%E9%87%8C/%E8%87%AA/%E6%B5%B7%E9%87%8C" target="_blank">
+                            <i class="bi bi-arrow-left-right"></i>海里公里转换工具
+                        </a>
+                        <a class="sidebar-flyout-item" href="https://tool.lu/timestamp/" target="_blank">
+                            <i class="bi bi-clock-history"></i>时间戳转换工具
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- 底部：主题切换 + 更新按钮 -->
+            <div class="sidebar-footer">
+                <button class="theme-toggle-btn" id="themeToggle" title="切换深色/浅色模式">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                    <span id="themeText">深色模式</span>
+                </button>
+                <button id="checkUpdateBtn" class="sidebar-update-btn" title="检查更新">
+                    <i class="bi bi-arrow-up-circle"></i>
+                    <span>v<span id="versionSpan"></span></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ==================== 移动端顶部栏 ==================== -->
+        <div class="mobile-header-bar d-flex d-md-none align-items-center justify-content-between p-2 bg-dark fixed-top">
+            <button class="btn btn-link text-white" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#sideMenuCanvas" aria-controls="sideMenuCanvas">
+                <i class="bi bi-list fs-3"></i>
+            </button>
+            <div class="d-flex align-items-center">
+                <img src="./img/favicon.png" alt="Logo" height="28" class="me-2">
+                <strong class="text-white">YUWEITEK工具箱</strong>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-light theme-toggle-mobile" id="themeToggleMobile" title="切换深色/浅色模式">
+                    <i class="bi bi-moon-fill" id="themeIconMobile"></i>
+                </button>
+                <button id="checkUpdateBtnMobile" class="btn btn-sm btn-outline-light">检查更新</button>
+            </div>
+        </div>
+
+        <!-- 移动端侧边栏（保留 offcanvas） -->
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="sideMenuCanvas" aria-labelledby="sideMenuLabel">
+            <div class="offcanvas-header border-bottom">
+                <div class="d-flex align-items-center">
+                    <img src="./img/favicon.png" alt="Logo" width="32" height="32" class="me-2">
+                    <h5 class="offcanvas-title mb-0" id="sideMenuLabel">YUWEITEK工具箱</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body p-0">
+                <div class="accordion" id="menuAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingParseTools">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseParseTools" aria-expanded="false" aria-controls="collapseParseTools">交通解析工具</button>
+                        </h2>
+                        <div id="collapseParseTools" class="accordion-collapse collapse" aria-labelledby="headingParseTools">
+                            <div class="accordion-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" menu-type="JT808Parse" href="#JT808Parse"><i class="bi bi-code-square me-2"></i>JT808解析工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="JT809Parse" href="#JT809Parse"><i class="bi bi-diagram-3 me-2"></i>JT809解析工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="JT1078Parse" href="#JT1078Parse"><i class="bi bi-camera-video me-2"></i>JT1078解析工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="JT19056Parse" href="#JT19056Parse"><i class="bi bi-clipboard-data me-2"></i>JT19056解析工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="JT905Parse" href="#JT905Parse"><i class="bi bi-broadcast me-2"></i>JT905解析工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="JTSBParse" href="#JTSBParse"><i class="bi bi-shield-exclamation me-2"></i>主动安全解析工具</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingDataTools">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseDataTools" aria-expanded="false" aria-controls="collapseDataTools">数据处理工具</button>
+                        </h2>
+                        <div id="collapseDataTools" class="accordion-collapse collapse" aria-labelledby="headingDataTools">
+                            <div class="accordion-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" menu-type="HexParse" href="#HexParse"><i class="bi bi-hash me-2"></i>Hex工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="DataTools" href="#DataTools"><i class="bi bi-file-spreadsheet me-2"></i>数据字段处理工具V5.2</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="LatLngQuery" href="#LatLngQuery"><i class="bi bi-map me-2"></i>经纬度坐标查询工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="H264Convert" href="#H264Convert"><i class="bi bi-film me-2"></i>H264转MP4工具</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingCmdTools">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseCmdTools" aria-expanded="false" aria-controls="collapseCmdTools">终端命令调试工具</button>
+                        </h2>
+                        <div id="collapseCmdTools" class="accordion-collapse collapse" aria-labelledby="headingCmdTools">
+                            <div class="accordion-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" href="http://yuweicloud.com:8990/server/mainIndex.action;cm=E73E06307A2BD318BFB317ADEF280CCC" target="_blank"><i class="bi bi-cloud me-2"></i>云Monitor</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="AdbTool" href="#AdbTool"><i class="bi bi-usb-plug me-2"></i>ADB命令调试工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="RareCharTool" href="#RareCharTool"><i class="bi bi-vector-pen me-2"></i>生僻字指令生成器</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOtherTools">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOtherTools" aria-expanded="false" aria-controls="collapseOtherTools">其他工具(友情链接)</button>
+                        </h2>
+                        <div id="collapseOtherTools" class="accordion-collapse collapse" aria-labelledby="headingOtherTools">
+                            <div class="accordion-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a class="list-group-item list-group-item-action" href="https://www.shijianjisuanqi.com/" target="_blank"><i class="bi bi-clock me-2"></i>时间计算工具</a>
+                                    <a class="list-group-item list-group-item-action" href="https://convertlive.com/zh/u/%E8%BD%AC%E6%8D%A2/%E5%85%AC%E9%87%8C/%E8%87%AA/%E6%B5%B7%E9%87%8C" target="_blank"><i class="bi bi-arrow-left-right me-2"></i>海里公里转换工具</a>
+                                    <a class="list-group-item list-group-item-action" href="https://tool.lu/timestamp/" target="_blank"><i class="bi bi-clock-history me-2"></i>时间戳转换工具</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer p-3 border-top">
+                <button class="theme-toggle-btn w-100" id="themeToggleOffcanvas" title="切换深色/浅色模式">
+                    <i class="bi bi-moon-fill" id="themeIconOffcanvas"></i>
+                    <span id="themeTextOffcanvas">深色模式</span>
+                </button>
+                <div class="text-center small text-muted mt-2">© YUWEITEK 工具箱</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 内容区域 start -->
+    <main id="main" class="flex-shrink-0">
+        <!-- JT808 start -->
+        <div class="container" id="JT808Parse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-code-square"></i> JT808解析工具</h2>
+                <p class="text-muted">符合JT/T 808协议标准，支持2011/2013/2019版本及各类扩展协议</p>
+            </div>
+            <form class="">
+                <div class="mb-3 row">
+                    <select id="JT808_ProtocolType" class="form-select" aria-label=".form-select-sm">
+                        <option selected value="JT808">国标(通过包自动识别版本号)</option>
+                        <option value="JT808_JT1078">国标扩展JT1078</option>
+                        <option value="JT808_SuBiao">国标扩展主动安全(苏标)</option>
+                        <option value="JT808_YueBiao">国标扩展主动安全(粤标)</option>
+                        <option value="JT808_JTRM">公交扩展协议(锐明)</option>
+                        <option value="JT2013Force">国标(强制使用2013版本解析)</option>
+                        <option value="JT808_GPS51">国标扩展私有协议(GPS51)</option>
+                    </select>
+                </div>
+                <!-- 原始日志模式 -->
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="JT808_RawLogMode">
+                        <label class="form-check-label" for="JT808_RawLogMode">原始日志模式</label>
+                    </div>
+                    <div class="raw-log-options" id="JT808_RawLogOptions" style="display:none;">
+                        <select id="JT808_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
+                            <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
+                            <option value="2323">优先提取 2323 格式（自定义）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row form-floating">
+                    <textarea class="form-control" id="JT808_Hex" style="height: 200px" rows="20"></textarea>
+                    <label for="JT808_Hex"><i class="bi bi-exclamation-circle"></i> 小技巧：如有分包或多包，请回车区分。</label>
+                </div>
+                <div class="mb-3" id="JT808_ExtractResult_Wrapper" style="display:none;">
+                    <label class="form-label fw-medium"><i class="bi bi-check-circle text-success"></i> 提取结果（可编辑，确认后点分析）</label>
+                    <textarea class="form-control" id="JT808_ExtractResult" style="height: 150px;"></textarea>
+                </div>
+                <div class="mb-3 row">
+                    <button type="button" id="JT808_Parse" class="btn btn-primary mb-3">分析</button>
+                    <button type="button" id="JT808_Diagnose" class="btn btn-info mb-3">智能解析</button>
+                </div>
+            </form>
+            <div>
+                <div class="accordion" id="JT808_Accordion_Result">
+
+                </div>
+            </div>
+        </div>
+        <!-- JT808 end -->
+
+        <!-- JT809 start -->
+        <div class="container hide" id="JT809Parse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-code-square"></i> JT809解析工具</h2>
+                <p class="text-muted">符合JT/T 809协议标准，支持2011/2019版本</p>
+            </div>
+            <form class="">
+                <div class="mb-3 row">
+                    <select id="JT809_ProtocolType" class="form-select form-select-sm" aria-label=".form-select-sm">
+                        <option selected value="2011">2011版本</option>
+                        <option value="2019">2019版本</option>
+                    </select>
+                </div>
+                <div class="mb-3 row">
+                    <select id="JT809_EncryptType" class="form-select form-select-sm" aria-label=".form-select-sm">
+                        <option selected value="none">未加密</option>
+                        <option value="encrypt">加密</option>
+                    </select>
+                </div>
+                <div class="hide" id="JT809_Encrypt_Group">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="JT809_M1">M1</span>
+                        <input type="number" id="JT809_M1_Value" class="form-control" value="0" placeholder="M1"
+                            aria-label="M1" aria-describedby="JT809_M1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="JT809_M1">IA1</span>
+                        <input type="number" id="JT809_IA1_Value" class="form-control" value="0" placeholder="IA1"
+                            aria-labtextel="IA1" aria-describedby="JT809_IA1">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="JT809_IC1">IC1</span>
+                        <input type="number" id="JT809_IC1_Value" class="form-control" value="0" placeholder="IC1"
+                            aria-label="IC1" aria-describedby="JT809_IC1">
+                    </div>
+                </div>
+                <!-- 原始日志模式 -->
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="JT809_RawLogMode">
+                        <label class="form-check-label" for="JT809_RawLogMode">原始日志模式</label>
+                    </div>
+                    <div class="raw-log-options" id="JT809_RawLogOptions" style="display:none;">
+                        <select id="JT809_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
+                            <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
+                            <option value="2323">优先提取 2323 格式（自定义）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <textarea class="form-control" id="JT809_Hex" rows="10"></textarea>
+                </div>
+                <div class="mb-3" id="JT809_ExtractResult_Wrapper" style="display:none;">
+                    <label class="form-label fw-medium"><i class="bi bi-check-circle text-success"></i> 提取结果（可编辑，确认后点分析）</label>
+                    <textarea class="form-control" id="JT809_ExtractResult" style="height: 150px;"></textarea>
+                </div>
+                <div class="mb-3 row">
+                    <button type="button" id="JT809_Parse" class="btn btn-primary mb-3">分析</button>
+                </div>
+            </form>
+            <div class="pre">
+                <pre id="JT809_Result"></pre>
+            </div>
+        </div>
+        <!-- JT809 end -->
+
+        <!-- JT1078 start -->
+        <div class="container hide" id="JT1078Parse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-code-square"></i> JT1078解析工具</h2>
+                <p class="text-muted">符合JT/T 1078协议标准，支持视频流解析</p>
+            </div>
+            <form class="">
+                <!-- 原始日志模式 -->
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="JT1078_RawLogMode">
+                        <label class="form-check-label" for="JT1078_RawLogMode">原始日志模式</label>
+                    </div>
+                    <div class="raw-log-options" id="JT1078_RawLogOptions" style="display:none;">
+                        <select id="JT1078_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
+                            <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
+                            <option value="2323">优先提取 2323 格式（自定义）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <textarea class="form-control" id="JT1078_Hex" rows="7">
+                        </textarea>
+                </div>
+                <div class="mb-3" id="JT1078_ExtractResult_Wrapper" style="display:none;">
+                    <label class="form-label fw-medium"><i class="bi bi-check-circle text-success"></i> 提取结果（可编辑，确认后点分析）</label>
+                    <textarea class="form-control" id="JT1078_ExtractResult" style="height: 150px;"></textarea>
+                </div>
+                <div class="mb-3 row">
+                    <button type="button" id="JT1078_Parse" class="btn btn-primary mb-3">分析</button>
+                </div>
+            </form>
+            <div class="pre">
+                <pre id="JT1078_Result"></pre>
+            </div>
+        </div>
+        <!-- JT1078 end -->
+
+        <!-- JT808_JT1078 start -->
+        <div class="container hide" id="JT808_JT1078Packet">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-code-square"></i> JT808扩展协议JT1078解析工具</h2>
+                <p class="text-muted">符合JT/T 1078协议标准，支持视频流解析</p>
+            </div>
+            <!-- 已删除多余的 <h1 class="mt-5">JT1078Packet</h1> -->
+            <form class="">
+                <div class="mb-3 row">
+                    <select id="JT808_JT1078_MsgType" class="form-select form-select-sm" aria-label=".form-select-sm">
+                        <option selected value="0x9101" data-url="Packet_0x9101">808_打开看视频</option>
+                        <option value="0x9102" data-url="Packet_0x9102">808_关闭看视频</option>
+                        <option value="0x9205" data-url="Packet_0x9205">808_关闭看视频</option>
+                        <option value="0x9206" data-url="Packet_0x9206">808_文件上传</option>
+                    </select>
+                </div>
+            </form>
+            <div class="" id="JT808_JT1078_Packet_0x9101">
+                <form class="">
+
+                </form>
+            </div>
+            <div class="" id="JT808_JT1078_Packet_0x9102">
+                <form class="">
+
+                </form>
+            </div>
+            <div class="" id="JT808_JT1078_Packet_0x9205">
+                <form class="">
+
+                </form>
+            </div>
+            <div class="" id="JT808_JT1078_Packet_0x9206">
+                <form class="">
+
+                </form>
+            </div>
+            <div class="pre">
+                <pre id="JT808_JT1078_Result"></pre>
+            </div>
+        </div>
+        <!-- JT808_JT1078 end -->
+
+        <!-- JT19056 start -->
+        <div class="container hide" id="JT19056Parse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-card-text"></i> JT19056解析工具</h2>
+                <p class="text-muted">符合JT/T 19056协议标准，支持汽车行驶记录仪上行/下行指令解析</p>
+            </div>
+            <form class="">
+                <div class="mb-3 row">
+                    <select id="JT19056_ProtocolType" class="form-select form-select-sm" aria-label=".form-select-sm">
+                        <option selected value="up">上行</option>
+                        <option value="down">下行</option>
+                    </select>
+                </div>
+                <!-- 原始日志模式 -->
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="JT19056_RawLogMode">
+                        <label class="form-check-label" for="JT19056_RawLogMode">原始日志模式</label>
+                    </div>
+                    <div class="raw-log-options" id="JT19056_RawLogOptions" style="display:none;">
+                        <select id="JT19056_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
+                            <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
+                            <option value="2323">优先提取 2323 格式（自定义）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <textarea class="form-control" id="JT19056_Hex" rows="3">
+
+                        </textarea>
+                </div>
+                <div class="mb-3" id="JT19056_ExtractResult_Wrapper" style="display:none;">
+                    <label class="form-label fw-medium"><i class="bi bi-check-circle text-success"></i> 提取结果（可编辑，确认后点分析）</label>
+                    <textarea class="form-control" id="JT19056_ExtractResult" style="height: 150px;"></textarea>
+                </div>
+                <div class="mb-3 row">
+                    <button type="button" id="JT19056_Parse" class="btn btn-primary mb-3">分析</button>
+                </div>
+            </form>
+            <div class="pre">
+                <pre id="JT19056_Result"></pre>
+            </div>
+        </div>
+        <!-- JT19056 end -->
+
+        <!-- JT905 start -->
+        <div class="container hide" id="JT905Parse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-geo-alt"></i> JT905解析工具</h2>
+                <p class="text-muted">符合JT/T 905协议标准，道路运输车辆卫星定位系统协议解析</p>
+            </div>
+            <form class="">
+                <!-- 原始日志模式 -->
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="JT905_RawLogMode">
+                        <label class="form-check-label" for="JT905_RawLogMode">原始日志模式</label>
+                    </div>
+                    <div class="raw-log-options" id="JT905_RawLogOptions" style="display:none;">
+                        <select id="JT905_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
+                            <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
+                            <option value="2323">优先提取 2323 格式（自定义）</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <textarea class="form-control" id="JT905_Hex" rows="3">
+                        </textarea>
+                </div>
+                <div class="mb-3" id="JT905_ExtractResult_Wrapper" style="display:none;">
+                    <label class="form-label fw-medium"><i class="bi bi-check-circle text-success"></i> 提取结果（可编辑，确认后点分析）</label>
+                    <textarea class="form-control" id="JT905_ExtractResult" style="height: 150px;"></textarea>
+                </div>
+                <div class="mb-3 row">
+                    <button type="button" id="JT905_Parse" class="btn btn-primary mb-3">分析</button>
+                </div>
+            </form>
+            <div class="pre">
+                <pre id="JT905_Result"></pre>
+            </div>
+        </div>
+        <!-- JT905 end -->
+
+        <!-- JTSB start -->
+        <div class="container hide" id="JTSBParse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-shield-exclamation"></i> 主动安全解析工具</h2>
+                <p class="text-muted">苏标主动安全报警数据（ADAS、DSM、盲区检测等）解析</p>
+            </div>
+            <form class="">
+                <div class="mb-3 row">
+                    <textarea class="form-control" id="JTSB_Hex" rows="10"></textarea>
+                </div>
+                <!-- 原始日志模式 -->
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="JTSB_RawLogMode">
+                        <label class="form-check-label" for="JTSB_RawLogMode">原始日志模式</label>
+                    </div>
+                    <div class="raw-log-options" id="JTSB_RawLogOptions" style="display:none;">
+                        <select class="form-select form-select-sm" id="JTSB_PacketFormat">
+                            <option value="7E">优先提取 7E 格式（JT808等）</option>
+                            <option value="2323">优先提取 2323 格式（自定义）</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- 提取结果 -->
+                <div class="mb-3" id="JTSB_ExtractResult_Wrapper" style="display:none;">
+                    <label class="form-label">提取结果 <small class="text-muted">（可编辑确认后再分析）</small></label>
+                    <textarea class="form-control font-monospace" id="JTSB_ExtractResult" rows="6" style="font-size:13px;"></textarea>
+                </div>
+                <div class="mb-3 row">
+                    <button type="button" id="JTSB_Parse" class="btn btn-primary mb-3">分析</button>
+                </div>
+            </form>
+            <div class="pre">
+                <pre id="JTSB_Result"></pre>
+            </div>
+        </div>
+        <!-- JTSB end -->
+
+        <!-- Hex start -->
+        <div class="container hide" id="HexParse">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-calculator"></i> Hex工具</h2>
+                <p class="text-muted">十六进制 / ASCII 互转，支持2-36进制通用转换</p>
+            </div>
+            <form class="">
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_2" value="2">
+                            <label class="form-check-label" for="input_2">2进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_4" value="4">
+                            <label class="form-check-label" for="input_4">4进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_8" value="8">
+                            <label class="form-check-label" for="input_8">8进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_10" value="10" checked>
+                            <label class="form-check-label" for="input_10">10进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_16" value="16">
+                            <label class="form-check-label" for="input_16">16进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_32" value="32">
+                            <label class="form-check-label" for="input_32">32进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_36" value="36">
+                            <label class="form-check-label" for="input_36">36进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="input_" id="input_ascii" value="ascii">
+                            <label class="form-check-label" for="input_ascii">ASCII</label>
+                        </div>
+                        <select id="input_num" class="form-select form-select-sm ms-2" style="width: auto;">
+                            <option value="2">2进制</option>
+                            <option value="3">3进制</option>
+                            <option value="4">4进制</option>
+                            <option value="5">5进制</option>
+                            <option value="6">6进制</option>
+                            <option value="7">7进制</option>
+                            <option value="8">8进制</option>
+                            <option value="9">9进制</option>
+                            <option value="10" selected>10进制</option>
+                            <option value="11">11进制</option>
+                            <option value="12">12进制</option>
+                            <option value="13">13进制</option>
+                            <option value="14">14进制</option>
+                            <option value="15">15进制</option>
+                            <option value="16">16进制</option>
+                            <option value="17">17进制</option>
+                            <option value="18">18进制</option>
+                            <option value="19">19进制</option>
+                            <option value="20">20进制</option>
+                            <option value="21">21进制</option>
+                            <option value="22">22进制</option>
+                            <option value="23">23进制</option>
+                            <option value="24">24进制</option>
+                            <option value="25">25进制</option>
+                            <option value="26">26进制</option>
+                            <option value="27">27进制</option>
+                            <option value="28">28进制</option>
+                            <option value="29">29进制</option>
+                            <option value="30">30进制</option>
+                            <option value="31">31进制</option>
+                            <option value="32">32进制</option>
+                            <option value="33">33进制</option>
+                            <option value="34">34进制</option>
+                            <option value="35">35进制</option>
+                            <option value="36">36进制</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 form-floating">
+                    <textarea class="form-control" id="input_value" placeholder="输入值" rows="3"
+                        style="min-height: 100px;"></textarea>
+                    <label for="input_value">输入值（支持多行输入）</label>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_2" value="2">
+                            <label class="form-check-label" for="output_2">2进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_4" value="4">
+                            <label class="form-check-label" for="output_4">4进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_8" value="8">
+                            <label class="form-check-label" for="output_8">8进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_10" value="10">
+                            <label class="form-check-label" for="output_10">10进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_16" value="16"
+                                checked>
+                            <label class="form-check-label" for="output_16">16进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_32" value="32">
+                            <label class="form-check-label" for="output_32">32进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_36" value="36">
+                            <label class="form-check-label" for="output_36">36进制</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="output_" id="output_ascii" value="ascii">
+                            <label class="form-check-label" for="output_ascii">ASCII</label>
+                        </div>
+                        <select id="output_num" class="form-select form-select-sm ms-2" style="width: auto;"
+                            onchange="convertRadix(1)">
+                            <option value="2">2进制</option>
+                            <option value="3">3进制</option>
+                            <option value="4">4进制</option>
+                            <option value="5">5进制</option>
+                            <option value="6">6进制</option>
+                            <option value="7">7进制</option>
+                            <option value="8">8进制</option>
+                            <option value="9">9进制</option>
+                            <option value="10">10进制</option>
+                            <option value="11">11进制</option>
+                            <option value="12">12进制</option>
+                            <option value="13">13进制</option>
+                            <option value="14">14进制</option>
+                            <option value="15">15进制</option>
+                            <option value="16" selected>16进制</option>
+                            <option value="17">17进制</option>
+                            <option value="18">18进制</option>
+                            <option value="19">19进制</option>
+                            <option value="20">20进制</option>
+                            <option value="21">21进制</option>
+                            <option value="22">22进制</option>
+                            <option value="23">23进制</option>
+                            <option value="24">24进制</option>
+                            <option value="25">25进制</option>
+                            <option value="26">26进制</option>
+                            <option value="27">27进制</option>
+                            <option value="28">28进制</option>
+                            <option value="29">29进制</option>
+                            <option value="30">30进制</option>
+                            <option value="31">31进制</option>
+                            <option value="32">32进制</option>
+                            <option value="33">33进制</option>
+                            <option value="34">34进制</option>
+                            <option value="35">35进制</option>
+                            <option value="36">36进制</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <button type="button" id="HexToolsClear" class="btn btn-danger"><i class="bi bi-trash3"></i>
+                        清空</button>
+                    <button type="button" id="HexToolsDemo" class="btn btn-success ms-2"><i class="bi bi-stickies"></i>
+                        示例</button>
+                </div>
+                <div class="mb-3 form-floating">
+                    <textarea class="form-control" id="output_value" placeholder="结果" rows="3"
+                        style="min-height: 100px;" readonly></textarea>
+                    <label for="output_value">结果</label>
+                </div>
+
+            </form>
+        </div>
+        <!-- Hex end -->
+
+        <!-- 数据字段处理工具 start -->
+        <div class="container hide" id="DataTools">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-file-spreadsheet"></i> 数据字段处理工具 V5.2</h2>
+                <p class="text-muted">7E / 2323 数据包智能提取、空格去除、结果一键复制</p>
+            </div>
+            <div class="data-tools-container d-flex flex-column">
+                <!-- 新增：数据包格式选择 -->
+                <div class="d-flex align-items-center gap-3 mb-2" style="padding: 0 0 8px 0;">
+                    <label class="form-label mb-0 fw-medium">数据包格式：</label>
+                    <select id="packetFormat" class="form-select form-select-sm" style="width: auto;">
+                        <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
+                        <option value="2323">优先提取 2323 格式（自定义）</option>
+                    </select>
+                    <span class="text-muted small">根据数据包类型选择提取顺序</span>
+                </div>
+                <!-- 原始数据输入区 -->
+                <div class="mb-3 form-floating" style="margin-bottom: -0.6rem !important;">
+                    <div class="input-container">
+                        <textarea class="form-control w-100" id="input" placeholder=""
+                            style="height: 200px; padding-top: 30px;"></textarea>
+                        <label for="input" class="input-label"
+                            style="font-size: 16px; color: #000; top: 15px; left: 15px;">输入原始数据</label>
+                    </div>
+                </div>
+                <!-- 按钮组 -->
+                <div class="button-group d-flex justify-content-center mb-2 flex-wrap" style="gap: 0.5rem;">
+                    <div style="display: flex; gap: 10px;">
+                        <button id="processBtn" class="btn btn-primary">处理</button>
+                        <button id="delSpaceBtn" class="btn btn-secondary">去除空格</button>
+                        <button id="copyBtn" class="btn btn-success">复制结果</button>
+                        <button id="clearBtn" class="btn btn-danger">清空</button>
+                    </div>
+                </div>
+                <!-- 结果输出区 -->
+                <div class="mb-3 form-floating">
+                    <div class="input-container">
+                        <textarea class="form-control w-100" id="output" placeholder=""
+                            style="height: 200px; padding-top: 30px;" readonly></textarea>
+                        <label for="output" class="input-label"
+                            style="font-size: 16px; color: #000; top: 15px; left: 15px;">处理结果</label>
+                    </div>
+                </div>
+            </div>
+            <div class="toast" id="toast">已复制到剪贴板！</div>
+        </div>
+        <!-- 数据字段处理工具 end -->
+
+        <!-- 经纬度坐标查询工具 start -->
+        <div class="container hide" id="LatLngQuery">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-map"></i> 经纬度坐标查询工具</h2>
+                <p class="text-muted">地址 ↔ 坐标互转、批量处理、坐标格式转换、地图可视化</p>
+            </div>
+            <!-- 核心功能区域 -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <!-- 地址/坐标查询卡片 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-search me-2"></i>核心查询功能
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="pills-geocode-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-geocode" type="button" role="tab"> <i
+                                            class="fas fa-map-marker-alt me-1"></i> 地址转坐标 </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-reverse-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-reverse" type="button" role="tab"> <i
+                                            class="fas fa-location-arrow me-1"></i> 坐标转地址 </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="pills-batch-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-batch" type="button" role="tab"> <i
+                                            class="fas fa-table me-1"></i> 批量处理 </button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="pills-tabContent">
+                                <!-- 地址转坐标 -->
+                                <div class="tab-pane fade show active" id="pills-geocode" role="tabpanel">
+                                    <div class="mb-3">
+                                        <label class="form-label">输入地址 <i class="fas fa-info-circle tooltip-icon"
+                                                title="输入具体地址，如：北京市海淀区颐和园路5号"></i></label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control search-input"
+                                                placeholder="例如：北京市海淀区颐和园路5号" id="address-input" /> <button
+                                                class="btn btn-primary" type="button" id="geocode-btn"> <i
+                                                    class="fas fa-search"></i> 查询 </button>
+                                        </div>
+                                    </div>
+                                    <div class="result-box">
+                                        <h6>查询结果：</h6>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">经纬度：</span> <span class="coordinate-badge"
+                                                id="geocode-result">39.9042, 116.4074</span> <button
+                                                class="btn btn-sm btn-outline-primary ms-3" id="copy-coordinate"> <i
+                                                    class="fas fa-copy"></i> 复制 </button>
+                                        </div>
+                                        <div class="mt-2">
+                                            <span class="format-badge">DD格式</span> <span
+                                                class="format-badge ms-2">WGS-84坐标系</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 坐标转地址 -->
+                                <div class="tab-pane fade" id="pills-reverse" role="tabpanel">
+                                    <div class="mb-3">
+                                        <label class="form-label">输入经纬度 <i class="fas fa-info-circle tooltip-icon"
+                                                title="输入经纬度坐标，支持多种格式"></i></label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control search-input"
+                                                placeholder="例如：39.9042, 116.4074" id="coordinate-input" /> <button
+                                                class="btn btn-primary" type="button" id="reverse-geocode-btn"> <i
+                                                    class="fas fa-search"></i> 查询 </button>
+                                        </div>
+                                        <div class="form-text">支持度分秒(DMS)、度十进制分(DMM)、十进制度(DD)格式</div>
+                                    </div>
+                                    <div class="result-box">
+                                        <h6>查询结果：</h6>
+                                        <p>地址：<span class="fw-bold" id="reverse-result">北京市东城区</span></p>
+                                        <div class="d-flex">
+                                            <button class="btn btn-sm btn-outline-primary me-2"> <i
+                                                    class="fas fa-share-alt"></i> 分享 </button> <button
+                                                class="btn btn-sm btn-outline-primary"> <i class="fas fa-download"></i>
+                                                导出 </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 批量处理 -->
+                                <div class="tab-pane fade" id="pills-batch" role="tabpanel">
+                                    <div class="mb-3">
+                                        <label class="form-label">批量上传文件 <i class="fas fa-info-circle tooltip-icon"
+                                                title="上传CSV或TXT文件进行批量处理"></i></label>
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" accept=".csv,.txt"
+                                                id="batch-file" /> <button class="btn btn-primary" type="button"
+                                                id="upload-btn"> <i class="fas fa-upload"></i> 上传 </button>
+                                        </div>
+                                        <div class="form-text">支持CSV或TXT格式，每行一个地址或坐标</div>
+                                    </div>
+                                    <button class="btn btn-outline-primary" id="download-sample-btn"> <i
+                                            class="fas fa-download me-1"></i> 下载示例文件 </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 坐标格式转换卡片 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-exchange-alt me-2"></i>坐标格式转换
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">输入坐标 <i class="fas fa-info-circle tooltip-icon"
+                                        title="输入坐标，系统将自动识别格式"></i></label> <input type="text"
+                                    class="form-control search-input" placeholder="例如：39.9042, 116.4074"
+                                    id="convert-input" />
+                                <div class="form-text">系统将自动识别输入格式</div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="format" id="formatDMS"
+                                            checked="checked" /> <label class="form-check-label" for="formatDMS"> 度分秒
+                                            (DMS) </label>
+                                    </div>
+                                    <div class="ps-4 mt-1 small text-muted">40°26'46"N, 79°58'56"W</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="format" id="formatDMM" />
+                                        <label class="form-check-label" for="formatDMM"> 度十进制分 (DMM) </label>
+                                    </div>
+                                    <div class="ps-4 mt-1 small text-muted">40°26.767'N, 79°58.933'W</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="format" id="formatDD" />
+                                        <label class="form-check-label" for="formatDD"> 十进制度 (DD) </label>
+                                    </div>
+                                    <div class="ps-4 mt-1 small text-muted">40.446°, -79.982°</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary w-100 mb-3" id="convert-btn"> <i
+                                    class="fas fa-sync-alt me-2"></i>转换坐标格式 </button>
+                            <div class="result-box">
+                                <h6>转换结果：</h6>
+                                <p class="mb-1">DD: <span class="coordinate-badge" id="result-dd">39.9042,
+                                        116.4074</span></p>
+                                <p class="mb-1">DMS: <span class="coordinate-badge" id="result-dms">39°54'15.12"N,
+                                        116°24'26.64"E</span></p>
+                                <p class="mb-0">DMM: <span class="coordinate-badge" id="result-dmm">39°54.252'N,
+                                        116°24.444'E</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 右侧地图区域 -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-map me-2"></i>地图可视化
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="mapDiv" style="height: 400px; width: 100%; background: #f0f0f0;">
+                                <div class="map-placeholder d-flex align-items-center justify-content-center h-100">
+                                    <i class="fas fa-spinner fa-spin me-2"></i> 地图加载中...
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="me-2">当前坐标：</span> <span class="coordinate-badge"
+                                        id="current-coordinate">39.9042, 116.4074</span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-2" id="locate-btn"> <i
+                                            class="fas fa-crosshairs"></i> 定位 </button> <button
+                                        class="btn btn-sm btn-outline-primary" id="share-btn"> <i
+                                            class="fas fa-share-alt"></i> 分享 </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 坐标系设置卡片 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-cogs me-2"></i>坐标系设置
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="coordinateSystem"
+                                            id="systemWGS84" checked="checked" /> <label class="form-check-label"
+                                            for="systemWGS84"> WGS-84 </label>
+                                    </div>
+                                    <div class="ps-4 mt-1 small text-muted">GPS标准</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="coordinateSystem"
+                                            id="systemGCJ02" /> <label class="form-check-label" for="systemGCJ02">
+                                            GCJ-02 </label>
+                                    </div>
+                                    <div class="ps-4 mt-1 small text-muted">国测局坐标</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="coordinateSystem"
+                                            id="systemBD09" /> <label class="form-check-label" for="systemBD09"> BD-09
+                                        </label>
+                                    </div>
+                                    <div class="ps-4 mt-1 small text-muted">百度坐标系</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 经纬度坐标查询工具 end -->
+
+        <!-- H264转MP4工具 start -->
+        <div class="container hide" id="H264Convert">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-film"></i> H264转MP4工具</h2>
+                <p class="text-muted">单文件 / 批量转换 .264/.h264 文件为 MP4，支持实时进度推送和取消任务</p>
+            </div>
+            <!-- 单文件转换卡片 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-film me-2"></i> 单文件转换
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">源文件路径（.264 / .h264）</label>
+                                <input type="text" id="sourcePath" class="form-control"
+                                    placeholder="例如 D:\videos\test.264">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">输出 MP4 路径</label>
+                                <div class="input-group">
+                                    <input type="text" id="outputPath" class="form-control"
+                                        placeholder="例如 D:\videos\test.mp4">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        id="browseOutputBtn">浏览</button>
+                                </div>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="reencodeCheck" checked>
+                                <label class="form-check-label" for="reencodeCheck">重新编码（兼容性更好，速度较慢）</label>
+                            </div>
+                            <div class="mb-3" id="crfGroup" style="display: none;">
+                                <label class="form-label">CRF 质量 (0-51, 越小质量越高)</label>
+                                <input type="range" class="form-range" id="crfSlider" min="0" max="51" value="23">
+                                <span id="crfValue">23</span>
+                            </div>
+                            <button id="startConvertBtn" class="btn btn-primary">开始转换</button>
+                            <button id="cancelConvertBtn" class="btn btn-danger" style="display: none;">取消转换</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="progress mb-3" style="height: 25px;">
+                                <div id="convertProgress" class="progress-bar" role="progressbar" style="width: 0%;">0%
+                                </div>
+                            </div>
+                            <div id="convertLog" class="border rounded p-2"
+                                style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                                等待转换...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 批量转换文件夹卡片 -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-folder-symlink me-2"></i> 批量转换文件夹
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">文件夹路径（包含 .264 / .h264 文件）</label>
+                                <input type="text" id="batchFolderPath" class="form-control" placeholder="例如 D:\videos">
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="batchReencodeCheck" checked>
+                                <label class="form-check-label" for="batchReencodeCheck">重新编码（兼容性更好，速度较慢）</label>
+                            </div>
+                            <div class="mb-3" id="batchCrfGroup" style="display: none;">
+                                <label class="form-label">CRF 质量 (0-51, 越小质量越高)</label>
+                                <input type="range" class="form-range" id="batchCrfSlider" min="0" max="51" value="23">
+                                <span id="batchCrfValue">23</span>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="batchOverwrite">
+                                <label class="form-check-label" for="batchOverwrite">覆盖已存在的 MP4 文件</label>
+                            </div>
+                            <div>
+                                <button id="startBatchConvertBtn" class="btn btn-primary">开始批量转换</button>
+                                <button id="cancelBatchConvertBtn" class="btn btn-danger"
+                                    style="display: none;">取消批量转换</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="progress mb-3" style="height: 25px;">
+                                <div id="batchProgress" class="progress-bar" role="progressbar" style="width: 0%;">0%
+                                </div>
+                            </div>
+                            <div id="batchLog" class="border rounded p-2"
+                                style="height: 200px; overflow-y: auto; font-family: monospace; font-size: 12px;">
+                                等待批量转换...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- H264转MP4工具 end -->
+
+        <!-- ADB工具 start -->
+        <div class="container hide" id="AdbTool">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-usb-plug"></i> ADB命令调试工具</h2>
+                <p class="text-muted">设备管理、命令发送/管理、日志采集（支持快捷键 Ctrl+Alt+S / Ctrl+Alt+X）</p>
+            </div>
+            <!-- 左右两列布局 -->
+            <div class="row g-4">
+                <!-- 左侧操作区 (8列) -->
+                <div class="col-md-8">
+                    <!-- 设备选择 -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <label class="form-label fw-medium mb-2">选择设备：</label>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <select id="deviceSelect" class="form-select form-select-sm flex-grow-1"
+                                    style="max-width: 300px;"></select>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    id="btnRefreshDevices">刷新设备</button>
+                                <span id="adbStatus" class="text-muted"></span>
+                            </div>
+                            <div id="commandButtons" class="mt-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- 日志采集控制区域 -->
+                    <div class="card mb-3">
+                        <div class="card-header py-2">
+                            <h4 class="mb-0 fs-5">日志采集</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2">
+                                <input type="text" id="logcatFilename" class="form-control form-control-sm"
+                                    placeholder="保存路径（可选，如 D:\logs\logcat.txt，默认自动生成）">
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span id="logcatStatus" class="text-muted">状态：<span id="logcatStatusText" class="badge bg-danger">未运行</span></span>
+                                <small class="text-muted">快捷键: Ctrl+Alt+S/X/F</small>
+                                <span class="ms-auto"></span>
+                                <button type="button" class="btn btn-success btn-sm" id="btnStartLogcat">
+                                    <i class="bi bi-play-fill"></i> 开始采集
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" id="btnStopLogcat" disabled>
+                                    <i class="bi bi-stop-fill"></i> 停止采集
+                                </button>
+                                <button type="button" class="btn btn-info btn-sm" id="btnOpenFolder">
+                                    <i class="bi bi-folder2-open"></i> 打开文件夹
+                                </button>
+                            </div>
+                            <div id="logcatDetail" class="small text-muted" style="display:none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- 手动命令区域 -->
+                    <div class="card mb-3">
+                        <div class="card-header py-2">
+                            <h4 class="mb-0 fs-5">手动命令</h4>
+                        </div>
+                        <div class="card-body">
+                            <!-- 手动输入命令 -->
+                            <div class="mb-2">
+                                <textarea id="manualCommand" class="form-control form-control-sm"
+                                    placeholder="输入adb命令（如: shell ls /sdcard，不需要加adb前缀）" rows="2"
+                                    style="resize: vertical;"></textarea>
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <small class="text-muted me-auto">快捷键: Ctrl+Enter</small>
+                                <button type="button" class="btn btn-primary btn-sm" id="btnSendManual">
+                                    <i class="bi bi-send"></i> 发送
+                                </button>
+                            </div>
+                            <!-- 自然语言生成命令 -->
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="commandInstruction" class="form-control form-control-sm"
+                                    placeholder="用自然语言描述操作（如：开启飞行模式）">
+                                <button type="button" class="btn btn-outline-info btn-sm" id="btnGenerateCommand">
+                                    <i class="bi bi-stars"></i> AI 生成
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                                        <!-- 管理命令区域 -->
+                    <div class="card mb-3">
+                        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 fs-5">管理命令</h4>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-outline-success btn-sm" id="btnExportCommands">
+                                    <i class="bi bi-download"></i> 导出
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm" id="btnImportCommands">
+                                    <i class="bi bi-upload"></i> 导入
+                                </button>
+                                <input type="file" id="importFile" accept=".json" style="display: none;">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- 表单区：名称 + 分组（第一行），命令内容（第二行） -->
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" id="cmdName" class="form-control form-control-sm" placeholder="命令名称" autocomplete="off">
+                                </div>
+                                <div class="col-md-7">
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="cmdGroup" class="form-control" placeholder="分组名称" list="groupOptions" autocomplete="off">
+                                        <button class="btn btn-outline-secondary" type="button" id="btnManageGroups" title="管理分组">
+                                            <i class="bi bi-gear"></i>
+                                        </button>
+                                        <datalist id="groupOptions"></datalist>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-12">
+                                    <textarea id="cmdText" class="form-control form-control-sm" placeholder="命令内容（如: shell ls /sdcard）" rows="2" style="resize: vertical; min-height: 40px;" autocomplete="off"></textarea>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1 mb-3 align-items-center">
+                                <small class="text-muted me-auto">
+                                    <i class="bi bi-info-circle"></i> shell 命令请以 "shell " 开头
+                                </small>
+                                <button type="button" class="btn btn-primary btn-sm" id="btnAddCommand">添加</button>
+                                <button type="button" class="btn btn-secondary btn-sm" id="btnUpdateCommand">修改</button>
+                                <button type="button" class="btn btn-danger btn-sm" id="btnDeleteCommand">删除</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearForm">清除</button>
+                            </div>
+
+                            <!-- 搜索 + 批量操作 -->
+                            <div class="d-flex gap-2 mb-2 flex-wrap align-items-center">
+                                <input type="text" id="commandSearch" class="form-control form-control-sm" placeholder="🔍 搜索命令..." style="max-width: 250px;">
+                                <div class="vr"></div>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-primary" id="btnSelectAll" title="全选/取消">
+                                        <i class="bi bi-check2-square"></i> 全选
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" id="btnBatchDelete" title="批量删除">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </button>
+                                </div>
+                                <div class="input-group input-group-sm" style="width: 220px;">
+                                    <select id="batchMoveGroup" class="form-select form-select-sm" style="font-size: 12px;">
+                                        <option value="">移动到分组...</option>
+                                    </select>
+                                    <button class="btn btn-outline-primary btn-sm" type="button" id="btnBatchMove">
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 命令列表（复选框形式） -->
+                            <div id="commandListContainer" class="border rounded p-2" style="max-height: 350px; overflow-y: auto; background: #fafbfc;">
+                                <div id="commandListEmpty" class="text-center text-muted py-3" style="display:none;">暂无命令</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- 左侧操作区 end -->
+
+<!-- 右侧结果显示区 (4列) -->
+                <div class="col-md-4">
+                    <div class="sticky-top" style="top: 70px; z-index: 100;">
+                        <div class="card">
+                            <div class="card-header py-2">
+                                <h5 class="mb-0 fs-6">执行结果</h5>
+                            </div>
+                            <div class="card-body d-flex flex-column p-3">
+                                <div id="commandOutput" class="p-2 bg-light border rounded shadow-sm mb-2"
+                                    style="white-space: pre-wrap; font-family: Consolas, monospace; overflow-y: auto; max-height: calc(100vh - 200px);">
+                                    命令执行结果将显示在这里...
+                                </div>
+                                <button type="button" class="btn btn-danger btn-sm w-100"
+                                    id="btnClearOutput">清空</button>
+                                <small class="text-muted d-block text-center mt-1">快捷键: Ctrl+Alt+C</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ADB工具 end -->
+
+        <!-- 生僻字指令生成器 start -->
+        <div class="container hide" id="RareCharTool">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-vector-pen"></i> 生僻字指令生成器</h2>
+                <p class="text-muted">输入生僻字，生成16x16 / 24x24点阵 ADB 指令，用于终端显示</p>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3 align-items-center mb-4">
+                        <div class="col-auto">
+                            <input type="text" id="rareCharInput" class="form-control form-control-lg text-center"
+                                maxlength="1" placeholder="字" style="width: 100px; height: 100px; font-size: 3rem;">
+                        </div>
+                        <div class="col-auto">
+                            <button id="generateRareBtn" class="btn btn-primary btn-lg">生成指令</button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- 指令1 -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <span>📟 指令1 (16×16点阵)</span>
+                                </div>
+                                <div class="card-body">
+                                    <textarea id="cmdRare1" class="form-control font-monospace" rows="4" readonly
+                                        placeholder="等待生成..."></textarea>
+                                </div>
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-sm btn-outline-secondary copy-rare-btn"
+                                        data-target="cmdRare1">复制</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 指令2 -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <span>📟 指令2 (24×24点阵 前半)</span>
+                                </div>
+                                <div class="card-body">
+                                    <textarea id="cmdRare2" class="form-control font-monospace" rows="4" readonly
+                                        placeholder="等待生成..."></textarea>
+                                </div>
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-sm btn-outline-secondary copy-rare-btn"
+                                        data-target="cmdRare2">复制</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 指令3 -->
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <span>📟 指令3 (24×24点阵 后半)</span>
+                                </div>
+                                <div class="card-body">
+                                    <textarea id="cmdRare3" class="form-control font-monospace" rows="4" readonly
+                                        placeholder="等待生成..."></textarea>
+                                </div>
+                                <div class="card-footer text-end">
+                                    <button class="btn btn-sm btn-outline-secondary copy-rare-btn"
+                                        data-target="cmdRare3">复制</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="container mt-4 text-center">
+                            <footer>
+                                <p>© 2026 生僻字指令生成工具 | fantool</p>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 生僻字指令生成器 end -->
+
+        <!-- 智能助手悬浮窗 -->
+        <div id="qaFloatButton" class="qa-float-button" title="智能助手">
+            <i class="bi bi-chat-dots-fill"></i>
+        </div>
+
+        <div id="qaFloatWindow" class="qa-float-window">
+            <div class="qa-float-header">
+                <span>智能助手</span>
+                <div class="qa-header-buttons">
+                    <button class="qa-float-close" aria-label="关闭">&times;</button>
+                </div>
+            </div>
+            <div class="qa-float-body">
+                <textarea id="qaQuestion" class="form-control" rows="3"
+                    placeholder="例如：JT808 协议中消息 ID 0x0200 是什么意思？"></textarea>
+                <button id="btnAsk" class="btn btn-primary mt-3">提问</button>
+                <!-- 新增清空历史会话链接 -->
+                <!-- <div class="qa-clear-link mt-2 text-center">
+                    <a href="javascript:void(0);" id="qaClearLink" class="text-secondary small">清空历史会话</a>
+                </div> -->
+                <div id="qaAnswer" class="qa-answer mt-3">
+                    <div class="qa-welcome">
+                        <div class="qa-welcome-icon">🤖</div>
+                        <p class="qa-welcome-text">你好！我是你的智能助手<br>有什么可以帮你的吗？</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部版权说明 start -->
+     <footer class="footer mt-auto py-3 bg-light">
+        <div class="container-fluid">
+            <p class="acknowledgment">特别鸣谢！<br>
+                <a href="https://github.com/SmallChi" target="_blank">SmallChi</a>&nbsp;&nbsp;&nbsp;
+                <a href="https://www.bchrt.com/" target="_blank">木马查询</a>&nbsp;&nbsp;&nbsp;
+                <a href="#">技术服务部</a>&nbsp;&nbsp;&nbsp;
+                <a href="#">嵌软测试部</a>&nbsp;&nbsp;&nbsp;
+            </p>
+            <hr />
+            <span>
+                <p><img src="./img/备案图标.png" width="20" />&nbsp;<a
+                        href="https://beian.mps.gov.cn/#/query/webSearch?code=45030402000336" rel="noreferrer"
+                        target="_blank">桂公网安备45030402000336号</a></p>
+                <p><a href="https://beian.miit.gov.cn" target="_blank">Copyright © 2025 Loong. All Rights
+                        Reserved.桂ICP备2025067954号-1</a></p>
+            </span>
+            <div id="licenseStatus" class="mt-2 small text-muted" style="text-align: center;"></div>
+        </div>
+    </footer>
+    <!-- 底部版权说明 end -->
+
+    <!-- 激活模态框 start -->
+    <div class="modal fade" id="activateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog  modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title">激活授权</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">本机机器码</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="machineCodeDisplay" readonly
+                                style="word-break: break-all; background-color: #e9ecef; font-family: monospace;">
+                            <button class="btn btn-outline-secondary" type="button" id="copyMachineCodeBtn">复制</button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="licenseInput" class="form-label">授权码</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="licenseInput" placeholder="请输入授权码">
+                            <button class="btn btn-outline-secondary" type="button" id="pasteLicenseBtn">粘贴</button>
+                        </div>
+                    </div>
+                    <div id="activateError" class="text-danger"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="activateBtn">激活</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 激活模态框 end -->
+
+    <!-- 核心模块（必须按顺序） -->
+    <script src="/js/core/config.js"></script>
+    <script src="/js/core/utils.js"></script>
+    <script src="/js/core/auth.js"></script>
+
+    <!-- 功能模块 -->
+    <script src="/js/modules/hex-convert.js"></script>
+    <script src="/js/modules/data-processor.js"></script>
+    <script src="/js/modules/jt-parse.js"></script>
+    <script src="/js/modules/latlng-query.js"></script>
+    <script src="/js/modules/video-convert.js"></script>
+    <script src="/js/modules/adb-tools.js"></script>
+    <script src="/js/modules/ai-assistant.js"></script>
+    <script src="/js/modules/rare-char.js"></script>
+
+    <!-- 入口文件（最后加载） -->
+    <script src="/js/site.js"></script>
+</body>
+
+</html>

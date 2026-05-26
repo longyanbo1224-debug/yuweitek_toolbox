@@ -1,0 +1,152 @@
+{
+    "confVersion": 1,
+    "status": 200,
+    "controllerNum": 2,
+    "biaodingControllerNum": 1,
+    "canOta": 1,
+    "controllerList": [
+        {
+            "specialUpgrade": 0,
+            "bootUpgrade": 0,
+            "scriptListLen": 2,
+            "controller": "发动机",
+            "biaodingNo": "713BD",
+            "softType": "OS",
+            "netType": 1,
+            "channel": 3,
+            "powerModel": 2,
+            "upgradeModel": 1,
+            "bootUrl": "",
+            "bootSize": 0,
+            "baseRollbackType": 1,
+            "mixRollbackType": 1,
+            "scriptList": [
+                {
+                    "scriptType": 1,
+                    "referer": "",
+                    "requestId": "7E0",
+                    "responseId": "7E8",
+                    "url": "http://oos-cn.ctyunapi.cn/dongfengtest/20220721/e410c338-d9e9-4624-8068-8620164cc361.ttb",
+                    "hash": "60ecb25cb4736b59915e62f62c9ff31b5ca69eed524ca0936ff95ca366e8bb5",
+                    "encrypt": 0,
+                    "size": 11720,
+                    "originSize": 11720,
+                    "platform": 2,
+                    "fileName": "libDDI13SA.so",
+                    "functionName": "GenerateKeyEx_DDi13_CN6",
+                    "keyLength": 16,
+                    "standardType": 1,
+                    "filePath": "/data/ota/master/script/发动机-APP-1-1.ttb",
+                    "decryptFilePath": "/data/ota/master/script/extra/发动机-APP-1-1.ttb"
+                },
+                {
+                    "scriptType": 8,
+                    "referer": "",
+                    "requestId": "7E0",
+                    "responseId": "7E8",
+                    "url": "http://oos-cn.ctyunapi.cn/dongfengtest/20220721/fa611df7-e49d-458f-8f98-d766f53186f9.ttb",
+                    "hash": "2fc2361948e1a6d5d1c8a66ac0b4183fad4c7991529f596596ae43f63277c1b3",
+                    "encrypt": 0,
+                    "size": 33888,
+                    "originSize": 33888,
+                    "platform": 2,
+                    "fileName": "libDDI13SA.so",
+                    "functionName": "GenerateKeyEx_DDi13_CN6",
+                    "keyLength": 16,
+                    "standardType": 1,
+                    "filePath": "/data/ota/master/script/发动机-APP-8-1.ttb",
+                    "decryptFilePath": "/data/ota/master/script/extra/发动机-APP-8-1.ttb"
+                }
+            ]
+        },
+		{
+            "specialUpgrade": 0,
+            "bootUpgrade": 0,
+            "scriptListLen": 2,
+            "controller": "AMT",
+            "biaodingNo": "713B1",
+            "softType": "OS",
+            "netType": 1,
+            "channel": 3,
+            "powerModel": 2,
+            "upgradeModel": 1,
+            "bootUrl": "",
+            "bootSize": 0,
+            "baseRollbackType": 1,
+            "mixRollbackType": 1,
+            "scriptList": [
+                {
+                    "scriptType": 1,
+                    "referer": "",
+                    "requestId": "7E0",
+                    "responseId": "7E8",
+                    "url": "http://oos-cn.ctyunapi.cn/dongfengtest/20220721/e410c338-d9e9-4624-8068-8620164cc361.ttb",
+                    "hash": "60ecb25cb4736b59915e62f62c9ff31b5ca69eed524ca0936ff95ca366e8bb5",
+                    "encrypt": 0,
+                    "size": 11720,
+                    "originSize": 11720,
+                    "platform": 2,
+                    "fileName": "libDDI11SA.so",
+                    "functionName": "GenerateKeyEx_DDi11_CN6",
+                    "keyLength": 16,
+                    "standardType": 1,
+                    "filePath": "/data/ota/master/script/发动机-APP-1-1.ttb",
+                    "decryptFilePath": "/data/ota/master/script/extra/发动机-APP-1-1.ttb"
+                },
+                {
+                    "scriptType": 8,
+                    "referer": "",
+                    "requestId": "7E0",
+                    "responseId": "7E8",
+                    "url": "http://oos-cn.ctyunapi.cn/dongfengtest/20220721/fa611df7-e49d-458f-8f98-d766f53186f9.ttb",
+                    "hash": "2fc2361948e1a6d5d1c8a66ac0b4183fad4c7991529f596596ae43f63277c1b3",
+                    "encrypt": 0,
+                    "size": 33888,
+                    "originSize": 33888,
+                    "platform": 2,
+                    "fileName": "libDDI11SA.so",
+                    "functionName": "GenerateKeyEx_DDi11_CN6",
+                    "keyLength": 16,
+                    "standardType": 1,
+                    "filePath": "/data/ota/master/script/发动机-APP-8-1.ttb",
+                    "decryptFilePath": "/data/ota/master/script/extra/发动机-APP-8-1.ttb"
+                }
+            ]
+        }
+    ],
+    "biaodingControllerList": [
+        {
+            "scriptListLen": 1,
+            "controller": "发动机",
+            "biaodingNo": "713BD",
+            "softType": "BIAODING",
+            "netType": 1,
+            "channel": 3,
+            "powerModel": 0,
+            "upgradeModel": 1,
+            "biaodingStandardType": 1,
+            "biaodingRollbackType": 2,
+            "mixRollbackType": 2,
+            "scriptList": [
+                {
+                    "scriptType": 8,
+                    "referer": "",
+                    "requestId": "7E0",
+                    "responseId": "7E8",
+                    "url": "http://oos-cn.ctyunapi.cn/dongfengtest/20220722/0614d67d-1de9-41a0-aeb4-efcc9c2e472d.ttb",
+                    "hash": "94e4a6335d6f59f3fa5050b26f47a9925fee4791aee9685979cb9fc035faf516",
+                    "encrypt": 0,
+                    "size": 68640,
+                    "originSize": 68640,
+                    "platform": 2,
+                    "fileName": "libDDI13SA.so",
+                    "functionName": "GenerateKeyEx_DDi13_CN6",
+                    "keyLength": 16,
+                    "standardType": 1,
+                    "filePath": "/data/ota/master/script/发动机-APP-8-3.ttb",
+                    "decryptFilePath": "/data/ota/master/script/extra/发动机-APP-8-3.ttb"
+                }
+            ]
+        }
+    ]
+}

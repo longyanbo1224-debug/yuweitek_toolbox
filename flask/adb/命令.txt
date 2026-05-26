@@ -1,0 +1,12 @@
+===========================================
+adb                                                             
+adb shell                                                     
+alias ls='busybox ls --color=never';
+export LD_LIBRARY_PATH=/usrdata/appset/lib:$LD_LIBRARY_PATH
+===========================================
+adb push命令 ：从电脑上传送文件到终端；
+adb push D:\file.txt system/
+===========================================
+adb pull命令 ：从终端传送文件到电脑上；
+adb pull system/file.txt D:/
+===========================================

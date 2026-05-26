@@ -1,0 +1,327 @@
+--------- beginning of main
+02-04 16:33:26.356 22756 22756 I TerminalApp: 生命周期管理开始:
+02-04 16:33:26.356 22756 22756 I TerminalApp: 主线程初始化
+02-04 16:33:26.368 22756 22756 W CrashReport: Bugly debug模式开启，请在发布时把isDebug关闭。 -- Running in debug model for 'isDebug' is enabled. Please disable it when you release.
+02-04 16:33:26.368 22756 22756 E CrashReport: --------------------------------------------------------------------------------------------
+02-04 16:33:26.368 22756 22756 W CrashReport: Bugly debug模式将有以下行为特性 -- The following list shows the behaviour of debug model: 
+02-04 16:33:26.368 22756 22756 W CrashReport: [1] 输出详细的Bugly SDK的Log -- More detailed log of Bugly SDK will be output to logcat;
+02-04 16:33:26.368 22756 22756 W CrashReport: [2] 每一条Crash都会被立即上报 -- Every crash caught by Bugly will be uploaded immediately.
+02-04 16:33:26.368 22756 22756 W CrashReport: [3] 自定义日志将会在Logcat中输出 -- Custom log will be output to logcat.
+02-04 16:33:26.368 22756 22756 E CrashReport: --------------------------------------------------------------------------------------------
+02-04 16:33:26.368 22756 22756 I CrashReportInfo: [init] Open debug mode of Bugly.
+02-04 16:33:26.372 22756 22756 I CrashReport:  crash report start initializing...
+02-04 16:33:26.372 22756 22756 I CrashReportInfo: [init] Bugly start initializing...
+02-04 16:33:26.373 22756 22756 I CrashReport: [init] Bugly complete version: v4.1.9.3
+02-04 16:33:26.387 22756 22756 D CrashReport: com info create end
+02-04 16:33:26.389 22756 22756 D CrashReport: SDK_INFO is empty
+02-04 16:33:26.393 22756 22756 I CrashReport: [param] Set APP ID:399ba302ca
+02-04 16:33:26.397 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.u$2
+02-04 16:33:26.398 22756 22756 I CrashReport: Initializing crash module.
+02-04 16:33:26.399 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.u$1
+02-04 16:33:26.409 22756 22756 I CrashReport: backup system java handler: com.android.internal.os.RuntimeInit$UncaughtHandler@4c4a6a9
+02-04 16:33:26.409 22756 22756 I CrashReport: registered java monitor: com.tencent.bugly.proguard.av@238a42e
+02-04 16:33:26.414 22756 22756 D CrashReport: Delete empty record file /data/user/0/com.boyuan.hxc_android/app_bugly/sys_log_1770193816423.txt
+02-04 16:33:26.414 22756 22756 D CrashReport: Delete empty record file /data/user/0/com.boyuan.hxc_android/app_bugly/jni_log_1770193816423.txt
+02-04 16:33:26.415 22756 22756 I CrashReport: user change native true
+02-04 16:33:26.415 22756 22756 I CrashReport: native changed to true
+02-04 16:33:26.415 22756 22756 I CrashReport: [Native] Trying to load so: Bugly_Native
+02-04 16:33:26.448 22756 22756 I eup     : register native abi method success
+02-04 16:33:26.449 22756 22756 I CrashReport: [Native] Successfully loaded SO: Bugly_Native
+02-04 16:33:26.449 22756 22756 I eup     : setLogMode 3 current 4
+02-04 16:33:26.449 22756 22756 I eup     : regist start
+02-04 16:33:26.449 22756 22756 I eup     : JARJNIVERSION:3
+02-04 16:33:26.449 22756 22756 I eup     : set signal stack
+02-04 16:33:26.449 22756 22756 I eup     : regist anr sigquit handler
+02-04 16:33:26.449 22756 22756 I eup     : regist native handler
+02-04 16:33:26.450 22756 22756 I eup     : Opened system log record file: /data/user/0/com.boyuan.hxc_android/app_bugly/sys_log_1770194006449.txt
+02-04 16:33:26.450 22756 22756 I eup     : Opened JNI log record file: /data/user/0/com.boyuan.hxc_android/app_bugly/jni_log_1770194006449.txt
+02-04 16:33:26.450 22756 22756 I eup     : NativeBuglyVersion:4.1.9.3
+02-04 16:33:26.450 22756 22756 I CrashReport: [Native] Native Crash Report enable.
+02-04 16:33:26.450 22756 22756 I CrashReport: comInfo.sdkVersion 4.1.9.3-4.1.9.3
+02-04 16:33:26.450 22756 22756 D eup     : call getRunningCpuAbi:armeabi-v7a
+02-04 16:33:26.451 22756 22756 I eup     : jni_setNativeInfo: key is 10
+02-04 16:33:26.451 22756 22756 I eup     : Set native info: app version(2.2.7)
+02-04 16:33:26.451 22756 22756 I eup     : jni_setNativeInfo: key is 13
+02-04 16:33:26.451 22756 22756 I eup     : Set native info: app package(com.boyuan.hxc_android)
+02-04 16:33:26.451 22756 22756 I eup     : jni_setNativeInfo: key is 11
+02-04 16:33:26.451 22756 22756 I eup     : Set native info: user ID(unknown)
+02-04 16:33:26.451 22756 22756 D CrashReport: isAppForeground:false
+02-04 16:33:26.451 22756 22756 I eup     : jni_setNativeInfo: key is 14
+02-04 16:33:26.451 22756 22756 I eup     : Set native info: isAppForeground(false)
+02-04 16:33:26.451 22756 22756 I eup     : jni_setNativeInfo: key is 15
+02-04 16:33:26.451 22756 22756 I eup     : Set native info: launchTime(1770194006374)
+02-04 16:33:26.452 22756 22756 I CrashReport: anr changed to true
+02-04 16:33:26.452 22756 22756 D CrashReport: set record stack trace enable:false
+02-04 16:33:26.458 22756 22756 I CrashReport: startWatchingPrivateAnrDir! dumFilePath is /data/user/0/com.boyuan.hxc_android/app_bugly
+02-04 16:33:26.459 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.ay$4
+02-04 16:33:26.461 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 0ms) task: com.tencent.bugly.proguard.at$4
+02-04 16:33:26.462 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.crashreport.crash.jni.NativeCrashHandler$1
+02-04 16:33:26.462 22756 22932 D CrashReport: [Util] Try to lock file:local_crash_lock (pid=22756 | tid=22932)
+02-04 16:33:26.463 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.au$1
+02-04 16:33:26.464 22756 22924 D CrashReport: Number of overdue trace files that has deleted: 0
+02-04 16:33:26.464 22756 22756 D CrashReport: add action android.net.conn.CONNECTIVITY_CHANGE
+02-04 16:33:26.464 22756 22924 D CrashReport: Number of overdue trace files that has deleted: 0
+02-04 16:33:26.465 22756 22924 D CrashReport: Number of overdue trace files that has deleted: 0
+02-04 16:33:26.465 22756 22924 D CrashReport: Number of overdue trace files that has deleted: 0
+02-04 16:33:26.466 22756 22924 D CrashReport: [Util] Try to lock file:native_record_lock (pid=22756 | tid=22924)
+02-04 16:33:26.469 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.aq$1
+02-04 16:33:26.469 22756 22756 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.u$1
+02-04 16:33:26.469 22756 22924 D CrashReport: [Util] Successfully locked file: native_record_lock (pid=22756 | tid=22924)
+02-04 16:33:26.469 22756 22932 D CrashReport: [Util] Successfully locked file: local_crash_lock (pid=22756 | tid=22932)
+02-04 16:33:26.471 22756 22924 D CrashReport: [Native] Number of record files overdue: 0, has deleted: 0
+02-04 16:33:26.472 22756 22924 D CrashReport: [Util] Try to unlock file: native_record_lock (pid=22756 | tid=22924)
+02-04 16:33:26.472 22756 22756 D CrashReport: isAppForeground:false
+02-04 16:33:26.472 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 0ms) task: com.tencent.bugly.proguard.r$a
+02-04 16:33:26.472 22756 22924 D CrashReport: [Util] Successfully unlocked file: native_record_lock (pid=22756 | tid=22924)
+02-04 16:33:26.472 22756 22756 I CrashReport: [session] launch app, new start
+02-04 16:33:26.473 22756 22924 D CrashReport: [ExtraCrashManager] Trying to notify Bugly agents.
+02-04 16:33:26.473 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 26798527ms) task: com.tencent.bugly.proguard.r$b
+02-04 16:33:26.474 22756 22924 I CrashReport: [ExtraCrashManager] no game agent
+02-04 16:33:26.474 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 21600000ms) task: com.tencent.bugly.proguard.r$c
+02-04 16:33:26.474 22756 22924 I CrashReport: [aq] Register broadcast receiver of Bugly.
+02-04 16:33:26.479 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 0ms) task: com.tencent.bugly.proguard.ac$1
+02-04 16:33:26.479 22756 22756 I CrashReportInfo: [init] Bugly initialization finished.
+02-04 16:33:26.494 22756 22926 D CrashReport: [UserInfo] Record user info.
+02-04 16:33:26.502 22756 22932 D CrashReport: sla local data is null
+02-04 16:33:26.592 22756 22926 D CrashReport: [Database] insert t_ui success.
+02-04 16:33:26.592 22756 22926 D CrashReport: [Database] insert t_ui success with ID: 146
+02-04 16:33:26.597 22756 22932 D CrashReport: Size of crash list loaded from DB: 0
+02-04 16:33:26.597 22756 22932 D CrashReport: no crash need to be uploaded at this start
+02-04 16:33:26.597 22756 22932 D CrashReport: [Util] Try to unlock file: local_crash_lock (pid=22756 | tid=22932)
+02-04 16:33:26.601 22756 22932 D CrashReport: [Util] Successfully unlocked file: local_crash_lock (pid=22756 | tid=22932)
+02-04 16:33:26.610 22756 22926 D CrashReport: [Strategy] Notify com.tencent.bugly.proguard.s
+02-04 16:33:26.611 22756 22926 D CrashReport: [AsyncTaskHandler] Post a normal task: com.tencent.bugly.proguard.r$2
+02-04 16:33:26.611 22756 22932 D CrashReport: Uploading frequency will not be checked if SDK is in debug mode.
+02-04 16:33:26.611 22756 22926 D CrashReport: [Strategy] Notify com.tencent.bugly.CrashModule
+02-04 16:33:26.611 22756 22926 W CrashReport: customer decides whether to open or close.
+02-04 16:33:26.629 22756 22756 I BaiduApiAuth: BaiduApiAuth SDK Version:1.0.25
+02-04 16:33:26.640 22756 22932 D CrashReport: [Database] deleted t_ui data 1
+02-04 16:33:26.640 22756 22932 D CrashReport: [UserInfo] Upload user info(size: 1)
+02-04 16:33:26.658 22756 22932 D CrashReport: [Database] insert t_ui success.
+02-04 16:33:26.659 22756 22932 D CrashReport: [Database] insert t_ui success with ID: 146
+02-04 16:33:26.659 22756 22932 W CrashReport: uploadCheck failed
+02-04 16:33:26.782 22756 22756 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+02-04 16:33:26.782 22756 22756 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+02-04 16:33:26.782 22756 22756 W CuidBuddyInfoManager: galaxy lib host missing meta-data,make sure you know the right way to integrate galaxy
+02-04 16:33:26.854 22756 22756 E SharedPreferencesImpl: Couldn't create directory for SharedPreferences file /data/user/0/com.boyuan.hxc_android/shared_prefs/authStatus_com.boyuan.hxc_android������������������������������������������������������������������������������������������������������������.xml
+02-04 16:33:26.855 22756 22756 E PermissionCheck: permission check result is: 601
+02-04 16:33:26.883 22756 22965 D NetworkSecurityConfig: Using Network Security Config from resource network_security_config debugBuild: false
+02-04 16:33:27.197 22756 22756 D getLastTrainData: null
+02-04 16:33:27.308 22756 22965 E SharedPreferencesImpl: Couldn't create directory for SharedPreferences file /data/user/0/com.boyuan.hxc_android/shared_prefs/authStatus_com.boyuan.hxc_android������������������������������������������������������������������������������������������������������������.xml
+02-04 16:33:27.321 22756 22756 I CrashReportInfo: [user] set userId : 15112371392
+02-04 16:33:27.321 22756 22756 I eup     : jni_setNativeInfo: key is 11
+02-04 16:33:27.321 22756 22756 I eup     : Set native info: user ID(15112371392)
+02-04 16:33:27.322 22756 22756 D CrashReport: isAppForeground:false
+02-04 16:33:27.322 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 0ms) task: com.tencent.bugly.proguard.r$a
+02-04 16:33:27.323 22756 22926 D CrashReport: [UserInfo] Record user info.
+02-04 16:33:27.334 22756 22926 I CrashReport: [UserInfo] There are too many user info in local: 20
+02-04 16:33:27.340 22756 22756 W ImageLoader: memoryCache() and memoryCacheSize() calls overlap each other
+02-04 16:33:27.347 22756 22756 W ImageLoader: diskCache(), diskCacheSize() and diskCacheFileCount calls overlap each other
+02-04 16:33:27.347 22756 22756 W ImageLoader: diskCache() and diskCacheFileNameGenerator() calls overlap each other
+02-04 16:33:27.354 22756 22756 D ImageLoader: Initialize ImageLoader with configuration
+02-04 16:33:27.357 22756 22756 I TerminalApp: 主线程初始化结束
+02-04 16:33:27.357 22756 22756 I TerminalApp: 后台线程开始初始化
+02-04 16:33:27.470 22756 22938 D YwDevice: exeShell cmd:cmd package set-home-activity "com.boyuan.hxc_android/com.boyuan.hxc_android.ui.SplashActivity" result:Success;
+02-04 16:33:27.503 22756 22756 W art     : Before Android 4.1, method android.graphics.PorterDuffColorFilter androidx.vectordrawable.graphics.drawable.VectorDrawableCompat.updateTintFilter(android.graphics.PorterDuffColorFilter, android.content.res.ColorStateList, android.graphics.PorterDuff$Mode) would have incorrectly overridden the package-private method in android.graphics.drawable.Drawable
+02-04 16:33:27.512 22756 22756 I TerminalApp: 生命周期管理  创建:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:33:27.512 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.SplashActivity onCreated <<<
+02-04 16:33:27.655 22756 22756 I SplashActivity: 开启按键监听
+02-04 16:33:27.659 22756 22939 I 获取IMEI次数:0: 获取IMEI成功
+02-04 16:33:27.664 22756 22756 D YuweiInfoHandlerThread: getLooper
+02-04 16:33:27.673 22756 22756 I TerminalApp: 生命周期管理 开始（即变为可见）:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:33:27.673 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.SplashActivity onStart <<<
+02-04 16:33:27.674 22756 22756 D CrashReport: setActivityForeState, hash:219880997 isFore:true
+02-04 16:33:27.674 22756 22756 I eup     : jni_setNativeInfo: key is 14
+02-04 16:33:27.674 22756 22756 I eup     : Set native info: isAppForeground(true)
+02-04 16:33:27.679 22756 22756 I TerminalApp: 生命周期管理 恢复（即用户可以与其交互）:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:33:27.679 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.SplashActivity onResumed <<<
+02-04 16:33:27.680 22756 22756 I CrashReport: [session] launch app one times (app in background 1770194007 seconds and over 30 seconds)
+02-04 16:33:27.681 22756 22756 D CrashReport: isAppForeground:true
+02-04 16:33:27.681 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 0ms) task: com.tencent.bugly.proguard.r$a
+02-04 16:33:27.681 22756 22932 D CrashReport: [UserInfo] Record user info.
+02-04 16:33:27.681 22756 22756 I CrashReport: add a timer to upload hot start user info
+02-04 16:33:27.682 22756 22756 D CrashReport: [AsyncTaskHandler] Post a delay(time: 300000ms) task: com.tencent.bugly.proguard.r$a
+02-04 16:33:27.698 22756 22932 I CrashReport: [UserInfo] There are too many user info in local: 20
+02-04 16:33:27.728 22756 22756 I [Gralloc]: Dram size is 873 MB
+02-04 16:33:27.728 22756 22756 I [Gralloc]: Secure level is 3
+02-04 16:33:27.728 22756 22756 I [Gralloc]: ION flush Cache range: Yes
+02-04 16:33:27.728 22756 22756 I [Gralloc]: Carveout enable: Yes
+02-04 16:33:27.740 22756 22756 I eup     : jni_setNativeInfo: key is 21
+02-04 16:33:27.744 22756 22756 I NetBroadcastReceiver: 当前网络是否连接==true 网络类型==移动网络(SIM卡) Current network is connected==true Network type==Mobile Data (SIM card)
+02-04 16:33:27.761 22756 22756 W System.err: SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+02-04 16:33:27.761 22756 22756 W System.err: SLF4J: Defaulting to no-operation (NOP) logger implementation
+02-04 16:33:27.761 22756 22756 W System.err: SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+02-04 16:33:27.798 22756 23080 V nextSerialNumber==: 0
+02-04 16:33:27.800 22756 23080 D SendUniqueKey: 0: com.boyuan.hxc_android.tcp.message.send.HeartBeatMsg
+02-04 16:33:27.800 22756 23080 I register ==: class com.boyuan.hxc_android.tcp.message.recevice.TcpReceiveMsg
+02-04 16:33:27.917 22756 23072 D libEGL  : loaded /system/lib/egl/libGLES_mali.so
+02-04 16:33:28.019 22756 23072 I OpenGLRenderer: Initialized EGL, version 1.4
+02-04 16:33:28.019 22756 23072 D OpenGLRenderer: Swap behavior 1
+02-04 16:33:29.166 22756 22938 D YwDevice: exeShell cmd:pm disable-user com.autonavi.amapauto result:
+02-04 16:33:30.799 22756 23079 D SendUniqueKey: 0: com.boyuan.hxc_android.tcp.message.send.HeartBeatMsg
+02-04 16:33:30.802 22756 22756 W System.err: java.util.concurrent.TimeoutException: The source did not signal an event for 3 seconds and has been terminated.
+02-04 16:33:30.809 22756 22756 W System.err: 	at io.reactivex.internal.operators.observable.ObservableTimeoutTimed$TimeoutObserver.onTimeout(ObservableTimeoutTimed.java:134)
+02-04 16:33:30.809 22756 22756 W System.err: 	at io.reactivex.internal.operators.observable.ObservableTimeoutTimed$TimeoutTask.run(ObservableTimeoutTimed.java:165)
+02-04 16:33:30.810 22756 22756 W System.err: 	at io.reactivex.internal.schedulers.ScheduledRunnable.run(ScheduledRunnable.java:66)
+02-04 16:33:30.810 22756 22756 W System.err: 	at io.reactivex.internal.schedulers.ScheduledRunnable.call(ScheduledRunnable.java:57)
+02-04 16:33:30.810 22756 22756 W System.err: 	at java.util.concurrent.FutureTask.run(FutureTask.java:237)
+02-04 16:33:30.810 22756 22756 W System.err: 	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:272)
+02-04 16:33:30.810 22756 22756 W System.err: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1133)
+02-04 16:33:30.810 22756 22756 W System.err: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:607)
+02-04 16:33:30.810 22756 22756 W System.err: 	at java.lang.Thread.run(Thread.java:761)
+02-04 16:33:30.901 22756 22939 I 请求电子围栏: 开始请求电子围栏
+02-04 16:33:31.153 22756 22938 D YwDevice: exeShell cmd:pm enable com.android.launcher3 result:Package com.android.launcher3 new state: enabled;
+02-04 16:33:31.241 22756 22938 D YwDevice: exeShell cmd:setprop persist.yw.systemui.hide 1 result:
+02-04 16:33:31.311 22756 22938 D YwDevice: exeShell cmd:setprop persist.yw.app.whiteapplist com.hztech.app.drivertrain9 result:
+02-04 16:33:31.322 22756 22938 I FaceEngineManager: 初始化 人脸和活体识别引擎
+02-04 16:33:31.582 22756 22939 D YuweiInfoHandlerThread: getLooper
+02-04 16:33:32.858 22756 22939 D ImageLoader: 使用系统定位
+02-04 16:33:32.872 22756 22939 E queryDrivingSchoolRegionVersion: 获取到电子围栏但设备未定位
+02-04 16:33:32.882 22756 22939 D YuweiInfoHandlerThread: getLooper
+02-04 16:33:32.897 22756 22939 I 检查网络时间: 检查网络时间
+02-04 16:33:33.033 22756 22939 I TimeHelper: timeFromHttp: 1770194013000
+02-04 16:33:33.034 22756 22939 I 第 1 次: 检查网络时间
+02-04 16:33:33.034 22756 22939 I 检查网络时间: 检查网络时间成功
+02-04 16:33:33.266 22756 22939 I TextToSpeech: Sucessfully bound to com.iflytek.vflynote
+02-04 16:33:33.302 22756 22939 I TextToSpeech: Sucessfully bound to com.iflytek.vflynote
+02-04 16:33:34.227 22756 23500 I YwImuManager: closeAcc ret:0
+02-04 16:33:34.229 22756 23500 I YwImuManager: closeGyro ret:0
+02-04 16:33:34.232 22756 23500 I YwImuManager: disableAcc ret:0
+02-04 16:33:34.240 22756 23500 I YwImuManager: disableGyro ret:0
+02-04 16:33:34.261 22756 23500 I YwImuManager: enableAcc ret:0
+02-04 16:33:34.269 22756 23500 I YwImuManager: enableGyro ret:0
+02-04 16:33:34.271 22756 23500 I YwImuManager: openAcc ret:0
+02-04 16:33:34.273 22756 23500 I YwImuManager: openGyro ret:0
+02-04 16:33:34.273 22756 23500 I YwImuManager: start ret:0
+02-04 16:33:34.837 22756 23597 D cameraJni: JNI_OnLoad
+02-04 16:33:34.839 22756 23597 D cameraJni: MdkCore_open channel_id=0 fd=97
+02-04 16:33:34.839 22756 23597 I YwCamera: open: CameraId=0, ret=0
+02-04 16:33:34.888 22756 22756 I takePicture: 需要人脸识别
+02-04 16:33:34.898 22756 22756 I takePicture: 1
+02-04 16:33:34.898 22756 22756 E forceTake1: 触发强制拍照
+02-04 16:33:37.827 22756 23500 I YwImuManager: closeAcc ret:0
+02-04 16:33:37.925 22756 23500 I YwImuManager: closeGyro ret:0
+02-04 16:33:37.972 22756 23500 I YwImuManager: disableAcc ret:0
+02-04 16:33:38.006 22756 23500 I YwImuManager: disableGyro ret:0
+02-04 16:33:38.021 22756 23500 I YwImuManager: enableAcc ret:0
+02-04 16:33:38.031 22756 23500 I YwImuManager: enableGyro ret:0
+02-04 16:33:38.032 22756 23500 I YwImuManager: openAcc ret:0
+02-04 16:33:38.032 22756 23500 I YwImuManager: openGyro ret:0
+02-04 16:33:38.032 22756 23500 I YwImuManager: start ret:0
+02-04 16:33:38.214 22756 23577 I takeOnePicture: start
+02-04 16:33:38.259 22756 23577 D CameraManager: parseYuvColor: cameraId=0, ratio=1.0, result=1
+02-04 16:33:38.263 22756 23577 I takeOnePicture: 未出现重复帧
+02-04 16:33:38.427 22756 23577 W TextToSpeech: stop failed: not bound to TTS engine
+02-04 16:33:38.428 22756 23577 I takeOnePicture: end
+02-04 16:33:38.591 22756 22756 I TextToSpeech: Connected to ComponentInfo{com.iflytek.vflynote/com.iflytek.vflynote.TtsService}
+02-04 16:33:38.599 22756 24094 I TextToSpeech: Set up connection to ComponentInfo{com.iflytek.vflynote/com.iflytek.vflynote.TtsService}
+02-04 16:33:39.156 22756 22769 I art     : Background partial concurrent mark sweep GC freed 21970(1556KB) AllocSpace objects, 1(1352KB) LOS objects, 42% free, 5MB/9MB, paused 5.392ms total 271.855ms
+02-04 16:33:42.865 22756 22756 I AppLocationManager: startRequestLocation gpsState==1 已定位
+02-04 16:33:46.130 22756 22938 I 请求电子围栏: 开始请求电子围栏
+02-04 16:33:47.446 22756 22763 I art     : Do partial code cache collection, code=28KB, data=30KB
+02-04 16:33:47.447 22756 22763 I art     : After code cache collection, code=26KB, data=29KB
+02-04 16:33:47.447 22756 22763 I art     : Increasing code cache capacity to 128KB
+02-04 16:33:48.156 22756 22939 I 检查网络时间: 检查网络时间
+02-04 16:33:48.281 22756 22939 I TimeHelper: timeFromHttp: 1770194028000
+02-04 16:33:48.282 22756 22939 I 第 1 次: 检查网络时间
+02-04 16:33:48.282 22756 22939 I 检查网络时间: 检查网络时间成功
+02-04 16:33:48.319 22756 22939 I TextToSpeech: Sucessfully bound to com.iflytek.vflynote
+02-04 16:33:48.331 22756 22756 I TextToSpeech: Connected to ComponentInfo{com.iflytek.vflynote/com.iflytek.vflynote.TtsService}
+02-04 16:33:48.344 22756 25051 I TextToSpeech: Set up connection to ComponentInfo{com.iflytek.vflynote/com.iflytek.vflynote.TtsService}
+02-04 16:33:54.833 22756 23117 D cameraJni: MdkCore_open channel_id=0 fd=96
+02-04 16:33:54.833 22756 23117 I YwCamera: open: CameraId=0, ret=0
+02-04 16:33:54.863 22756 22756 I takePicture: 需要人脸识别
+02-04 16:33:54.864 22756 22756 I takePicture: 1
+02-04 16:33:54.864 22756 22756 E forceTake1: 触发强制拍照
+02-04 16:33:58.168 22756 23577 I takeOnePicture: start
+02-04 16:33:58.180 22756 23577 D CameraManager: parseYuvColor: cameraId=0, ratio=1.0, result=1
+02-04 16:33:58.182 22756 23577 I takeOnePicture: 未出现重复帧
+02-04 16:33:58.229 22756 23577 I takeOnePicture: end
+02-04 16:33:58.241 22756 22939 I 检查app版本号 请求地址: splashCheckVersion  checkUrl: http://61.183.157.58:9326//zk/device/queryDeviceUpgradeInfo?sim=15112371392&version=2.2.7&typeCode=t4tgz
+02-04 16:33:58.602 22756 22756 I 检查app版本号: splashCheckVersion: BaseResp{success=true, code='null', message='null', resultCode=0, msg='null'} 
+02-04 16:33:58.673 22756 22756 D getUniqueKey:: connect()
+02-04 16:33:58.674 22756 22756 I ImageLoader: register ip:47.111.132.31, port:9001
+02-04 16:33:58.686 22756 22756 E ImageLoader: connect: 
+02-04 16:33:58.692 22756 22756 I 终端编号为：7361276591566323: 
+02-04 16:33:58.693 22756 22756 E ImageLoader: ----------探针命令体长度：-----------71:00000000
+02-04 16:33:58.694 22756 22756 I System.out: 设置计时终端培训过程数据上报频度参数  (0x60)：580101017137333631323736353931353636333233000000000096FB58
+02-04 16:33:58.788 22756 25958 E CommonTcpHandler: sessionCreated: 
+02-04 16:33:58.788 22756 25958 I CommonTcpHandler: sessionOpened: 
+02-04 16:33:59.180 22756 23080 I 终端编号为：7361276591566323: 
+02-04 16:33:59.318 22756 23080 V nextSerialNumber==: 1
+02-04 16:33:59.320 22756 23080 D SendUniqueKey: 1: com.boyuan.hxc_android.tcp.message.send.AuthMsg
+02-04 16:33:59.321 22756 23080 I register ==: class com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg
+02-04 16:33:59.780 22756 25958 D TcpProtocolDecoder: 缓存 Buffer==0  buffer limit==24  缓存Buffer Position==0  buffer Position==0
+02-04 16:33:59.781 22756 25958 D TcpProtocolDecoder: 缓存Buffer==empty
+02-04 16:33:59.781 22756 25958 D TcpProtocolDecoder: tempLimit ==0 buffer.limit() == 24 buffer.position() == 0
+02-04 16:33:59.789 22756 25958 D TcpProtocolDecoder: 拼接后Buffer==7E 80 80 01 00 05 00 00 01 51 12 37 13 92 00 01 3C 00 01 01 02 00 CF 7E  0  24
+02-04 16:33:59.795 22756 25958 D TcpProtocolDecoder: 收到数据===7e8080010005000001511237139200013c0001010200cf7e
+02-04 16:33:59.796 22756 25958 D TcpProtocolDecoder: 完整数据==7e8080010005000001511237139200013c0001010200cf7e
+02-04 16:33:59.799 22756 25958 E CommonTcpHandler: auth onResponse: CommonReceiveMsg{responseSerialNo=1, id=258, result=0}
+02-04 16:33:59.799 22756 25958 I CommonTcpHandler: onResponse: 鉴权成功
+02-04 16:33:59.842 22756 22756 D getUniqueKey: 1: com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg:258
+02-04 16:34:00.107 22756 22756 D getLastTrainData: null
+02-04 16:34:00.115 22756 22756 D getLastTrainData: null
+02-04 16:34:00.278 22756 22756 D getLastTrainData: null
+02-04 16:34:00.391 22756 22938 D cameraJni: MdkCore_open channel_id=0 fd=110
+02-04 16:34:00.392 22756 22938 I YwCamera: open: CameraId=0, ret=0
+02-04 16:34:00.428 22756 22756 I TerminalApp: 生命周期管理 暂停（即不再与用户交互）:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:34:00.428 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.SplashActivity onPaused <<<
+02-04 16:34:00.601 22756 22756 I 设置培训助手开关状态: true
+02-04 16:34:00.601 22756 22756 I trainHelperSetting()-httpUrl: http://61.183.157.58:9326
+02-04 16:34:00.643 22756 22756 I TerminalApp: 生命周期管理  创建:com.boyuan.hxc_android.ui.MainActivity
+02-04 16:34:00.644 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.MainActivity onCreated <<<
+02-04 16:34:00.842 22756 22756 I TerminalApp: 生命周期管理 开始（即变为可见）:com.boyuan.hxc_android.ui.MainActivity
+02-04 16:34:00.842 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.MainActivity onStart <<<
+02-04 16:34:00.842 22756 22756 D CrashReport: setActivityForeState, hash:251077730 isFore:true
+02-04 16:34:00.843 22756 22756 I eup     : jni_setNativeInfo: key is 14
+02-04 16:34:00.843 22756 22756 I eup     : Set native info: isAppForeground(true)
+02-04 16:34:00.849 22756 22756 I TerminalApp: 生命周期管理 恢复（即用户可以与其交互）:com.boyuan.hxc_android.ui.MainActivity
+02-04 16:34:00.850 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.MainActivity onResumed <<<
+02-04 16:34:00.855 22756 22756 E ImageLoader: connect: 
+02-04 16:34:00.857 22756 22756 I 终端编号为：7361276591566323: 
+02-04 16:34:00.857 22756 22756 E ImageLoader: ----------探针命令体长度：-----------71:00000000
+02-04 16:34:00.858 22756 22756 I System.out: 设置计时终端培训过程数据上报频度参数  (0x60)：580101017137333631323736353931353636333233000000000096FB58
+02-04 16:34:00.868 22756 23080 V nextSerialNumber==: 2
+02-04 16:34:00.869 22756 23080 D SendUniqueKey: 2: com.boyuan.hxc_android.tcp.message.send.LocationReportMsg
+02-04 16:34:00.869 22756 23080 I register ==: class com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg
+02-04 16:34:01.117 22756 25958 D TcpProtocolDecoder: 缓存 Buffer==0  buffer limit==24  缓存Buffer Position==0  buffer Position==0
+02-04 16:34:01.117 22756 25958 D TcpProtocolDecoder: 缓存Buffer==empty
+02-04 16:34:01.118 22756 25958 D TcpProtocolDecoder: tempLimit ==0 buffer.limit() == 24 buffer.position() == 0
+02-04 16:34:01.118 22756 25958 D TcpProtocolDecoder: 拼接后Buffer==7E 80 80 01 00 05 00 00 01 51 12 37 13 92 00 02 3C 00 02 02 00 00 CE 7E  0  24
+02-04 16:34:01.118 22756 25958 D TcpProtocolDecoder: 收到数据===7e8080010005000001511237139200023c0002020000ce7e
+02-04 16:34:01.119 22756 25958 D TcpProtocolDecoder: 完整数据==7e8080010005000001511237139200023c0002020000ce7e
+02-04 16:34:01.162 22756 23072 W OpenGLRenderer: Points are too far apart 4.000000
+02-04 16:34:01.162 22756 23072 W OpenGLRenderer: Points are too far apart 4.000001
+02-04 16:34:01.162 22756 23072 W OpenGLRenderer: Points are too far apart 4.000001
+02-04 16:34:01.193 22756 22756 D getUniqueKey: 2: com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg:512
+02-04 16:34:01.219 22756 22756 I TerminalApp: 生命周期管理 停止（即不可见）:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:34:01.220 22756 22756 I TerminalApp: 生命周期管理 停止 activityCount--:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:34:01.220 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.SplashActivity onStop <<<
+02-04 16:34:01.220 22756 22756 D CrashReport: setActivityForeState, hash:219880997 isFore:false
+02-04 16:34:01.220 22756 22756 I eup     : jni_setNativeInfo: key is 14
+02-04 16:34:01.220 22756 22756 I eup     : Set native info: isAppForeground(true)
+02-04 16:34:01.223 22756 22756 I SplashActivity: 关闭按键监听
+02-04 16:34:01.230 22756 22756 I TerminalApp: 生命周期管理 销毁:com.boyuan.hxc_android.ui.SplashActivity
+02-04 16:34:01.239 22756 22756 D CrashReport: >>> com.boyuan.hxc_android.ui.SplashActivity onDestroyed <<<
+02-04 16:34:21.152 22756 25958 W CommonTcpHandler: sessionIdle: ==writer idle
+02-04 16:34:21.154 22756 23080 V nextSerialNumber==: 3
+02-04 16:34:21.155 22756 23080 D SendUniqueKey: 3: com.boyuan.hxc_android.tcp.message.send.HeartBeatMsg
+02-04 16:34:21.155 22756 23080 I register ==: class com.boyuan.hxc_android.tcp.message.recevice.TcpReceiveMsg
+02-04 16:34:21.461 22756 25958 D TcpProtocolDecoder: 缓存 Buffer==0  buffer limit==24  缓存Buffer Position==0  buffer Position==0
+02-04 16:34:21.461 22756 25958 D TcpProtocolDecoder: 缓存Buffer==empty
+02-04 16:34:21.461 22756 25958 D TcpProtocolDecoder: tempLimit ==0 buffer.limit() == 24 buffer.position() == 0
+02-04 16:34:21.462 22756 25958 D TcpProtocolDecoder: 拼接后Buffer==7E 80 80 01 00 05 00 00 01 51 12 37 13 92 00 03 3C 00 03 00 02 00 CE 7E  0  24
+02-04 16:34:21.463 22756 25958 D TcpProtocolDecoder: 收到数据===7e8080010005000001511237139200033c0003000200ce7e
+02-04 16:34:21.464 22756 25958 D TcpProtocolDecoder: 完整数据==7e8080010005000001511237139200033c0003000200ce7e
+02-04 16:34:21.465 22756 22756 D getUniqueKey: 3: com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg:2
+02-04 16:34:30.858 22756 23080 V nextSerialNumber==: 4
+02-04 16:34:30.859 22756 23080 D SendUniqueKey: 4: com.boyuan.hxc_android.tcp.message.send.LocationReportMsg
+02-04 16:34:30.859 22756 23080 I register ==: class com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg
+02-04 16:34:31.104 22756 25958 D TcpProtocolDecoder: 缓存 Buffer==0  buffer limit==24  缓存Buffer Position==0  buffer Position==0
+02-04 16:34:31.104 22756 25958 D TcpProtocolDecoder: 缓存Buffer==empty
+02-04 16:34:31.104 22756 25958 D TcpProtocolDecoder: tempLimit ==0 buffer.limit() == 24 buffer.position() == 0
+02-04 16:34:31.105 22756 25958 D TcpProtocolDecoder: 拼接后Buffer==7E 80 80 01 00 05 00 00 01 51 12 37 13 92 00 04 3C 00 04 02 00 00 CE 7E  0  24
+02-04 16:34:31.105 22756 25958 D TcpProtocolDecoder: 收到数据===7e8080010005000001511237139200043c0004020000ce7e
+02-04 16:34:31.105 22756 25958 D TcpProtocolDecoder: 完整数据==7e8080010005000001511237139200043c0004020000ce7e
+02-04 16:34:31.106 22756 22756 D getUniqueKey: 4: com.boyuan.hxc_android.tcp.message.recevice.CommonReceiveMsg:512
