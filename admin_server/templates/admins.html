@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 管理员管理</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .sidebar { width: 220px; min-height: 100vh; background: #1a1a2e; color: #c0c0d0; position: fixed; top: 0; left: 0; z-index: 100; }
+        .sidebar .nav-link { color: #8a8a9a; padding: 12px 20px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.2s; }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.15); color: #fff; border-left: 3px solid #4dabf7; padding-left: 17px; }
+        .sidebar .nav-link i { width: 18px; text-align: center; }
+        .main-content { margin-left: 220px; padding: 20px; }
+        .card { border: none; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .badge-super { background: #dc3545; }
+        .badge-admin { background: #0d6efd; }
+    </style>
+</head>
+<body>
+    <div class="sidebar d-flex flex-column">
+        <div class="p-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center gap-2">
+    <img src="/static/img/favicon.png" alt="logo" width="32" height="32" style="border-radius: 6px;">
+    <div>
+        <div style="font-size: 15px; font-weight: bold; color: #fff; line-height: 1.2;">YUWEITEK工具箱</div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.2;">后台管理系统</div>
+    </div>
+</div>
+            <small class="text-muted">{{ admin_user }}</small>
+        </div>
+        <nav class="flex-column flex-grow-1">
+            <a class="nav-link" href="{{ admin_path }}/"><i class="bi bi-speedometer2"></i> 仪表盘</a>
+            <a class="nav-link" href="{{ admin_path }}/licenses"><i class="bi bi-key"></i> 授权管理</a>
+            <a class="nav-link" href="{{ admin_path }}/permissions"><i class="bi bi-sliders"></i> 工具权限</a>
+            <a class="nav-link" href="{{ admin_path }}/import"><i class="bi bi-upload"></i> 批量导入</a>
+            <a class="nav-link" href="{{ admin_path }}/logs"><i class="bi bi-journal-text"></i> 操作日志</a>
+            {% if admin_role == "super_admin" %}<a class="nav-link active" href="{{ admin_path }}/admins"><i class="bi bi-people"></i> 管理员管理</a>{% endif %}
+            <a class="nav-link" href="{{ admin_path }}/password"><i class="bi bi-gear"></i> 修改密码</a>
+        </nav>
+        <div class="p-3 border-top border-secondary">
+            <a class="nav-link text-danger" href="{{ admin_path }}/logout"><i class="bi bi-box-arrow-left"></i> 退出登录</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">管理员管理</h4>
+            <button class="btn btn-primary" onclick="showAddModal()"><i class="bi bi-plus"></i> 添加管理员</button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>角色</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for a in admins %}
+                        <tr>
+                            <td>{{ a.id }}</td>
+                            <td><strong>{{ a.username }}</strong></td>
+                            <td>
+                                {% if a.role == 'super_admin' %}
+                                <span class="badge badge-super">超级管理员</span>
+                                {% else %}
+                                <span class="badge badge-admin">管理员</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ a.created_at }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-warning" onclick="showResetPwd({{ a.id }}, '{{ a.username }}')">重置密码</button>
+                                {% if a.role != 'super_admin' %}
+                                <button class="btn btn-sm btn-outline-danger ms-1" onclick="doDelete({{ a.id }}, '{{ a.username }}')">删除</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加管理员弹窗 -->
+    <div class="modal fade" id="addModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加管理员</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <input type="text" id="newUsername" class="form-control" placeholder="登录用户名">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">密码</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="至少6位">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">角色</label>
+                        <select id="newRole" class="form-select">
+                            <option value="admin">管理员（可操作授权）</option>
+                            <option value="super_admin">超级管理员（可管理其他管理员）</option>
+                        </select>
+                    </div>
+                    <div id="addError" class="text-danger small"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="doCreate()">创建</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重置密码弹窗 -->
+    <div class="modal fade" id="resetPwdModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">重置密码</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>为 <strong id="resetUsername"></strong> 设置新密码：</p>
+                    <input type="password" id="resetNewPwd" class="form-control" placeholder="至少6位">
+                    <input type="hidden" id="resetAdminId">
+                    <div id="resetError" class="text-danger small mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-warning btn-sm" onclick="doResetPwd()">确认重置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/bootstrap.bundle.min.js"></script>
+    <script>
+        const ADMIN_PATH = '{{ admin_path }}';
+
+        function showAddModal() {
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('newRole').value = 'admin';
+            document.getElementById('addError').textContent = '';
+            new bootstrap.Modal(document.getElementById('addModal')).show();
+        }
+
+        function doCreate() {
+            const fd = new FormData();
+            fd.append('username', document.getElementById('newUsername').value.trim());
+            fd.append('password', document.getElementById('newPassword').value);
+            fd.append('role', document.getElementById('newRole').value);
+            fetch(ADMIN_PATH + '/admins/create', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(r => r.json()).then(d => {
+                    if (d.success) location.reload();
+                    else document.getElementById('addError').textContent = d.message;
+                });
+        }
+
+        function showResetPwd(id, username) {
+            document.getElementById('resetAdminId').value = id;
+            document.getElementById('resetUsername').textContent = username;
+            document.getElementById('resetNewPwd').value = '';
+            document.getElementById('resetError').textContent = '';
+            new bootstrap.Modal(document.getElementById('resetPwdModal')).show();
+        }
+
+        function doResetPwd() {
+            const fd = new FormData();
+            fd.append('admin_id', document.getElementById('resetAdminId').value);
+            fd.append('new_password', document.getElementById('resetNewPwd').value);
+            fetch(ADMIN_PATH + '/admins/reset_password', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(r => r.json()).then(d => {
+                    if (d.success) { bootstrap.Modal.getInstance(document.getElementById('resetPwdModal')).hide(); alert('密码已重置'); }
+                    else document.getElementById('resetError').textContent = d.message;
+                });
+        }
+
+        function doDelete(id, username) {
+            if (!confirm(`确定删除管理员 "${username}"？`)) return;
+            const fd = new FormData();
+            fd.append('admin_id', id);
+            fetch(ADMIN_PATH + '/admins/delete', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(r => r.json()).then(d => {
+                    if (d.success) location.reload();
+                    else alert(d.message);
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 仪表盘</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .sidebar { width: 220px; min-height: 100vh; background: #1a1a2e; color: #c0c0d0; position: fixed; top: 0; left: 0; z-index: 100; }
+        .sidebar .nav-link { color: #8a8a9a; padding: 12px 20px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.2s; }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.05); color: #fff; }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.15); color: #fff; border-left: 3px solid #4dabf7; padding-left: 17px; }
+        .sidebar .nav-link i { width: 18px; text-align: center; }
+        .main-content { margin-left: 220px; padding: 20px; }
+        .stat-card { background: #fff; border-radius: 10px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .stat-card .number { font-size: 2rem; font-weight: 700; }
+        .stat-card .label { color: #999; font-size: 0.85rem; }
+        .stat-card.pending .number { color: #f0ad4e; }
+        .stat-card.approved .number { color: #28a745; }
+        .stat-card.revoked .number { color: #dc3545; }
+        .stat-card.online .number { color: #0d6efd; }
+    </style>
+</head>
+<body>
+    <div class="sidebar d-flex flex-column">
+        <div class="p-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center gap-2">
+    <img src="/static/img/favicon.png" alt="logo" width="32" height="32" style="border-radius: 6px;">
+    <div>
+        <div style="font-size: 15px; font-weight: bold; color: #fff; line-height: 1.2;">YUWEITEK工具箱</div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.2;">后台管理系统</div>
+    </div>
+</div>
+            <small class="text-muted">{{ admin_user }}</small>
+        </div>
+        <nav class="flex-column flex-grow-1">
+            <a class="nav-link active" href="{{ admin_path }}/"><i class="bi bi-speedometer2"></i> 仪表盘</a>
+            <a class="nav-link" href="{{ admin_path }}/licenses"><i class="bi bi-key"></i> 授权管理</a>
+            <a class="nav-link" href="{{ admin_path }}/permissions"><i class="bi bi-sliders"></i> 工具权限</a>
+            <a class="nav-link" href="{{ admin_path }}/import"><i class="bi bi-upload"></i> 批量导入</a>
+            <a class="nav-link" href="{{ admin_path }}/logs"><i class="bi bi-journal-text"></i> 操作日志</a>
+            {% if admin_role == "super_admin" %}<a class="nav-link" href="{{ admin_path }}/admins"><i class="bi bi-people"></i> 管理员管理</a>{% endif %}
+            <a class="nav-link" href="{{ admin_path }}/password"><i class="bi bi-gear"></i> 修改密码</a>
+        </nav>
+        <div class="p-3 border-top border-secondary">
+            <a class="nav-link text-danger" href="{{ admin_path }}/logout"><i class="bi bi-box-arrow-left"></i> 退出登录</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h4 class="mb-4">仪表盘</h4>
+        <div class="row g-3 mb-4">
+            <div class="col-md-2"><div class="stat-card"><div class="number">{{ stats.total }}</div><div class="label">总设备数</div></div></div>
+            <div class="col-md-2"><div class="stat-card approved"><div class="number">{{ stats.approved }}</div><div class="label">已授权</div></div></div>
+            <div class="col-md-2"><div class="stat-card pending"><div class="number">{{ stats.pending }}</div><div class="label">待审核</div></div></div>
+            <div class="col-md-2"><div class="stat-card revoked"><div class="number">{{ stats.revoked }}</div><div class="label">已收回</div></div></div>
+            <div class="col-md-2"><div class="stat-card online"><div class="number">{{ stats.online_24h }}</div><div class="label">24h在线</div></div></div>
+            <div class="col-md-2"><div class="stat-card"><div class="number">{{ stats.today_new }}</div><div class="label">今日新增</div></div></div>
+        </div>
+        {% if stats.blocked %}
+        <div class="alert alert-warning mb-3">
+            <i class="bi bi-slash-circle"></i> 已拉黑设备：<strong>{{ stats.blocked }}</strong> 台
+            <a href="{{ admin_path }}/licenses?status=blocked" class="ms-2">查看全部 →</a>
+        </div>
+        {% endif %}
+        {% if stats.deleted %}
+        <div class="alert alert-secondary mb-3">
+            <i class="bi bi-trash"></i> 已删除设备：<strong>{{ stats.deleted }}</strong> 台
+            <a href="{{ admin_path }}/licenses?status=deleted" class="ms-2">查看全部 →</a>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>待审核设备</span>
+                <a href="{{ admin_path }}/licenses?status=pending" class="btn btn-sm btn-outline-warning">查看全部</a>
+            </div>
+            <div class="card-body">
+                {% if pending_list %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>机器码</th>
+                            <th>用户名</th>
+                            <th>授权人</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lic in pending_list %}
+                        <tr>
+                            <td><code>{{ lic.machine_code }}</code></td>
+                            <td>{{ lic.user_name or '-' }}</td>
+                            <td>{{ lic.operator or '-' }}</td>
+                            <td>{{ lic.created_at }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-success" onclick="showApprove('{{ lic.machine_code }}', '{{ lic.user_name }}')">授权</button>
+                                <button class="btn btn-sm btn-outline-danger ms-1" onclick="quickReject('{{ lic.machine_code }}')">拒绝</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted mb-0">暂无待审核设备</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 授权弹窗 -->
+    <div class="modal fade" id="approveModal" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">授权设备</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">机器码: <code id="approveMc"></code></p>
+                    <div class="mb-3">
+                        <label class="form-label">用户名</label>
+                        <input type="text" id="approveUserName" class="form-control" placeholder="可选">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">授权到期日期</label>
+                        <input type="date" id="approveExpireDate" class="form-control">
+                        <small class="text-muted">留空表示永久</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">备注</label>
+                        <input type="text" id="approveNote" class="form-control" placeholder="可选">
+                    </div>
+                    <input type="hidden" id="approveMachineCode">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success btn-sm" onclick="doApproveConfirm()">确认授权</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/bootstrap.bundle.min.js"></script>
+    <script>
+        const ADMIN_PATH = '{{ admin_path }}';
+
+        function showApprove(mc, user) {
+            document.getElementById('approveMachineCode').value = mc;
+            document.getElementById('approveMc').textContent = mc;
+            document.getElementById('approveUserName').value = user || '';
+            document.getElementById('approveExpireDate').value = '';
+            document.getElementById('approveNote').value = '';
+            new bootstrap.Modal(document.getElementById('approveModal')).show();
+        }
+
+        function doApproveConfirm() {
+            const mc = document.getElementById('approveMachineCode').value;
+            const ed = document.getElementById('approveExpireDate').value;
+            const un = document.getElementById('approveUserName').value.trim();
+            const note = document.getElementById('approveNote').value.trim();
+            const fd = new FormData();
+            fd.append('machine_code', mc);
+            fd.append('expire_date', ed);
+            if (un) fd.append('user_name', un);
+            if (note) fd.append('note', note);
+            fetch(ADMIN_PATH + '/approve', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.message); });
+        }
+
+        function quickReject(mc) {
+            if (!confirm('确定拒绝该设备？')) return;
+            const fd = new FormData();
+            fd.append('machine_code', mc);
+            fetch(ADMIN_PATH + '/revoke', { method: 'POST', body: fd, credentials: 'same-origin' })
+                .then(r => r.json()).then(d => { if (d.success) location.reload(); else alert(d.message); });
+        }
+    </script>
+</body>
+</html>

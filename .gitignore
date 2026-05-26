@@ -25,3 +25,7 @@ Thumbs.db
 
 # UPX (tool archive, not needed in repo)
 upx-*.zip
+
+# Admin server - runtime files
+admin_server/licenses.db
+admin_server/__pycache__/

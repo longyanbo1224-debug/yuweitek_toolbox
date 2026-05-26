@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 工具权限</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .sidebar { width: 220px; min-height: 100vh; background: #1a1a2e; color: #c0c0d0; position: fixed; }
+        .sidebar .nav-link { color: #8a8a9a; padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.08); color: #fff; }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.15); border-left: 3px solid #4dabf7; padding-left: 17px; }
+        .sidebar .nav-link i { width: 18px; text-align: center; }
+        .main-content { margin-left: 220px; padding: 20px; }
+        .perm-table { font-size: 0.85rem; }
+        .perm-table th { position: sticky; top: 0; background: #f8f9fa; z-index: 1; white-space: nowrap; }
+        .perm-table td { vertical-align: middle; text-align: center; }
+        .perm-table td:first-child, .perm-table th:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 2; }
+        .perm-table .machine-code { font-family: monospace; font-size: 0.8rem; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+        .form-check-input { cursor: pointer; }
+        .user-row:hover { background: #f0f5ff; }
+    </style>
+</head>
+<body>
+    <div class="sidebar d-flex flex-column">
+        <div class="p-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center gap-2">
+    <img src="/static/img/favicon.png" alt="logo" width="32" height="32" style="border-radius: 6px;">
+    <div>
+        <div style="font-size: 15px; font-weight: bold; color: #fff; line-height: 1.2;">YUWEITEK工具箱</div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.2;">后台管理系统</div>
+    </div>
+</div>
+            <small class="text-muted">{{ admin_user }}</small>
+        </div>
+        <nav class="flex-column flex-grow-1">
+            <a class="nav-link" href="{{ admin_path }}/"><i class="bi bi-speedometer2"></i> 仪表盘</a>
+            <a class="nav-link" href="{{ admin_path }}/licenses"><i class="bi bi-key"></i> 授权管理</a>
+            <a class="nav-link active" href="{{ admin_path }}/permissions"><i class="bi bi-sliders"></i> 工具权限</a>
+            <a class="nav-link" href="{{ admin_path }}/import"><i class="bi bi-upload"></i> 批量导入</a>
+            <a class="nav-link" href="{{ admin_path }}/logs"><i class="bi bi-journal-text"></i> 操作日志</a>
+            {% if admin_role == "super_admin" %}<a class="nav-link" href="{{ admin_path }}/admins"><i class="bi bi-people"></i> 管理员管理</a>{% endif %}
+            <a class="nav-link" href="{{ admin_path }}/password"><i class="bi bi-gear"></i> 修改密码</a>
+        </nav>
+        <div class="p-3 border-top border-secondary">
+            <a class="nav-link text-danger" href="{{ admin_path }}/logout"><i class="bi bi-box-arrow-left"></i> 退出登录</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h4 class="mb-3">工具权限管理</h4>
+        <p class="text-muted mb-3">控制每个已授权用户可以使用哪些工具。关闭后用户该工具将无法使用。</p>
+
+        <!-- 搜索框 -->
+        <div class="mb-3" style="max-width: 400px;">
+            <input type="text" id="permSearch" class="form-control" placeholder="搜索用户名或机器码...">
+        </div>
+
+        {% if users %}
+        <div class="card">
+            <div class="card-body p-0" style="overflow-x: auto;">
+                <table class="table table-bordered perm-table mb-0">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 200px;">
+                                用户
+                                <button class="btn btn-sm btn-outline-success ms-2" onclick="toggleAllUsers(true)" title="全部开启">
+                                    <i class="bi bi-check-all"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger ms-1" onclick="toggleAllUsers(false)" title="全部关闭">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </th>
+                            {% for key, name in tools %}
+                            <th title="{{ key }}">{{ name }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr class="user-row">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div>
+                                        <div class="fw-bold">{{ user.user_name or user.granted_to or user.machine_code[:8] }}</div>
+                                        <div class="machine-code text-muted" title="{{ user.machine_code }}">{{ user.machine_code }}</div>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <button class="btn btn-sm btn-outline-success" onclick="toggleUserAll('{{ user.machine_code }}', true)" title="全部开启">
+                                            <i class="bi bi-check-all"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="toggleUserAll('{{ user.machine_code }}', false)" title="全部关闭">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                            {% for key, name in tools %}
+                            <td>
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input tool-toggle" type="checkbox"
+                                           data-mc="{{ user.machine_code }}" data-tool="{{ key }}"
+                                           {% if user.tools.get(key, True) %}checked{% endif %}
+                                           onchange="toggleTool(this)">
+                                </div>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-people" style="font-size: 3rem;"></i>
+            <p class="mt-2">暂无已授权用户，请先在"授权管理"中授权</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="/static/bootstrap.bundle.min.js"></script>
+    <script>
+        const ADMIN_PATH = '{{ admin_path }}';
+
+        function toggleTool(el) {
+            const mc = el.dataset.mc;
+            const tool = el.dataset.tool;
+            const enabled = el.checked;
+            fetch(ADMIN_PATH + '/toggle_tool', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({machine_code: mc, tool_key: tool, enabled: enabled}),
+                credentials: 'same-origin'
+            }).then(r => r.json()).then(d => {
+                if (!d.success) { alert(d.message); el.checked = !enabled; }
+            });
+        }
+
+        function toggleUserAll(mc, enabled) {
+            fetch(ADMIN_PATH + '/toggle_all_tools', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({machine_code: mc, enabled: enabled}),
+                credentials: 'same-origin'
+            }).then(r => r.json()).then(d => {
+                if (d.success) {
+                    document.querySelectorAll(`.tool-toggle[data-mc="${mc}"]`).forEach(cb => cb.checked = enabled);
+                } else { alert(d.message); }
+            });
+        }
+
+        function toggleAllUsers(enabled) {
+            if (!confirm(enabled ? '确定开启所有用户的全部工具？' : '确定关闭所有用户的全部工具？')) return;
+            const checkboxes = document.querySelectorAll('.tool-toggle');
+            const mcs = [...new Set([...checkboxes].map(cb => cb.dataset.mc))];
+            let done = 0;
+            mcs.forEach(mc => {
+                fetch(ADMIN_PATH + '/toggle_all_tools', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({machine_code: mc, enabled: enabled}),
+                    credentials: 'same-origin'
+                }).then(r => r.json()).then(d => {
+                    done++;
+                    if (done === mcs.length) location.reload();
+                });
+            });
+        }
+
+        // 搜索过滤
+        document.getElementById('permSearch').addEventListener('input', function() {
+            var q = this.value.trim().toLowerCase();
+            document.querySelectorAll('.user-row').forEach(function(row) {
+                var text = row.textContent.toLowerCase();
+                row.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

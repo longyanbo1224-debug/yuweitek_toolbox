@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 登录</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .login-card { width: 380px; background: #fff; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 40px; }
+        .login-title { text-align: center; margin-bottom: 30px; }
+        .login-title h4 { font-weight: 600; color: #333; }
+        .login-title small { color: #999; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="login-title">
+            <h4>YUWEITEK工具箱后台管理系统后台</h4>
+            <small>YUWEITEK License Manager</small>
+        </div>
+        {% if error %}
+        <div class="alert alert-danger py-2">{{ error }}</div>
+        {% endif %}
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">用户名</label>
+                <input type="text" name="username" class="form-control" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">密码</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">登录</button>
+        </form>
+    </div>
+</body>
+</html>

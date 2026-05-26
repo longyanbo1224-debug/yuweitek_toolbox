@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 批量导入</title>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f0f2f5; }
+        .sidebar { width: 220px; min-height: 100vh; background: #1a1a2e; color: #c0c0d0; position: fixed; }
+        .sidebar .nav-link { color: #8a8a9a; padding: 12px 20px; display: flex; align-items: center; gap: 10px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.08); color: #fff; }
+        .sidebar .nav-link.active { background: rgba(255,255,255,0.15); border-left: 3px solid #4dabf7; padding-left: 17px; }
+        .sidebar .nav-link i { width: 18px; text-align: center; }
+        .main-content { margin-left: 220px; padding: 20px; }
+        .upload-zone { border: 2px dashed #ccc; border-radius: 12px; padding: 40px; text-align: center; transition: all 0.2s; cursor: pointer; }
+        .upload-zone:hover, .upload-zone.dragover { border-color: #0d6efd; background: #f0f5ff; }
+        .upload-zone i { font-size: 3rem; color: #ccc; }
+    </style>
+</head>
+<body>
+    <div class="sidebar d-flex flex-column">
+        <div class="p-3 border-bottom border-secondary">
+            <div class="d-flex align-items-center gap-2">
+    <img src="/static/img/favicon.png" alt="logo" width="32" height="32" style="border-radius: 6px;">
+    <div>
+        <div style="font-size: 15px; font-weight: bold; color: #fff; line-height: 1.2;">YUWEITEK工具箱</div>
+        <div style="font-size: 11px; color: rgba(255,255,255,0.6); line-height: 1.2;">后台管理系统</div>
+    </div>
+</div>
+            <small class="text-muted">{{ admin_user }}</small>
+        </div>
+        <nav class="flex-column flex-grow-1">
+            <a class="nav-link" href="{{ admin_path }}/"><i class="bi bi-speedometer2"></i> 仪表盘</a>
+            <a class="nav-link" href="{{ admin_path }}/licenses"><i class="bi bi-key"></i> 授权管理</a>
+            <a class="nav-link" href="{{ admin_path }}/permissions"><i class="bi bi-sliders"></i> 工具权限</a>
+            <a class="nav-link active" href="{{ admin_path }}/import"><i class="bi bi-upload"></i> 批量导入</a>
+            <a class="nav-link" href="{{ admin_path }}/logs"><i class="bi bi-journal-text"></i> 操作日志</a>
+            {% if admin_role == "super_admin" %}<a class="nav-link" href="{{ admin_path }}/admins"><i class="bi bi-people"></i> 管理员管理</a>{% endif %}
+            <a class="nav-link" href="{{ admin_path }}/password"><i class="bi bi-gear"></i> 修改密码</a>
+        </nav>
+        <div class="p-3 border-top border-secondary">
+            <a class="nav-link text-danger" href="{{ admin_path }}/logout"><i class="bi bi-box-arrow-left"></i> 退出登录</a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h4 class="mb-4">批量导入授权</h4>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+        <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
+        {% if errors %}
+        <div class="alert alert-warning">
+            <strong>以下行导入失败：</strong>
+            <ul class="mb-0 mt-2">
+                {% for err in errors %}
+                <li>{{ err }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> 导入说明
+            </div>
+            <div class="card-body">
+                <p>上传已有的 <code>license.xlsx</code> 文件，系统会自动识别列并导入。</p>
+                <p><strong>支持的列名：</strong></p>
+                <ul>
+                    <li><code>机器码</code> — 必填，设备唯一标识</li>
+                    <li><code>授权码</code> — 可选，有则自动标记为"已授权"</li>
+                    <li><code>有效期</code> — 可选，格式 YYYY-MM-DD 或"永久"</li>
+                    <li><code>授权人</code> — 可选，用户姓名</li>
+                    <li><code>备注</code> — 可选</li>
+                </ul>
+                <p class="text-muted mb-0">已存在的机器码会更新记录，不会重复创建。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                        <i class="bi bi-file-earmark-spreadsheet"></i>
+                        <p class="mt-2 mb-0">点击选择文件 或 拖拽 xlsx 文件到此处</p>
+                        <small class="text-muted" id="fileName">未选择文件</small>
+                    </div>
+                    <input type="file" name="file" id="fileInput" accept=".xlsx" class="d-none"
+                           onchange="document.getElementById('fileName').textContent = this.files[0]?.name || '未选择文件'">
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-upload"></i> 开始导入
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/bootstrap.bundle.min.js"></script>
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        ['dragenter', 'dragover'].forEach(e => {
+            dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.add('dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, (ev) => { ev.preventDefault(); dropZone.classList.remove('dragover'); });
+        });
+        dropZone.addEventListener('drop', (ev) => {
+            const files = ev.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+                document.getElementById('fileName').textContent = files[0].name;
+            }
+        });
+    </script>
+</body>
+</html>
