@@ -39,7 +39,7 @@ def start_dotnet_backend():
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = subprocess.SW_HIDE
-    
+
     # 将输出写入日志文件
     log_file = open(os.path.join(LOG_DIR, 'dotnet.log'), 'w')
     dotnet_process = subprocess.Popen(
@@ -47,17 +47,24 @@ def start_dotnet_backend():
         startupinfo=startupinfo,
         stdout=log_file,
         stderr=subprocess.STDOUT,
-        cwd=base_dir  # 重要：设置工作目录为临时目录，确保配置文件被找到
+        cwd=base_dir
     )
     print(f".NET 后端已启动，PID: {dotnet_process.pid}，日志：{log_file.name}")
 
 def cleanup_dotnet():
-    """程序退出时关闭 .NET 子进程"""
+    """程序退出时关闭 .NET 子进程及其子进程树"""
     global dotnet_process
     if dotnet_process and dotnet_process.poll() is None:
         print("正在关闭 .NET 后端...")
-        dotnet_process.terminate()
         try:
-            dotnet_process.wait(timeout=3)
+            # 用 taskkill /T /F 杀掉整个进程树，防止子进程锁定 _MEIPASS 文件
+            subprocess.run(
+                f'taskkill /T /F /PID {dotnet_process.pid}',
+                shell=True, capture_output=True, timeout=5
+            )
+        except Exception:
+            dotnet_process.terminate()
+        try:
+            dotnet_process.wait(timeout=5)
         except subprocess.TimeoutExpired:
             dotnet_process.kill()
