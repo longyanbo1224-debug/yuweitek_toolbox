@@ -8,12 +8,10 @@ from flask import stream_with_context
 import json
 from services import call_openclaw_agent, call_openclaw_agent_stream
 from services.license import is_licensed
-from utils import require_version
 
 ai_bp = Blueprint('ai', __name__)
 
 @ai_bp.route('/ai/parse', methods=['POST'])
-@require_version
 def ai_parse():
     if not is_licensed():
         return jsonify({'error': '未授权，请先激活'}), 401
@@ -43,7 +41,6 @@ def ai_parse():
         return jsonify({'success': False, 'error': error}), 500
 
 @ai_bp.route('/ai/generate_command', methods=['POST'])
-@require_version
 def ai_generate_command():
     """ADB 命令智能生成"""
     if not is_licensed():
@@ -79,7 +76,6 @@ def ai_generate_command():
         return jsonify({'success': False, 'error': error}), 500
 
 @ai_bp.route('/ai/ask', methods=['GET', 'POST'])
-@require_version
 def ai_ask():
     if not is_licensed():
         return jsonify({'error': '未授权，请先激活'}), 401

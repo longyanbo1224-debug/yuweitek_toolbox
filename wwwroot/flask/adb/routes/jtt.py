@@ -6,12 +6,10 @@ JTT 代理路由：转发请求到 .NET 后端 (JTTools.exe)
 from flask import Blueprint, request, jsonify, Response
 import requests
 from services.license import is_licensed
-from utils import require_version
 
 jtt_bp = Blueprint('jtt', __name__)
 
 @jtt_bp.route('/jtt/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-@require_version
 def proxy_to_dotnet(path):
     """代理所有 /jtt/* 请求到 .NET 后端（JTTools.exe），并检查授权状态"""
     # 1. 检查授权（未授权则拒绝）

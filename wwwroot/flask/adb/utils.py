@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-通用辅助函数：硬件ID、版本比较、更新信息获取、require_version装饰器等
+通用辅助函数：硬件ID、版本比较、更新信息获取等
 """
 
 import hashlib
 import wmi
 import requests
 from datetime import datetime, timedelta
-from functools import wraps
-from flask import request, jsonify
-from config import MIN_REQUIRED_VERSION, UPDATE_INFO_URL
+from config import UPDATE_INFO_URL
 
 # 全局缓存
 cached_update_info = None
@@ -50,19 +48,6 @@ def get_hardware_id_legacy():
     raw = f"{motherboard_serial}|{disk_serial}"
     return hashlib.sha256(raw.encode()).hexdigest()
 
-def compare_versions(v1, v2):
-    """比较两个版本号，v1 < v2 返回负数，相等返回0，v1 > v2 返回正数"""
-    def normalize(v):
-        return [int(x) for x in v.split('.')]
-    v1_parts = normalize(v1)
-    v2_parts = normalize(v2)
-    for i in range(max(len(v1_parts), len(v2_parts))):
-        a = v1_parts[i] if i < len(v1_parts) else 0
-        b = v2_parts[i] if i < len(v2_parts) else 0
-        if a != b:
-            return a - b
-    return 0
-
 def get_update_info():
     """从远程获取最新版本信息和下载链接，带30分钟缓存，支持多个备用地址"""
     global cached_update_info, cache_expire_time
@@ -101,27 +86,3 @@ def get_update_info():
     print("[更新] 所有节点失败，无法获取远程信息")
     return None
 
-def require_version(f):
-    """装饰器：检查客户端版本是否满足最低要求（优先使用远程 min_required）"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if request.method == 'OPTIONS':
-            return f(*args, **kwargs)
-        client_version = request.headers.get('X-Client-Version') or request.args.get('client_version')
-        if not client_version:
-            return jsonify({'error': '缺少客户端版本信息'}), 400
-
-        # 优先从远程获取最低版本要求
-        update_info = get_update_info()
-        if update_info and 'min_required' in update_info:
-            min_required = update_info['min_required']
-            print(f"[版本检查] 使用远程 min_required={min_required}")
-        else:
-            # 远程获取失败，回退到本地配置
-            min_required = MIN_REQUIRED_VERSION
-            print(f"[版本检查] 使用本地 min_required={min_required}")
-
-        if compare_versions(client_version, min_required) < 0:
-            return jsonify({'error': f'请更新到版本 {min_required} 或更高'}), 426
-        return f(*args, **kwargs)
-    return decorated_function

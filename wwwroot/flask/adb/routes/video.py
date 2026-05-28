@@ -13,7 +13,6 @@ import os
 from datetime import datetime
 from services.video_converter import convert_file, batch_convert, convert_file_async
 from services.license import is_licensed
-from utils import require_version
 from state import convert_tasks, tasks_lock, batch_sessions, batch_lock
 
 video_bp = Blueprint('video', __name__)
@@ -70,7 +69,6 @@ def run_convert_task(task):
 
 # ---------- 同步转换 API ----------
 @video_bp.route('/video/convert', methods=['POST'])
-@require_version
 def video_convert():
     """单个文件转换API（同步）"""
     if not is_licensed():
@@ -99,7 +97,6 @@ def video_convert():
         return jsonify({'success': False, 'error': '转换失败，请检查日志'}), 500
 
 @video_bp.route('/video/batch_convert', methods=['POST'])
-@require_version
 def video_batch_convert():
     """批量转换API（同步）"""
     if not is_licensed():
@@ -127,7 +124,6 @@ def video_batch_convert():
 
 # ---------- 异步转换 API ----------
 @video_bp.route('/video/convert_async', methods=['POST'])
-@require_version
 def video_convert_async():
     """异步启动转换任务"""
     if not is_licensed():
@@ -162,7 +158,6 @@ def video_convert_async():
 
 # ---------- 异步任务状态查询 ----------
 @video_bp.route('/video/task_status/<task_id>', methods=['GET'])
-@require_version
 def video_task_status(task_id):
     """轮询任务状态"""
     with tasks_lock:
@@ -177,7 +172,6 @@ def video_task_status(task_id):
     })
 
 @video_bp.route('/video/task_stream/<task_id>')
-@require_version
 def video_task_stream(task_id):
     """SSE 推送任务进度"""
     def generate():
@@ -199,7 +193,6 @@ def video_task_stream(task_id):
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 @video_bp.route('/video/cancel/<task_id>', methods=['POST'])
-@require_version
 def cancel_convert(task_id):
     """取消正在进行的转换任务"""
     if not is_licensed():
@@ -227,7 +220,6 @@ def cancel_convert(task_id):
 
 # ---------- 批量转换文件夹的旧版 SSE 接口（保留兼容） ----------
 @video_bp.route('/video/batch_convert_folder', methods=['GET'])
-@require_version
 def batch_convert_folder():
     """批量转换文件夹内的所有.264/.h264文件，通过SSE推送进度（旧版）"""
     if not is_licensed():
@@ -347,7 +339,6 @@ def _push_batch_event(session_id, data):
             batch_sessions[session_id]['events'].append(data)
 
 @video_bp.route('/video/batch_convert_start', methods=['POST'])
-@require_version
 def batch_convert_start():
     if not is_licensed():
         return jsonify({'error': '未授权'}), 401
@@ -369,7 +360,6 @@ def batch_convert_start():
     return jsonify({'session_id': session.id})
 
 @video_bp.route('/video/batch_stream/<session_id>')
-@require_version
 def batch_stream(session_id):
     def generate():
         last_event_index = 0
@@ -393,7 +383,6 @@ def batch_stream(session_id):
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 @video_bp.route('/video/batch_cancel/<session_id>', methods=['POST'])
-@require_version
 def batch_cancel(session_id):
     if not is_licensed():
         return jsonify({'error': '未授权'}), 401

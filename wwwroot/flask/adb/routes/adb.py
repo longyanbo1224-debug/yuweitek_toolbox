@@ -11,7 +11,6 @@ import sys
 import shutil
 from config import ADB_PATH, ADB_EXISTS, COMMANDS_FILE
 from services.license import is_licensed
-from utils import require_version
 
 adb_bp = Blueprint('adb', __name__)
 
@@ -54,14 +53,12 @@ def get_devices():
 
 # ---------- API 路由 ----------
 @adb_bp.route('/devices', methods=['GET'])
-@require_version
 def devices():
     if not is_licensed():
         return jsonify({'error': '未授权', 'devices': []}), 401
     return jsonify({'devices': get_devices()})
 
 @adb_bp.route('/commands', methods=['GET'])
-@require_version
 def get_commands():
     """获取所有命令"""
     if not is_licensed():
@@ -69,7 +66,6 @@ def get_commands():
     return jsonify({'commands': load_commands()})
 
 @adb_bp.route('/commands', methods=['POST'])
-@require_version
 def add_command():
     """添加新命令（支持 group 字段）"""
     if not is_licensed():
@@ -88,7 +84,6 @@ def add_command():
     return jsonify({'message': '添加成功', 'commands': commands})
 
 @adb_bp.route('/commands/<path:name>', methods=['PUT'])
-@require_version
 def update_command(name):
     """修改命令（支持 group 字段）"""
     if not is_licensed():
@@ -114,7 +109,6 @@ def update_command(name):
     return jsonify({'message': '修改成功', 'commands': commands})
 
 @adb_bp.route('/commands/<path:name>', methods=['DELETE'])
-@require_version
 def delete_command(name):
     """删除命令"""
     if not is_licensed():
@@ -128,7 +122,6 @@ def delete_command(name):
 
 # ---------- 批量操作 ----------
 @adb_bp.route('/commands/batch_delete', methods=['POST'])
-@require_version
 def batch_delete_commands():
     """批量删除命令"""
     if not is_licensed():
@@ -145,7 +138,6 @@ def batch_delete_commands():
     return jsonify({'message': f'已删除 {deleted} 条命令', 'commands': new_commands})
 
 @adb_bp.route('/commands/batch_move', methods=['POST'])
-@require_version
 def batch_move_commands():
     """批量移动命令到指定分组"""
     if not is_licensed():
@@ -167,7 +159,6 @@ def batch_move_commands():
 
 # ---------- 分组管理 ----------
 @adb_bp.route('/groups', methods=['GET'])
-@require_version
 def get_groups():
     """获取所有分组名称列表"""
     if not is_licensed():
@@ -177,7 +168,6 @@ def get_groups():
     return jsonify({'groups': groups})
 
 @adb_bp.route('/groups/rename', methods=['POST'])
-@require_version
 def rename_group():
     """重命名分组"""
     if not is_licensed():
@@ -199,7 +189,6 @@ def rename_group():
     return jsonify({'message': f'已重命名 {renamed} 条命令的分组', 'commands': commands})
 
 @adb_bp.route('/groups/<path:group_name>', methods=['DELETE'])
-@require_version
 def delete_group(group_name):
     """删除分组（组内命令移到未分组）"""
     if not is_licensed():
@@ -215,7 +204,6 @@ def delete_group(group_name):
 
 # ---------- 导入导出 ----------
 @adb_bp.route('/commands/import', methods=['POST'])
-@require_version
 def import_commands():
     """批量导入命令（替换全部）"""
     if not is_licensed():
@@ -233,7 +221,6 @@ def import_commands():
 
 # ---------- 发送命令 ----------
 @adb_bp.route('/send_command', methods=['POST'])
-@require_version
 def send_command():
     """发送单条 ADB 命令"""
     if not is_licensed():

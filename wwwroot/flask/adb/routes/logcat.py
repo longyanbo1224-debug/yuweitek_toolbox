@@ -11,13 +11,11 @@ import time
 import atexit
 from config import ADB_PATH, LOG_DIR, USER_DATA_DIR
 from services.license import is_licensed
-from utils import require_version
 from state import current_logcat_process, current_logcat_device, current_logcat_file
 
 logcat_bp = Blueprint('logcat', __name__)
 
 @logcat_bp.route('/logcat/start', methods=['POST'])
-@require_version
 def logcat_start():
     """启动 logcat 日志采集"""
     if not is_licensed():
@@ -115,7 +113,6 @@ def logcat_start():
         return jsonify({'error': str(e)}), 500
 
 @logcat_bp.route('/logcat/stop', methods=['POST'])
-@require_version
 def logcat_stop():
     """停止当前日志采集"""
     if not is_licensed():
@@ -148,7 +145,6 @@ def logcat_stop():
         return jsonify({'error': str(e)}), 500
 
 @logcat_bp.route('/logcat/status', methods=['GET'])
-@require_version
 def logcat_status():
     """查询日志采集状态"""
     if not is_licensed():
@@ -163,7 +159,6 @@ def logcat_status():
         return jsonify({'running': False})
 
 @logcat_bp.route('/open_folder', methods=['POST'])
-@require_version
 def open_folder():
     """打开指定文件夹（客户端）"""
     if not is_licensed():

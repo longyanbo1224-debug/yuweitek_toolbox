@@ -9,7 +9,6 @@ import sys
 import subprocess
 from config import get_static_dir, LOG_DIR, USER_DATA_DIR
 from services.license import is_licensed
-from utils import require_version
 
 static_bp = Blueprint('static', __name__)
 STATIC_DIR = get_static_dir()
@@ -26,7 +25,6 @@ def serve_static(path):
     return send_from_directory(STATIC_DIR, 'index.html')
 
 @static_bp.route('/api/open_folder', methods=['POST'])
-@require_version
 def open_folder():
     """打开指定文件夹（客户端）"""
     if not is_licensed():
