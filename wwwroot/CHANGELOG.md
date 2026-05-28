@@ -1,4 +1,4 @@
-﻿## [1.3.0_2] - 2026-05-26
+﻿## [1.3.0_2] - 2026-05-28
 
 ### 新增
 - **系统托盘单实例**：通过 Windows Mutex 互斥锁防止重复启动，重复启动时弹出 MessageBox 提示。
@@ -6,8 +6,11 @@
 
 ### 变更
 - **本地授权记录格式调整**：优化本地授权记录的存储格式，提升兼容性和可维护性。
+- **移除 require_version 版本强制校验装饰器**：该装饰器与 CORS 预检（OPTIONS）请求冲突，导致跨域请求全部失败。鉴于前后端打包同步分发，版本强制校验无实际意义，移除装饰器、`compare_versions` 函数及相关依赖（`wraps`、`request`、`jsonify` 等 import），涉及 utils.py 及 6 个路由文件共 78 行代码。
+- **API 地址动态化**：`axios.defaults.baseURL` 从硬编码 `http://127.0.0.1:5000` 改为 `window.location.origin`，适配不同部署环境（本地、反向代理等）。
 
 ### 修复
+- **CORS 预检请求失败**：浏览器发送跨域 OPTIONS 预检请求时不含 `X-Client-Version` 自定义头，被 `require_version` 装饰器拦截返回 400，导致所有非简单跨域请求无法发出。移除装饰器后问题解决。
 - **退出时临时目录删除失败 Warning**：退出时主动清理子进程并等待文件句柄释放，手动删除 PyInstaller `_MEIPASS` 临时目录，避免弹出 "Failed to remove temporary directory" 警告。改进 `cleanup_dotnet()` 使用 `taskkill /T /F` 杀掉整个进程树。
 - **机器码受U盘影响**：激活授权时硬盘序列号获取改为只取固定内置硬盘（`Win32_DiskDrive` + `MediaType = 'Fixed hard disk media'`），排除U盘、SD卡、移动硬盘的干扰，同时保留旧算法兜底，已授权用户升级后无需重新激活。
 - **ADB命令列表点击不选中**：点击命令列表行时自动勾选复选框并设为选中状态，修复修改命令后因未选中导致无法保存的问题。
