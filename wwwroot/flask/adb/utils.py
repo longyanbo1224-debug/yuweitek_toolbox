@@ -105,6 +105,8 @@ def require_version(f):
     """装饰器：检查客户端版本是否满足最低要求（优先使用远程 min_required）"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
+        if request.method == 'OPTIONS':
+            return f(*args, **kwargs)
         client_version = request.headers.get('X-Client-Version') or request.args.get('client_version')
         if not client_version:
             return jsonify({'error': '缺少客户端版本信息'}), 400

@@ -4,7 +4,7 @@
 const FRONTEND_VERSION = "1.3.0";   // 必须与后端 APP_VERSION 保持一致
 
 // 配置 axios 基础 URL
-axios.defaults.baseURL = "http://127.0.0.1:5000";
+axios.defaults.baseURL = window.location.origin;
 
 // 请求拦截器：添加客户端版本头
 axios.interceptors.request.use(config => {
