@@ -8,7 +8,6 @@ import os
 import webbrowser
 import pystray
 from PIL import Image
-import requests
 from config import get_static_dir
 
 def get_icon_path():
@@ -17,24 +16,20 @@ def get_icon_path():
         base_dir = sys._MEIPASS
     else:
         base_dir = os.path.dirname(os.path.abspath(__file__))
-    # 使用 app.ico 以匹配打包脚本
     return os.path.join(base_dir, 'app.ico')
 
 def open_browser():
-    webbrowser.open_new('http://localhost:5000')
+    webbrowser.open('http://localhost:5000')
 
 def shutdown_server():
-    """停止 Flask 服务（通过请求 /shutdown）"""
-    try:
-        requests.post('http://127.0.0.1:5000/shutdown', timeout=1)
-    except Exception as e:
-        print(f"关闭请求失败: {e}")
+    """停止服务（Flask 为 daemon 线程，主线程退出时自动终止）"""
+    pass
 
 def open_page(page_hash):
-    webbrowser.open_new(f'http://localhost:5000/{page_hash}')
+    webbrowser.open(f'http://localhost:5000/{page_hash}')
 
 def open_external(url):
-    webbrowser.open_new(url)
+    webbrowser.open(url)
 
 def create_tray_icon():
     """创建并运行系统托盘图标"""

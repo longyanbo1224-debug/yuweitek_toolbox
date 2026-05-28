@@ -5,7 +5,7 @@ a = Analysis(
     ['adb_server.py'],
     pathex=[],
     binaries=[],
-    datas=[('..\\..\\index.html', '.'), ('..\\..\\css', 'css'), ('..\\..\\js', 'js'), ('..\\..\\img', 'img'), ('..\\..\\lib', 'lib'), ('..\\..\\app.ico', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\ffprobe.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\flask\\appsettings.json', '.')],
+    datas=[('..\\..\\index.html', '.'), ('..\\..\\css', 'css'), ('..\\..\\js', 'js'), ('..\\..\\img', 'img'), ('..\\..\\lib', 'lib'), ('..\\..\\app.ico', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\ffprobe.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\flask\\appsettings.json', '.')],
     hiddenimports=['pystray', 'PIL'],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改）\\wwwroot\\app.ico'],
+    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.0_2（本地授权记录格式更改 u盘插入机器码变更bug adb命令选择优化）\\wwwroot\\app.ico'],
 )

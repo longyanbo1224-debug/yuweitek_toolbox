@@ -49,6 +49,8 @@ def start_dotnet_backend():
         stderr=subprocess.STDOUT,
         cwd=base_dir
     )
+    # 保存文件句柄引用，以便退出时关闭
+    dotnet_process._log_file = log_file
     print(f".NET 后端已启动，PID: {dotnet_process.pid}，日志：{log_file.name}")
 
 def cleanup_dotnet():
@@ -68,3 +70,9 @@ def cleanup_dotnet():
             dotnet_process.wait(timeout=5)
         except subprocess.TimeoutExpired:
             dotnet_process.kill()
+    # 关闭日志文件句柄（防止占用 _MEIPASS 临时目录导致删除失败）
+    if dotnet_process and hasattr(dotnet_process, '_log_file'):
+        try:
+            dotnet_process._log_file.close()
+        except Exception:
+            pass
