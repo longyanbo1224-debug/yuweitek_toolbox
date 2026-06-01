@@ -37,13 +37,8 @@ function checkVersionAndProceed() {
 
 function showForceUpdateModal(updateUrl, changelog) {
     if ($('#forceUpdateModal').length) $('#forceUpdateModal').remove();
-    const noValidUrl = !updateUrl || updateUrl === '' || updateUrl === '/api/version';
-    let downloadButtonHtml = '';
-    if (noValidUrl) {
-        downloadButtonHtml = `<div class="alert alert-warning mt-3"><strong>⚠️ 无法自动获取下载链接</strong><br>请前往官网或联系管理员获取最新版本安装包。</div>`;
-    } else {
-        downloadButtonHtml = `<a href="${updateUrl}" class="btn btn-danger" id="forceUpdateDownloadBtn" target="_blank">立即下载</a>`;
-    }
+    const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
+    const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
     const changelogHtml = changelog ? `<div class="mt-3"><strong>📝 更新内容：</strong><pre style="white-space: pre-wrap; font-size: 0.9rem; margin-top: 5px; background: #f8f9fa; padding: 8px; border-radius: 5px;">${escapeHtml(changelog)}</pre></div>` : '';
     const modalHtml = `
     <div class="modal fade" id="forceUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
@@ -55,7 +50,20 @@ function showForceUpdateModal(updateUrl, changelog) {
                 <div class="modal-body">
                     <p>您当前使用的版本（${FRONTEND_VERSION}）已过时，请下载最新版本后重新使用。</p>
                     ${changelogHtml}
-                    <div class="mt-3 text-center">${downloadButtonHtml}</div>
+                    <div class="mt-3">
+                        <div class="text-center mb-3">
+                            <img src="img/微信图片_20260601153501_486_66.png" alt="下载操作提示" class="update-guide-img">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="text" class="form-control form-control-sm" id="forceReleasesUrlInput" value="${releasesUrl}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" id="forceCopyReleasesBtn" title="复制链接">
+                                <i class="bi bi-clipboard"></i> 复制链接
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <a href="${akamsUrl}" class="btn btn-danger" id="forceUpdateDownloadBtn" target="_blank">打开下载页面</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,15 +71,35 @@ function showForceUpdateModal(updateUrl, changelog) {
     $('body').append(modalHtml);
     const modal = new bootstrap.Modal(document.getElementById('forceUpdateModal'), { backdrop: 'static' });
     modal.show();
-    if (!noValidUrl) {
-        $('#forceUpdateDownloadBtn').on('click', function () {
-            setTimeout(() => alert('下载完成后，请关闭本程序，运行安装包覆盖安装。'), 500);
-        });
-    }
+    $('#forceCopyReleasesBtn').on('click', function () {
+        const url = $('#forceReleasesUrlInput').val();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(() => {
+                $(this).html('<i class="bi bi-check-lg"></i> 已复制');
+                setTimeout(() => $(this).html('<i class="bi bi-clipboard"></i> 复制链接'), 2000);
+            }).catch(() => fallbackCopyText(url));
+        } else {
+            fallbackCopyText(url);
+        }
+    });
+    $('#forceUpdateDownloadBtn').on('click', function () {
+        setTimeout(() => alert('请在打开的页面中粘贴链接，选择版本下载。\n下载完成后，请关闭本程序，运行安装包覆盖安装。'), 500);
+    });
+}
+
+function fallbackCopyText(text) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
 }
 
 function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
     if ($('#recommendUpdateModal').length) return;
+    const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
+    const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
     const changelogHtml = changelog ? `<div class="mt-2"><strong>📝 更新内容：</strong><pre style="white-space: pre-wrap; font-size: 0.85rem; background: #f8f9fa; padding: 6px; border-radius: 5px;">${escapeHtml(changelog)}</pre></div>` : '';
     const modalHtml = `
         <div class="modal fade" id="recommendUpdateModal" tabindex="-1" data-bs-backdrop="static">
@@ -84,11 +112,19 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
                     <div class="modal-body">
                         <p>当前版本：<strong>${FRONTEND_VERSION}</strong><br>最新版本：<strong>${escapeHtml(latestVersion)}</strong></p>
                         ${changelogHtml}
-                        <p class="mt-3">是否立即前往下载页面？</p>
+                        <div class="text-center my-3">
+                            <img src="img/微信图片_20260601153501_486_66.png" alt="下载操作提示" class="update-guide-img">
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <input type="text" class="form-control form-control-sm" id="recommendReleasesUrlInput" value="${releasesUrl}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" id="recommendCopyReleasesBtn" title="复制链接">
+                                <i class="bi bi-clipboard"></i> 复制链接
+                            </button>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">暂不</button>
-                        <a href="${updateUrl}" class="btn btn-primary" target="_blank" id="confirmDownloadBtn">立即下载</a>
+                        <a href="${akamsUrl}" class="btn btn-primary" target="_blank" id="confirmDownloadBtn">打开下载页面</a>
                     </div>
                 </div>
             </div>
@@ -97,8 +133,19 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
     $('body').append(modalHtml);
     const modal = new bootstrap.Modal(document.getElementById('recommendUpdateModal'));
     modal.show();
+    $('#recommendCopyReleasesBtn').on('click', function () {
+        const url = $('#recommendReleasesUrlInput').val();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(url).then(() => {
+                $(this).html('<i class="bi bi-check-lg"></i> 已复制');
+                setTimeout(() => $(this).html('<i class="bi bi-clipboard"></i> 复制链接'), 2000);
+            }).catch(() => fallbackCopyText(url));
+        } else {
+            fallbackCopyText(url);
+        }
+    });
     $('#confirmDownloadBtn').on('click', function () {
-        setTimeout(() => alert('请在新打开的页面中下载最新版本安装包。'), 300);
+        setTimeout(() => alert('请在打开的页面中粘贴链接，选择版本下载。'), 300);
     });
     $('#recommendUpdateModal').on('hidden.bs.modal', function () { $(this).remove(); });
 }
@@ -107,7 +154,7 @@ function disableAllTools() {
     if (!$('.version-block-overlay').length) {
         $('body').append('<div class="version-block-overlay"></div>');
     }
-    $('button, input, textarea, select, .dropdown-item').not('#forceUpdateDownloadBtn, .modal button').prop('disabled', true).css('pointer-events', 'none');
+    $('button, input, textarea, select, .dropdown-item').not('#forceUpdateDownloadBtn, #forceCopyReleasesBtn, #forceReleasesUrlInput, .modal button, .modal input').prop('disabled', true).css('pointer-events', 'none');
     if (!$('#version-warning-bar').length) {
         $('#main').prepend('<div id="version-warning-bar" class="alert alert-danger version-warning-bar">⚠️ 请更新程序后再使用本工具 ⚠️</div>');
     }
@@ -193,6 +240,42 @@ $('#checkUpdateBtnMobile').on('click', function () {
     // 触发桌面端按钮的点击事件（复用完整逻辑）
     $('#checkUpdateBtn').trigger('click');
 });
+
+// ===== 历史版本链接：复制链接到剪贴板并打开 akams 代理 =====
+$('.history-version-link, .history-version-link-mobile').on('click', function () {
+    var url = $(this).data('url');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url);
+    }
+    window.open('https://github.akams.cn/', '_blank');
+    showHistoryVersionGuide();
+});
+
+function showHistoryVersionGuide() {
+    if ($('#historyVersionGuideModal').length) return;
+    const modalHtml = `
+    <div class="modal fade" id="historyVersionGuideModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-secondary text-white">
+                    <h5 class="modal-title">历史版本下载</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>请在已打开的页面中粘贴链接，查看历史版本。</p>
+                    <img src="img/微信图片_20260601153501_486_66.png" alt="下载操作提示" class="update-guide-img">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('body').append(modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('historyVersionGuideModal'));
+    modal.show();
+    $('#historyVersionGuideModal').on('hidden.bs.modal', function () { $(this).remove(); });
+}
 
 // 页面加载时检查授权和版本
 $(document).ready(function () {

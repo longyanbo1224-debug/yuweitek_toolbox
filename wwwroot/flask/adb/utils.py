@@ -7,7 +7,7 @@ import hashlib
 import wmi
 import requests
 from datetime import datetime, timedelta
-from config import UPDATE_INFO_URL
+from config import GITHUB_OWNER, GITHUB_REPO
 
 # 全局缓存
 cached_update_info = None
@@ -48,41 +48,100 @@ def get_hardware_id_legacy():
     raw = f"{motherboard_serial}|{disk_serial}"
     return hashlib.sha256(raw.encode()).hexdigest()
 
+def _parse_version_tag(tag_name):
+    """从 tag 名称中提取版本号（去除 v 前缀）"""
+    version = tag_name.strip()
+    if version.startswith('v') or version.startswith('V'):
+        version = version[1:]
+    return version
+
+
+def _fetch_from_github_releases():
+    """从 GitHub Releases API 获取最新版本信息"""
+    url = f"https://api.github.com/repos/{GITHUB_OWNER}/{GITHUB_REPO}/releases/latest"
+    try:
+        print(f"[更新] 尝试从 GitHub Releases API 获取...")
+        resp = requests.get(url, timeout=10, headers={
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'YUWEITEK-Toolbox'
+        })
+        if resp.status_code == 200:
+            data = resp.json()
+            tag_name = data.get('tag_name', '')
+            version = _parse_version_tag(tag_name)
+            if not version:
+                print(f"[更新] 无法解析版本号: {tag_name}")
+                return None
+            changelog = data.get('body', '') or ''
+            # 取前 500 字作为更新日志，避免过长
+            if len(changelog) > 500:
+                changelog = changelog[:500] + '...'
+            result = {
+                'version': version,
+                'min_required': version,  # 默认与最新版本相同（非强制更新）
+                'changelog': changelog,
+                'source': 'github_releases'
+            }
+            print(f"[更新] 成功从 GitHub Releases 获取，最新版本: {version}")
+            return result
+        else:
+            print(f"[更新] GitHub API 返回 HTTP {resp.status_code}")
+            return None
+    except Exception as e:
+        print(f"[更新] GitHub API 请求失败: {e}")
+        return None
+
+
+def _fetch_from_update_json():
+    """从 update.json 获取版本信息（Gitee 主源，GitHub CDN 备用）"""
+    try:
+        from config import UPDATE_INFO_URL, UPDATE_INFO_URL_BACKUP
+    except ImportError:
+        return None
+
+    urls = [
+        (UPDATE_INFO_URL, 'gitee'),
+        (UPDATE_INFO_URL_BACKUP, 'github_cdn'),
+    ]
+    for url, source in urls:
+        try:
+            print(f"[更新] 尝试从 {source} 获取: {url}")
+            resp = requests.get(url, timeout=10)
+            if resp.status_code == 200:
+                data = resp.json()
+                if 'version' in data and 'min_required' in data:
+                    data.setdefault('changelog', '')
+                    data['source'] = f'update_json_{source}'
+                    print(f"[更新] 成功从 {source} 获取，版本: {data['version']}")
+                    return data
+                else:
+                    print(f"[更新] {source} update.json 格式不完整")
+            else:
+                print(f"[更新] {source} 返回 HTTP {resp.status_code}")
+        except Exception as e:
+            print(f"[更新] {source} 请求失败: {e}")
+    return None
+
+
 def get_update_info():
-    """从远程获取最新版本信息和下载链接，带30分钟缓存，支持多个备用地址"""
+    """从远程获取最新版本信息，带30分钟缓存。优先 update.json，备用 GitHub Releases API"""
     global cached_update_info, cache_expire_time
 
     if cached_update_info and cache_expire_time and datetime.now() < cache_expire_time:
         return cached_update_info
 
-    # 构建 URL 列表：主 Gitee + 备用1 jsDelivr + 备用2 GitHub raw
-    urls_to_try = [UPDATE_INFO_URL]
-    try:
-        from config import UPDATE_INFO_URL_BACKUP
-        urls_to_try.append(UPDATE_INFO_URL_BACKUP)
-    except ImportError:
-        pass
-    # 添加 GitHub raw 直连作为第三备用
-    urls_to_try.append("https://raw.githubusercontent.com/longyanbo1224/yuweitek-toolbox/main/update.json")
+    # 优先：update.json（可精确控制 min_required 和 changelog）
+    result = _fetch_from_update_json()
 
-    for url in urls_to_try:
-        try:
-            print(f"[更新] 尝试从 {url} 获取...")
-            resp = requests.get(url, timeout=10)
-            if resp.status_code == 200:
-                data = resp.json()
-                if 'version' in data and 'min_required' in data and 'download_url' in data:
-                    cached_update_info = data
-                    cache_expire_time = datetime.now() + timedelta(minutes=30)
-                    print(f"[更新] 成功从 {url} 获取，远程 min_required={data['min_required']}")
-                    return data
-                else:
-                    print(f"[更新] 数据格式不完整: {url}")
-            else:
-                print(f"[更新] HTTP {resp.status_code} from {url}")
-        except Exception as e:
-            print(f"[更新] 请求失败 ({url}): {e}")
+    # 备用：GitHub Releases API
+    if not result:
+        result = _fetch_from_github_releases()
 
-    print("[更新] 所有节点失败，无法获取远程信息")
+    if result:
+        cached_update_info = result
+        cache_expire_time = datetime.now() + timedelta(minutes=30)
+        return result
+
+    print("[更新] 所有方式均失败，无法获取远程版本信息")
     return None
 

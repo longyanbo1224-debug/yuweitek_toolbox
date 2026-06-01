@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -o '.\\\\{0,2000\\\\}输入 Github 文件链接')",
+      "Bash(grep -o 'let.\\\\{0,200\\\\}=.\\\\{0,20\\\\}\\(\"\"\\)')",
+      "Bash(curl -sL -H \"Accept: application/vnd.github.v3+json\" \"https://api.github.com/repos/longyanbo1224/yuweitek-toolbox/releases/latest\")"
+    ]
+  }
+}

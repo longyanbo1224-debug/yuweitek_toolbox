@@ -46,8 +46,7 @@ def get_version():
         return jsonify({
             'current': APP_VERSION,
             'latest_version': info.get('version'),
-            'min_required': info.get('min_required'),
-            'update_url': info.get('download_url'),
+            'min_required': info.get('min_required', info.get('version')),
             'changelog': info.get('changelog', '')
         })
     else:
@@ -55,6 +54,5 @@ def get_version():
             'current': APP_VERSION,
             'latest_version': APP_VERSION,
             'min_required': MIN_REQUIRED_VERSION,
-            'update_url': '',
             'changelog': ''
         })

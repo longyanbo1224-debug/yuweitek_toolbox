@@ -50,9 +50,13 @@ APP_VERSION = "1.3.1"               # 当前程序版本
 MIN_REQUIRED_VERSION = "1.2.7"      # 最低支持版本，低于此版本强制更新
 
 # ---------- 更新配置 ----------
-# 替换成你在 Gitee 上获取的原始文件链接
+# GitHub 仓库信息（用于从 Releases API 获取最新版本）
+GITHUB_OWNER = "longyanbo1224"
+GITHUB_REPO = "yuweitek-toolbox"
+# 更新信息源（可精确控制 min_required 和 changelog）
+# 主源：Gitee（国内访问快）
 UPDATE_INFO_URL = "https://gitee.com/loong1224/yuweitek-toolbox---update/raw/master/update.json"
-# 替换成你在 Github 上获取的原始文件链接转成换成 jsdelivr 的链接，确保可以直接访问到 JSON 文件 https://www.jsdelivr.com/
+# 备用：GitHub CDN（jsDelivr）
 UPDATE_INFO_URL_BACKUP = "https://cdn.jsdelivr.net/gh/longyanbo1224/yuweitek-toolbox@main/update.json"
 
 # ---------- 授权开关 ----------
