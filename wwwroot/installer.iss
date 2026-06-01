@@ -43,6 +43,9 @@ VersionInfoProductVersion={#MyAppVersion}
 ; 安装完成后不自动删除临时文件（加快修复安装）
 ; CreateUninstallRegKey=yes
 
+[Languages]
+Name: "chinesesimplified"; MessagesFile: "D:\Program Files (x86)\Inno Setup 6\Languages\ChineseSimplified.isl"
+
 [Files]
 Source: "dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
