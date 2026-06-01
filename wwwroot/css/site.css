@@ -705,6 +705,18 @@ body.theme-dark #HexParse .text-muted {
     color: var(--text-secondary) !important;
 }
 
+/* HexParse - batch card dark theme */
+body.theme-dark #HexParse .card {
+    background-color: var(--bg-card, #1e1e2e);
+    border-color: var(--border-color);
+}
+body.theme-dark #hexBatchDropZone {
+    border-color: var(--border-color) !important;
+}
+body.theme-dark #HexParse .table {
+    color: var(--text-primary);
+}
+
 /* 通用 - 所有 textarea/form-control 在深色模式下 */
 body.theme-dark textarea.form-control {
     background-color: var(--bg-input) !important;
@@ -1070,6 +1082,14 @@ main > .container {
 
 #HexParse input[type="text"] {
   font-family: monospace;
+}
+
+#hexBatchDropZone {
+  transition: border-color 0.2s, background-color 0.2s;
+}
+#hexBatchDropZone.border-primary {
+  border-color: var(--bs-primary) !important;
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
 }
 
 /* ==================== 数据字段处理工具 ==================== */
