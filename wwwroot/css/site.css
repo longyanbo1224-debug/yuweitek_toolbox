@@ -1779,25 +1779,6 @@ body.theme-dark .cmd-row code {
     pointer-events: none;   /* 关键：让点击穿透，不影响模态框操作 */
 }
 
-/* 顶部警告条：固定在导航栏下方，全宽 */
-#version-warning-bar,
-.version-warning-bar {
-    position: fixed;
-    top: 56px;              /* 根据你的导航栏高度调整（Bootstrap 默认 navbar 高度约 56px） */
-    left: 0;
-    width: 100%;
-    margin: 0;
-    padding: 4px 10px;      /* 紧凑样式，减少遮挡 */
-    border-radius: 0;
-    text-align: center;
-    font-size: 0.85rem;
-    z-index: 1060;          /* 高于模态框（默认 1050），确保警告条始终可见 */
-    background-color: #dc3545 !important;
-    color: white !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-
 /* ==================== 产品模块（ProductAD） ==================== */
 #ProductAD .carousel-inner {
   height: 400px;

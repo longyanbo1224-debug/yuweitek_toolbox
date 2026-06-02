@@ -171,9 +171,6 @@ function disableAllTools() {
         $('body').append('<div class="version-block-overlay"></div>');
     }
     $('button, input, textarea, select, .dropdown-item').not('#forceUpdateDownloadBtn, #forceCopyReleasesBtn, #forceReleasesUrlInput, .modal button, .modal input').prop('disabled', true).css('pointer-events', 'none');
-    if (!$('#version-warning-bar').length) {
-        $('#main').prepend('<div id="version-warning-bar" class="alert alert-danger version-warning-bar">⚠️ 请更新程序后再使用本工具 ⚠️</div>');
-    }
 }
 
 // 复制机器码
