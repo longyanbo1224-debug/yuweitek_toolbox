@@ -52,7 +52,7 @@ function showForceUpdateModal(updateUrl, changelog) {
                     ${changelogHtml}
                     <div class="mt-3">
                         <div class="text-center mb-3">
-                            <img src="img/微信图片_20260601153501_486_66.png" alt="下载操作提示" class="update-guide-img">
+                            <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img">
                         </div>
                         <div class="input-group input-group-sm mb-2">
                             <input type="text" class="form-control form-control-sm" id="forceReleasesUrlInput" value="${releasesUrl}" readonly>
@@ -71,6 +71,12 @@ function showForceUpdateModal(updateUrl, changelog) {
     $('body').append(modalHtml);
     const modal = new bootstrap.Modal(document.getElementById('forceUpdateModal'), { backdrop: 'static' });
     modal.show();
+    // 弹窗显示后自动复制链接到剪贴板
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(releasesUrl).catch(() => fallbackCopyText(releasesUrl));
+    } else {
+        fallbackCopyText(releasesUrl);
+    }
     $('#forceCopyReleasesBtn').on('click', function () {
         const url = $('#forceReleasesUrlInput').val();
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -81,9 +87,6 @@ function showForceUpdateModal(updateUrl, changelog) {
         } else {
             fallbackCopyText(url);
         }
-    });
-    $('#forceUpdateDownloadBtn').on('click', function () {
-        setTimeout(() => alert('请在打开的页面中粘贴链接，选择版本下载。\n下载完成后，请关闭本程序，运行安装包覆盖安装。'), 500);
     });
 }
 
@@ -113,7 +116,7 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
                         <p>当前版本：<strong>${FRONTEND_VERSION}</strong><br>最新版本：<strong>${escapeHtml(latestVersion)}</strong></p>
                         ${changelogHtml}
                         <div class="text-center my-3">
-                            <img src="img/微信图片_20260601153501_486_66.png" alt="下载操作提示" class="update-guide-img">
+                            <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img">
                         </div>
                         <div class="input-group input-group-sm mb-2">
                             <input type="text" class="form-control form-control-sm" id="recommendReleasesUrlInput" value="${releasesUrl}" readonly>
@@ -133,6 +136,12 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
     $('body').append(modalHtml);
     const modal = new bootstrap.Modal(document.getElementById('recommendUpdateModal'));
     modal.show();
+    // 弹窗显示后自动复制链接到剪贴板
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(releasesUrl).catch(() => fallbackCopyText(releasesUrl));
+    } else {
+        fallbackCopyText(releasesUrl);
+    }
     $('#recommendCopyReleasesBtn').on('click', function () {
         const url = $('#recommendReleasesUrlInput').val();
         if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -143,9 +152,6 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
         } else {
             fallbackCopyText(url);
         }
-    });
-    $('#confirmDownloadBtn').on('click', function () {
-        setTimeout(() => alert('请在打开的页面中粘贴链接，选择版本下载。'), 300);
     });
     $('#recommendUpdateModal').on('hidden.bs.modal', function () { $(this).remove(); });
 }
@@ -263,7 +269,7 @@ function showHistoryVersionGuide() {
                 </div>
                 <div class="modal-body text-center">
                     <p>请在已打开的页面中粘贴链接，查看历史版本。</p>
-                    <img src="img/微信图片_20260601153501_486_66.png" alt="下载操作提示" class="update-guide-img">
+                    <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
