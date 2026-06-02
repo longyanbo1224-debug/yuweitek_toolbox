@@ -6,7 +6,7 @@
 - **Hex 转换复制结果按钮**：单次转换区域新增"复制结果"按钮，一键复制输出内容到剪贴板。
 - **PyWebView 桌面窗口模式**：支持以独立桌面窗口运行（`--mode pywebview`），标题栏显示打包图标，无边框窗口+居中显示。
 - **一键打包脚本**：新增 `build(一键打包).bat` + `build_all.py`，自动完成 PyInstaller 打包 → Inno Setup 编译安装程序 → 清理 dist 临时文件。
-- **一键更新版本号**：新增 `update_version.bat` 双击即可使用，输入版本号自动替换 installer.iss、config.py、config.js 三个文件；也可命令行执行 `python update_version.py 1.3.2`。版本更新已集成到一键打包流程中，打包时可选更新版本号，无需单独操作。
+- **一键更新版本号**：版本更新集成到一键打包流程中，打包时提示输入版本号，自动替换 installer.iss、config.py、config.js 三个文件，无需手动逐个修改。
 - **安装包中文界面**：Inno Setup 安装程序新增简体中文语言支持（`ChineseSimplified.isl`），安装全过程显示中文。
 - **更新下载操作提示图**：强制更新、推荐更新、历史版本弹窗新增可视化操作流程图。
 
