@@ -418,6 +418,44 @@ body.theme-dark .modal-footer {
     border-color: var(--border-color);
 }
 
+/* 深色模式 - 更新弹窗 */
+body.theme-dark .update-modal .update-title {
+    color: #f1f5f9;
+}
+
+body.theme-dark .update-modal .update-subtitle {
+    color: #94a3b8;
+}
+
+body.theme-dark .update-modal .update-version-row .version-value {
+    color: #f1f5f9;
+}
+
+body.theme-dark .update-modal .update-changelog {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.theme-dark .update-modal .update-link-box {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+body.theme-dark .update-modal .update-link-box input {
+    color: #cbd5e1;
+}
+
+body.theme-dark .update-modal .update-btn-secondary {
+    background: #1e293b;
+    border-color: #334155;
+    color: #e2e8f0;
+}
+
+body.theme-dark .update-modal .update-btn-secondary:hover {
+    background: #334155;
+    border-color: #475569;
+}
+
 /* toast 提示 */
 body.theme-dark #global-toast,
 body.theme-dark .toast {
@@ -1759,16 +1797,6 @@ body.theme-dark .cmd-row code {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* 强制更新弹窗：下移以避免被警告条遮挡 */
-#forceUpdateModal .modal-dialog {
-    margin-top: 110px;      /* 56px 导航栏 + ~30px 警告条 + 间距 */
-}
-
-@media (max-width: 767.98px) {
-    #forceUpdateModal .modal-dialog {
-        margin-top: 90px;   /* 移动端导航栏较矮 */
-    }
-}
 
 /* ==================== 产品模块（ProductAD） ==================== */
 #ProductAD .carousel-inner {
@@ -2191,6 +2219,235 @@ body.theme-dark .cmd-row code {
     border-radius: 8px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== 统一更新弹窗样式（现代化） ==================== */
+.update-modal .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.update-modal .modal-body {
+    padding: 2rem 1.75rem;
+}
+
+.update-modal .update-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.75rem;
+}
+
+.update-modal .update-icon.icon-danger {
+    background: #fff0f0;
+    color: #dc3545;
+}
+
+.update-modal .update-icon.icon-warning {
+    background: #fff8e1;
+    color: #f59e0b;
+}
+
+.update-modal .update-icon.icon-success {
+    background: #e8f5e9;
+    color: #22c55e;
+}
+
+.update-modal .update-icon.icon-info {
+    background: #e0f2fe;
+    color: #0ea5e9;
+}
+
+.update-modal .update-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.25rem;
+    color: #1a1a2e;
+}
+
+.update-modal .update-subtitle {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.88rem;
+    margin-bottom: 1.25rem;
+}
+
+.update-modal .update-version-row {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.update-modal .update-version-row .version-label {
+    color: #9ca3af;
+    font-size: 0.78rem;
+    display: block;
+}
+
+.update-modal .update-version-row .version-value {
+    font-weight: 600;
+    color: #1a1a2e;
+    font-size: 1rem;
+}
+
+.update-modal .update-changelog {
+    background: #f9fafb;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.update-modal .update-changelog pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-family: inherit;
+}
+
+.update-modal .update-guide-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.update-modal .update-link-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.update-modal .update-link-box input {
+    border: none;
+    background: transparent;
+    font-size: 0.82rem;
+    color: #6b7280;
+    flex: 1;
+    min-width: 0;
+}
+
+.update-modal .update-link-box input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.update-modal .update-link-box .btn {
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 8px;
+}
+
+.update-modal .update-btn-primary {
+    display: block;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.update-modal .update-btn-primary:hover {
+    background: linear-gradient(135deg, #4338ca, #5558e6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+    color: #fff;
+}
+
+.update-modal .update-btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    transition: all 0.2s;
+}
+
+.update-modal .update-btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.update-modal .update-btn-danger {
+    display: block;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: #fff;
+    transition: all 0.2s;
+}
+
+.update-modal .update-btn-danger:hover {
+    background: linear-gradient(135deg, #b91c1c, #dc2626);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+    color: #fff;
+}
+
+.update-modal .update-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.update-modal .update-actions-row {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.update-modal .update-actions-row > * {
+    flex: 1;
+}
+
+/* 强制更新弹窗下移（避免被警告条遮挡） */
+.update-modal.force-modal .modal-dialog {
+    margin-top: 110px;
+}
+
+@media (max-width: 767.98px) {
+    .update-modal .modal-body {
+        padding: 1.5rem 1.25rem;
+    }
+    .update-modal .update-version-row {
+        gap: 1.5rem;
+    }
+    .update-modal.force-modal .modal-dialog {
+        margin-top: 90px;
+    }
 }
 
 /* 滚动条 */

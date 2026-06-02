@@ -39,30 +39,35 @@ function showForceUpdateModal(updateUrl, changelog) {
     if ($('#forceUpdateModal').length) $('#forceUpdateModal').remove();
     const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
     const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
-    const changelogHtml = changelog ? `<div class="mt-3"><strong>📝 更新内容：</strong><pre style="white-space: pre-wrap; font-size: 0.9rem; margin-top: 5px; background: #f8f9fa; padding: 8px; border-radius: 5px;">${escapeHtml(changelog)}</pre></div>` : '';
+    const changelogHtml = changelog ? `
+        <div class="update-changelog">
+            <strong>📝 更新内容</strong>
+            <pre>${escapeHtml(changelog)}</pre>
+        </div>` : '';
     const modalHtml = `
-    <div class="modal fade" id="forceUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal fade update-modal force-modal" id="forceUpdateModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white justify-content-center">
-                    <h5 class="modal-title">版本过低，必须更新</h5>
-                </div>
                 <div class="modal-body">
-                    <p>您当前使用的版本（${FRONTEND_VERSION}）已过时，请下载最新版本后重新使用。</p>
+                    <div class="update-icon icon-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <div class="update-title">版本过低，必须更新</div>
+                    <div class="update-subtitle">当前版本已不受支持，请下载最新版本后继续使用</div>
+                    <div class="update-version-row">
+                        <div><span class="version-label">当前版本</span><span class="version-value">${FRONTEND_VERSION}</span></div>
+                        <div><span class="version-label">需要更新</span><span class="version-value" style="color:#dc3545">立即下载</span></div>
+                    </div>
                     ${changelogHtml}
-                    <div class="mt-3">
-                        <div class="text-center mb-3">
-                            <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img">
-                        </div>
-                        <div class="input-group input-group-sm mb-2">
-                            <input type="text" class="form-control form-control-sm" id="forceReleasesUrlInput" value="${releasesUrl}" readonly>
-                            <button class="btn btn-outline-secondary" type="button" id="forceCopyReleasesBtn" title="复制链接">
-                                <i class="bi bi-clipboard"></i> 复制链接
-                            </button>
-                        </div>
-                        <div class="text-center">
-                            <a href="${akamsUrl}" class="btn btn-danger" id="forceUpdateDownloadBtn" target="_blank">打开下载页面</a>
-                        </div>
+                    <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img w-100">
+                    <div class="update-link-box">
+                        <input type="text" id="forceReleasesUrlInput" value="${releasesUrl}" readonly>
+                        <button class="btn btn-sm btn-outline-secondary" type="button" id="forceCopyReleasesBtn" title="复制链接">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <div class="update-actions">
+                        <a href="${akamsUrl}" class="update-btn-danger text-center text-decoration-none" id="forceUpdateDownloadBtn" target="_blank">
+                            <i class="bi bi-download me-1"></i> 打开下载页面
+                        </a>
                     </div>
                 </div>
             </div>
@@ -71,7 +76,6 @@ function showForceUpdateModal(updateUrl, changelog) {
     $('body').append(modalHtml);
     const modal = new bootstrap.Modal(document.getElementById('forceUpdateModal'), { backdrop: 'static' });
     modal.show();
-    // 弹窗显示后自动复制链接到剪贴板
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(releasesUrl).catch(() => fallbackCopyText(releasesUrl));
     } else {
@@ -81,8 +85,8 @@ function showForceUpdateModal(updateUrl, changelog) {
         const url = $('#forceReleasesUrlInput').val();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(() => {
-                $(this).html('<i class="bi bi-check-lg"></i> 已复制');
-                setTimeout(() => $(this).html('<i class="bi bi-clipboard"></i> 复制链接'), 2000);
+                $(this).html('<i class="bi bi-check-lg"></i>');
+                setTimeout(() => $(this).html('<i class="bi bi-clipboard"></i>'), 2000);
             }).catch(() => fallbackCopyText(url));
         } else {
             fallbackCopyText(url);
@@ -103,31 +107,38 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
     if ($('#recommendUpdateModal').length) return;
     const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
     const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
-    const changelogHtml = changelog ? `<div class="mt-2"><strong>📝 更新内容：</strong><pre style="white-space: pre-wrap; font-size: 0.85rem; background: #f8f9fa; padding: 6px; border-radius: 5px;">${escapeHtml(changelog)}</pre></div>` : '';
+    const changelogHtml = changelog ? `
+        <div class="update-changelog">
+            <strong>📝 更新内容</strong>
+            <pre>${escapeHtml(changelog)}</pre>
+        </div>` : '';
     const modalHtml = `
-        <div class="modal fade" id="recommendUpdateModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal fade update-modal" id="recommendUpdateModal" tabindex="-1" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header bg-info text-white">
-                        <h5 class="modal-title">发现新版本</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
                     <div class="modal-body">
-                        <p>当前版本：<strong>${FRONTEND_VERSION}</strong><br>最新版本：<strong>${escapeHtml(latestVersion)}</strong></p>
-                        ${changelogHtml}
-                        <div class="text-center my-3">
-                            <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img">
+                        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                        <div class="update-icon icon-info"><i class="bi bi-rocket-takeoff-fill"></i></div>
+                        <div class="update-title">发现新版本</div>
+                        <div class="update-subtitle">建议更新以获得最佳体验</div>
+                        <div class="update-version-row">
+                            <div><span class="version-label">当前版本</span><span class="version-value">${FRONTEND_VERSION}</span></div>
+                            <div><span class="version-label">最新版本</span><span class="version-value" style="color:#0ea5e9">${escapeHtml(latestVersion)}</span></div>
                         </div>
-                        <div class="input-group input-group-sm mb-2">
-                            <input type="text" class="form-control form-control-sm" id="recommendReleasesUrlInput" value="${releasesUrl}" readonly>
-                            <button class="btn btn-outline-secondary" type="button" id="recommendCopyReleasesBtn" title="复制链接">
-                                <i class="bi bi-clipboard"></i> 复制链接
+                        ${changelogHtml}
+                        <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img w-100">
+                        <div class="update-link-box">
+                            <input type="text" id="recommendReleasesUrlInput" value="${releasesUrl}" readonly>
+                            <button class="btn btn-sm btn-outline-secondary" type="button" id="recommendCopyReleasesBtn" title="复制链接">
+                                <i class="bi bi-clipboard"></i>
                             </button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">暂不</button>
-                        <a href="${akamsUrl}" class="btn btn-primary" target="_blank" id="confirmDownloadBtn">打开下载页面</a>
+                        <div class="update-actions">
+                            <a href="${akamsUrl}" class="update-btn-primary text-center text-decoration-none" id="confirmDownloadBtn" target="_blank">
+                                <i class="bi bi-download me-1"></i> 打开下载页面
+                            </a>
+                            <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">暂不更新</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -136,7 +147,6 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
     $('body').append(modalHtml);
     const modal = new bootstrap.Modal(document.getElementById('recommendUpdateModal'));
     modal.show();
-    // 弹窗显示后自动复制链接到剪贴板
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(releasesUrl).catch(() => fallbackCopyText(releasesUrl));
     } else {
@@ -146,8 +156,8 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
         const url = $('#recommendReleasesUrlInput').val();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(() => {
-                $(this).html('<i class="bi bi-check-lg"></i> 已复制');
-                setTimeout(() => $(this).html('<i class="bi bi-clipboard"></i> 复制链接'), 2000);
+                $(this).html('<i class="bi bi-check-lg"></i>');
+                setTimeout(() => $(this).html('<i class="bi bi-clipboard"></i>'), 2000);
             }).catch(() => fallbackCopyText(url));
         } else {
             fallbackCopyText(url);
@@ -260,18 +270,16 @@ $('.history-version-link, .history-version-link-mobile').on('click', function ()
 function showLatestVersionModal(version) {
     if ($('#latestVersionModal').length) return;
     const modalHtml = `
-    <div class="modal fade" id="latestVersionModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade update-modal" id="latestVersionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">✅ 已是最新版本</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <p class="mb-0">当前版本已经是最新版本：<strong>${escapeHtml(version)}</strong></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
+                <div class="modal-body">
+                    <div class="update-icon icon-success"><i class="bi bi-check-lg" style="font-size:2rem"></i></div>
+                    <div class="update-title">已是最新版本</div>
+                    <div class="update-subtitle">当前版本 <strong>${escapeHtml(version)}</strong> 已是最新</div>
+                    <div class="update-actions" style="margin-top:1.25rem">
+                        <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">知道了</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -285,18 +293,16 @@ function showLatestVersionModal(version) {
 function showUpdateErrorModal(message) {
     if ($('#updateErrorModal').length) return;
     const modalHtml = `
-    <div class="modal fade" id="updateErrorModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade update-modal" id="updateErrorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">检查更新失败</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <p class="mb-0">检查更新失败，请稍后重试。<br><small class="text-muted">${escapeHtml(message)}</small></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
+                <div class="modal-body">
+                    <div class="update-icon icon-danger"><i class="bi bi-wifi-off"></i></div>
+                    <div class="update-title">检查更新失败</div>
+                    <div class="update-subtitle">请检查网络后重试<br><small>${escapeHtml(message)}</small></div>
+                    <div class="update-actions" style="margin-top:1.25rem">
+                        <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">知道了</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -310,19 +316,18 @@ function showUpdateErrorModal(message) {
 function showHistoryVersionGuide() {
     if ($('#historyVersionGuideModal').length) return;
     const modalHtml = `
-    <div class="modal fade" id="historyVersionGuideModal" tabindex="-1">
+    <div class="modal fade update-modal" id="historyVersionGuideModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-secondary text-white">
-                    <h5 class="modal-title">历史版本下载</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <p>请在已打开的页面中粘贴链接，查看历史版本。</p>
-                    <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
+                <div class="modal-body">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <div class="update-icon icon-warning"><i class="bi bi-clock-history"></i></div>
+                    <div class="update-title">历史版本下载</div>
+                    <div class="update-subtitle">请在已打开的页面中粘贴链接，查看历史版本</div>
+                    <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img w-100">
+                    <div class="update-actions">
+                        <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">知道了</button>
+                    </div>
                 </div>
             </div>
         </div>
