@@ -10,8 +10,13 @@
 ### 变更
 - **更新检查改为 GitHub Releases API**：版本更新检查从 Gitee update.json 改为优先使用 GitHub Releases API（`/repos/{owner}/{repo}/releases/latest`），备用 update.json（jsDelivr CDN），移除对 Gitee 主节点的依赖。
 - **更新下载流程优化**：强制更新和推荐更新弹窗改为引导用户通过 `github.akams.cn` 加速下载页面，支持一键复制 GitHub Releases 链接，用户可自行选择下载节点和版本。
+- **检查更新、强制更新、历史版本跳转方式优化**：改进三种更新场景的页面跳转逻辑，提升用户体验。
 - **后端移除 `update_url` 字段**：`/api/license/version` 接口不再返回 `update_url`，前端直接使用固定的 GitHub Releases 链接。
 - **Hex转换实时转换统一**：切换进制、修改输入等操作统一走实时转换逻辑，移除重复的 `convertRadix` 调用，交互更一致。
+
+### 优化
+- **移动端布局优化**：优化移动端页面布局，提升小屏幕下的显示效果和操作体验。
+- **移动端按钮样式优化**：优化移动端按钮的样式和交互反馈。
 
 ---
 
