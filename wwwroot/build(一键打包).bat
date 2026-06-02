@@ -1,189 +1,186 @@
-@echo off
-chcp 65001 >nul
-setlocal enabledelayedexpansion
-
-cd /d "%~dp0"
-set "ROOT_DIR=%CD%"
-echo å½“å‰ç›®å½•ï¼š%ROOT_DIR%
-echo.
-echo ========================================
-echo   ç¬¬1æ­¥ï¼šPyInstaller æ‰“åŒ… EXE
-echo ========================================
-echo.
-
-if not exist "index.html" (
-    echo é”™è¯¯ï¼šindex.html ä¸å­˜åœ¨ï¼
-    pause
-    exit /b 1
-)
-
-if not exist "app.ico" (
-    echo è­¦å‘Šï¼šapp.ico æœªæ‰¾åˆ°ï¼Œå°†ä½¿ç”¨é»˜è®¤å›¾æ ‡ã€‚
-    set "ICON_ARG="
-) else (
-    echo æ‰¾åˆ° app.icoï¼Œå°†ä½œä¸ºç¨‹åºå›¾æ ‡ã€‚
-    set "ICON_ARG=--icon="%ROOT_DIR%\app.ico""
-)
-
-python -c "import PIL" 2>nul
-if errorlevel 1 (
-    echo æç¤ºï¼šæœªå®‰è£… Pillowï¼Œå»ºè®®æ‰§è¡Œï¼špip install pillow
-)
-
-python -c "import pyinstaller" 2>nul
-if errorlevel 1 (
-    echo æ­£åœ¨ä»Žæ¸…åŽæºå®‰è£… PyInstaller...
-    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyinstaller
-    if errorlevel 1 (
-        echo PyInstaller å®‰è£…å¤±è´¥ï¼
-        pause
-        exit /b 1
-    )
-) else (
-    echo PyInstaller å·²å®‰è£…
-)
-
-if not exist "flask\adb" (
-    echo é”™è¯¯ï¼šflask\adb ç›®å½•ä¸å­˜åœ¨ï¼
-    pause
-    exit /b 1
-)
-cd flask\adb
-set "ADB_DIR=%CD%"
-echo è¿›å…¥æ‰“åŒ…ç›®å½•ï¼š%ADB_DIR%
-
-set "DIST_DIR=%ROOT_DIR%\dist"
-if not exist "!DIST_DIR!" (
-    echo åˆ›å»º dist ç›®å½•ï¼š!DIST_DIR!
-    mkdir "!DIST_DIR!"
-)
-
-set ADB_FLAG=
-if exist "%ADB_DIR%\adb.exe" (
-    echo æ‰¾åˆ° adb.exeï¼Œå°†ä¸€å¹¶æ‰“åŒ…
-    set ADB_FLAG=--add-data "%ADB_DIR%\adb.exe;."
-) else (
-    echo è­¦å‘Šï¼šadb.exe æœªæ‰¾åˆ°
-)
-
-if exist "%ADB_DIR%\AdbWinApi.dll" (
-    echo æ‰¾åˆ° AdbWinApi.dllï¼Œå°†ä¸€å¹¶æ‰“åŒ…
-    set ADB_FLAG=!ADB_FLAG! --add-data "%ADB_DIR%\AdbWinApi.dll;."
-) else (
-    echo è­¦å‘Šï¼šAdbWinApi.dll æœªæ‰¾åˆ°
-)
-
-if exist "%ADB_DIR%\AdbWinUsbApi.dll" (
-    echo æ‰¾åˆ° AdbWinUsbApi.dllï¼Œå°†ä¸€å¹¶æ‰“åŒ…
-    set ADB_FLAG=!ADB_FLAG! --add-data "%ADB_DIR%\AdbWinUsbApi.dll;."
-) else (
-    echo è­¦å‘Šï¼šAdbWinUsbApi.dll æœªæ‰¾åˆ°
-)
-
-set "FLASK_ROOT=%ROOT_DIR%\flask"
-
-if exist "%FLASK_ROOT%\JTTools.exe" (
-    echo æ‰¾åˆ° JTTools.exeï¼Œå°†ä¸€å¹¶æ‰“åŒ…
-    set ADB_FLAG=!ADB_FLAG! --add-data "%FLASK_ROOT%\JTTools.exe;."
-) else (
-    echo é”™è¯¯ï¼šJTTools.exe æœªæ‰¾åˆ°ï¼
-    pause
-    exit /b 1
-)
-
-if exist "%FLASK_ROOT%\appsettings.json" (
-    echo æ‰¾åˆ° appsettings.jsonï¼Œå°†ä¸€å¹¶æ‰“åŒ…
-    set ADB_FLAG=!ADB_FLAG! --add-data "%FLASK_ROOT%\appsettings.json;."
-) else (
-    echo è­¦å‘Šï¼šappsettings.json æœªæ‰¾åˆ°
-)
-
-echo æ­£åœ¨æ‰“åŒ…ï¼Œè¾“å‡ºç›®å½•ï¼š!DIST_DIR!
-
-REM ========== åŽŸæœ‰æ‰“åŒ…å‘½ä»¤ï¼ˆæµè§ˆå™¨ï¼‰ ==========
-pyinstaller --onefile --windowed --name "YUWEITEKå·¥å…·ç®± Agent" %ICON_ARG% --clean --distpath "%DIST_DIR%" --hidden-import pystray --hidden-import PIL --add-data "..\..\index.html;." --add-data "..\..\css;css" --add-data "..\..\js;js" --add-data "..\..\img;img" --add-data "..\..\lib;lib" --add-data "..\..\app.ico;." --add-data "%FLASK_ROOT%\ffmpeg.exe;." --add-data "%FLASK_ROOT%\ffprobe.exe;." %ADB_FLAG% adb_server.py
-
-if errorlevel 1 (
-    echo.
-    echo [é”™è¯¯] PyInstaller æ‰“åŒ…å¤±è´¥ï¼è¯·æ£€æŸ¥ä¸Šæ–¹é”™è¯¯ä¿¡æ¯ã€‚
-    pause
-    exit /b 1
-)
-
-echo.
-echo ========================================
-echo   PyInstaller æ‰“åŒ…æˆåŠŸï¼
-echo ========================================
-echo.
-
-REM ========================================
-REM   ç¬¬2æ­¥ï¼šInno Setup ç¼–è¯‘å®‰è£…åŒ…
-REM ========================================
-echo ========================================
-echo   ç¬¬2æ­¥ï¼šInno Setup ç¼–è¯‘å®‰è£…ç¨‹åº
-echo ========================================
-echo.
-
-cd /d "%ROOT_DIR%"
-
-REM æŸ¥æ‰¾ Inno Setup 6 ç¼–è¯‘å™¨
-set "ISCC_EXE="
-
-if exist "D:\Program Files (x86)\Inno Setup 6\ISCC.exe" (
-    set "ISCC_EXE=D:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-) else if exist "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" (
-    set "ISCC_EXE=C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-) else if exist "D:\Program Files\Inno Setup 6\ISCC.exe" (
-    set "ISCC_EXE=D:\Program Files\Inno Setup 6\ISCC.exe"
-) else if exist "C:\Program Files\Inno Setup 6\ISCC.exe" (
-    set "ISCC_EXE=C:\Program Files\Inno Setup 6\ISCC.exe"
-) else (
-    REM å°è¯•é€šè¿‡æ³¨å†Œè¡¨æŸ¥æ‰¾
-    for /f "tokens=2*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Inno Setup 6_is1" /v InstallLocation 2^>nul') do (
-        if exist "%%bISCC.exe" set "ISCC_EXE=%%bISCC.exe"
-    )
-)
-
-if "%ISCC_EXE%"=="" (
-    echo [é”™è¯¯] æœªæ‰¾åˆ° Inno Setup 6ï¼è¯·ç¡®è®¤å·²å®‰è£… Inno Setup 6ã€‚
-    echo å·²æ£€æŸ¥è·¯å¾„ï¼š
-    echo   - D:\Program Files (x86)\Inno Setup 6\ISCC.exe
-    echo   - C:\Program Files (x86)\Inno Setup 6\ISCC.exe
-    echo   - D:\Program Files\Inno Setup 6\ISCC.exe
-    echo   - C:\Program Files\Inno Setup 6\ISCC.exe
-    pause
-    exit /b 1
-)
-
-echo æ‰¾åˆ° Inno Setupï¼š%ISCC_EXE%
-echo æ­£åœ¨ç¼–è¯‘å®‰è£…ç¨‹åº...
-echo.
-
-"%ISCC_EXE%" "installer.iss"
-
-if errorlevel 1 (
-    echo.
-    echo [é”™è¯¯] Inno Setup ç¼–è¯‘å¤±è´¥ï¼è¯·æ£€æŸ¥ä¸Šæ–¹é”™è¯¯ä¿¡æ¯ã€‚
-    pause
-    exit /b 1
-)
-
-echo.
-echo ========================================
-echo   æ¸…ç†ä¸´æ—¶æ–‡ä»¶...
-echo ========================================
-
-if exist "%DIST_DIR%\YUWEITEKå·¥å…·ç®± Agent.exe" (
-    del /f /q "%DIST_DIR%\YUWEITEKå·¥å…·ç®± Agent.exe"
-    echo å·²åˆ é™¤ï¼š%DIST_DIR%\YUWEITEKå·¥å…·ç®± Agent.exe
-) else (
-    echo æœªæ‰¾åˆ°ä¸´æ—¶ EXEï¼Œè·³è¿‡æ¸…ç†ã€‚
-)
-
-echo.
-echo ========================================
-echo   å…¨éƒ¨å®Œæˆï¼
-echo ========================================
-echo   å®‰è£…åŒ…ï¼š  %ROOT_DIR%\YUWEITEKå·¥å…·ç®± Agent_1.3.1_Setup.exe
-echo ========================================
+@echo off
+chcp 65001 >nul
+
+pushd "%~dp0" 2>nul
+if errorlevel 1 (
+    echo ´íÎó£ºÎÞ·¨½øÈë½Å±¾Ä¿Â¼
+    pause
+    exit /b 1
+)
+
+set "ROOT_DIR=%CD%"
+echo µ±Ç°Ä¿Â¼£º%ROOT_DIR%
+echo.
+echo ========================================
+echo   µÚ1²½£ºPyInstaller ´ò°ü EXE
+echo ========================================
+echo.
+
+if not exist "index.html" (
+    echo ´íÎó£ºindex.html ²»´æÔÚ£¡
+    pause
+    popd
+    exit /b 1
+)
+
+if not exist "app.ico" (
+    echo ¾¯¸æ£ºapp.ico Î´ÕÒµ½£¬½«Ê¹ÓÃÄ¬ÈÏÍ¼±ê¡£
+    set "ICON_ARG="
+) else (
+    echo ÕÒµ½ app.ico£¬½«×÷Îª³ÌÐòÍ¼±ê¡£
+    set "ICON_ARG=--icon=%ROOT_DIR%pp.ico"
+)
+
+python -c "import PIL" 2>nul
+if errorlevel 1 (
+    echo ÌáÊ¾£ºÎ´°²×° Pillow£¬½¨ÒéÖ´ÐÐ£ºpip install pillow
+)
+
+python -c "import pyinstaller" 2>nul
+if errorlevel 1 (
+    echo ÕýÔÚ´ÓÇå»ªÔ´°²×° PyInstaller...
+    pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pyinstaller
+    if errorlevel 1 (
+        echo PyInstaller °²×°Ê§°Ü£¡
+        pause
+        popd
+        exit /b 1
+    )
+) else (
+    echo PyInstaller ÒÑ°²×°
+)
+
+if not exist "flaskdb" (
+    echo ´íÎó£ºflaskdb Ä¿Â¼²»´æÔÚ£¡
+    pause
+    popd
+    exit /b 1
+)
+
+pushd "flaskdb"
+set "ADB_DIR=%CD%"
+echo ½øÈë´ò°üÄ¿Â¼£º%ADB_DIR%
+
+set "DIST_DIR=%ROOT_DIR%\dist"
+if not exist "!DIST_DIR!" (
+    echo ´´½¨ dist Ä¿Â¼£º!DIST_DIR!
+    mkdir "!DIST_DIR!"
+)
+
+set "ADB_FLAG="
+if exist "%ADB_DIR%db.exe" (
+    echo ÕÒµ½ adb.exe£¬½«Ò»²¢´ò°ü
+    set "ADB_FLAG=--add-data %ADB_DIR%db.exe;."
+) else (
+    echo ¾¯¸æ£ºadb.exe Î´ÕÒµ½
+)
+
+if exist "%ADB_DIR%\AdbWinApi.dll" (
+    echo ÕÒµ½ AdbWinApi.dll£¬½«Ò»²¢´ò°ü
+    set "ADB_FLAG=!ADB_FLAG! --add-data %ADB_DIR%\AdbWinApi.dll;."
+) else (
+    echo ¾¯¸æ£ºAdbWinApi.dll Î´ÕÒµ½
+)
+
+if exist "%ADB_DIR%\AdbWinUsbApi.dll" (
+    echo ÕÒµ½ AdbWinUsbApi.dll£¬½«Ò»²¢´ò°ü
+    set "ADB_FLAG=!ADB_FLAG! --add-data %ADB_DIR%\AdbWinUsbApi.dll;."
+) else (
+    echo ¾¯¸æ£ºAdbWinUsbApi.dll Î´ÕÒµ½
+)
+
+popd
+
+set "FLASK_ROOT=%ROOT_DIR%lask"
+
+if exist "%FLASK_ROOT%\JTTools.exe" (
+    echo ÕÒµ½ JTTools.exe£¬½«Ò»²¢´ò°ü
+    set "ADB_FLAG=!ADB_FLAG! --add-data %FLASK_ROOT%\JTTools.exe;."
+) else (
+    echo ´íÎó£ºJTTools.exe Î´ÕÒµ½£¡
+    pause
+    popd
+    exit /b 1
+)
+
+if exist "%FLASK_ROOT%ppsettings.json" (
+    echo ÕÒµ½ appsettings.json£¬½«Ò»²¢´ò°ü
+    set "ADB_FLAG=!ADB_FLAG! --add-data %FLASK_ROOT%ppsettings.json;."
+) else (
+    echo ¾¯¸æ£ºappsettings.json Î´ÕÒµ½
+)
+
+echo ÕýÔÚ´ò°ü£¬Êä³öÄ¿Â¼£º%DIST_DIR%
+echo.
+
+pyinstaller --onefile --windowed --name "YUWEITEK¹¤¾ßÏä Agent" %ICON_ARG% --clean --distpath "%DIST_DIR%" --hidden-import pystray --hidden-import PIL --add-data "index.html;." --add-data "css;css" --add-data "js;js" --add-data "img;img" --add-data "lib;lib" --add-data "app.ico;." --add-data "%FLASK_ROOT%fmpeg.exe;." --add-data "%FLASK_ROOT%fprobe.exe;." %ADB_FLAG% flaskdbdb_server.py
+
+if errorlevel 1 (
+    echo.
+    echo [´íÎó] PyInstaller ´ò°üÊ§°Ü£¡Çë¼ì²éÉÏ·½´íÎóÐÅÏ¢¡£
+    pause
+    popd
+    exit /b 1
+)
+
+echo.
+echo ========================================
+echo   PyInstaller ´ò°ü³É¹¦£¡
+echo ========================================
+echo.
+
+REM ========================================
+echo   µÚ2²½£ºInno Setup ±àÒë°²×°³ÌÐò
+REM ========================================
+echo.
+
+set "ISCC_EXE="
+
+REM ÓÃ¶ÌÂ·¾¶Ãû±ÜÃâÀ¨ºÅÎÊÌâ
+for /d %%D in ("D:\PROGRA~2\Inno Setup 6") do if exist "%%~D\ISCC.exe" set "ISCC_EXE=%%~D\ISCC.exe"
+if not defined ISCC_EXE for /d %%D in ("C:\PROGRA~2\Inno Setup 6") do if exist "%%~D\ISCC.exe" set "ISCC_EXE=%%~D\ISCC.exe"
+if not defined ISCC_EXE for /d %%D in ("D:\PROGRA~1\Inno Setup 6") do if exist "%%~D\ISCC.exe" set "ISCC_EXE=%%~D\ISCC.exe"
+if not defined ISCC_EXE for /d %%D in ("C:\PROGRA~1\Inno Setup 6") do if exist "%%~D\ISCC.exe" set "ISCC_EXE=%%~D\ISCC.exe"
+
+if not defined ISCC_EXE (
+    echo [´íÎó] Î´ÕÒµ½ Inno Setup 6£¡ÇëÈ·ÈÏÒÑ°²×°¡£
+    pause
+    popd
+    exit /b 1
+)
+
+echo ÕÒµ½ Inno Setup£º%ISCC_EXE%
+echo ÕýÔÚ±àÒë°²×°³ÌÐò...
+echo.
+
+"%ISCC_EXE%" "installer.iss"
+
+if errorlevel 1 (
+    echo.
+    echo [´íÎó] Inno Setup ±àÒëÊ§°Ü£¡Çë¼ì²éÉÏ·½´íÎóÐÅÏ¢¡£
+    pause
+    popd
+    exit /b 1
+)
+
+echo.
+echo ========================================
+echo   ÇåÀíÁÙÊ±ÎÄ¼þ...
+echo ========================================
+
+if exist "%DIST_DIR%\YUWEITEK¹¤¾ßÏä Agent.exe" (
+    del /f /q "%DIST_DIR%\YUWEITEK¹¤¾ßÏä Agent.exe"
+    echo ÒÑÉ¾³ýÁÙÊ± EXE
+) else (
+    echo Î´ÕÒµ½ÁÙÊ± EXE£¬Ìø¹ýÇåÀí¡£
+)
+
+echo.
+echo ========================================
+echo   È«²¿Íê³É£¡
+echo ========================================
+echo   °²×°°ü£º%ROOT_DIR%\YUWEITEK¹¤¾ßÏä Agent_1.3.1_Setup.exe
+echo ========================================
+
+popd
 pause
