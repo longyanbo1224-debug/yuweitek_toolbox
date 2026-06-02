@@ -155,7 +155,16 @@ def main():
     else:
         print("Temp EXE not found, skip.")
 
-    setup_name = "YUWEITEK工具箱 Agent_1.3.1_Setup.exe"
+    # 从 config.py 动态读取版本号
+    app_version = "unknown"
+    config_py = os.path.join(flask_root, "adb", "config.py")
+    if os.path.isfile(config_py):
+        import re
+        with open(config_py, "r", encoding="utf-8") as f:
+            m = re.search(r'APP_VERSION\s*=\s*"([^"]+)"', f.read())
+            if m:
+                app_version = m.group(1)
+    setup_name = f"YUWEITEK工具箱 Agent_{app_version}_Setup.exe"
     print(f"\n{'=' * 40}")
     print("  All done!")
     print(f"{'=' * 40}")
