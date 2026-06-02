@@ -2414,20 +2414,12 @@ body.theme-dark .cmd-row code {
     flex: 1;
 }
 
-/* 强制更新弹窗下移（避免被警告条遮挡） */
-.update-modal.force-modal .modal-dialog {
-    margin-top: 110px;
-}
-
 @media (max-width: 767.98px) {
     .update-modal .modal-body {
         padding: 1.5rem 1.25rem;
     }
     .update-modal .update-version-row {
         gap: 1.5rem;
-    }
-    .update-modal.force-modal .modal-dialog {
-        margin-top: 90px;
     }
 }
 
