@@ -280,19 +280,7 @@ $(document).ready(function () {
 
     // ---------- 8. 版本号显示 ----------
     if (typeof FRONTEND_VERSION !== "undefined") {
-        $("#checkUpdateBtn, #checkUpdateBtnMobile").each(function () {
-            var $btn = $(this);
-            var originalText = $btn.text();
-            if (!originalText.includes(FRONTEND_VERSION)) {
-                if ($btn.is("#checkUpdateBtnMobile") && originalText === "检查更新") {
-                    $btn.text(`检查更新 v${FRONTEND_VERSION}`);
-                } else if ($btn.is("#checkUpdateBtn")) {
-                    $btn.text(`检查更新 v${FRONTEND_VERSION}`);
-                } else {
-                    $btn.text(`${originalText} v${FRONTEND_VERSION}`);
-                }
-            }
-        });
+        $("#versionSpan, #versionSpanMobile").text(FRONTEND_VERSION);
     }
 
     // ---------- 9. 深色/浅色主题切换 ----------
