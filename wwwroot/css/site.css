@@ -1749,12 +1749,25 @@ body.theme-dark .cmd-row code {
     left: 0;
     width: 100%;
     margin: 0;
+    padding: 4px 10px;      /* 紧凑样式，减少遮挡 */
     border-radius: 0;
     text-align: center;
-    z-index: 1041;          /* 高于遮罩层但低于模态框（模态框默认 1050） */
+    font-size: 0.85rem;
+    z-index: 1060;          /* 高于模态框（默认 1050），确保警告条始终可见 */
     background-color: #dc3545 !important;
     color: white !important;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 强制更新弹窗：下移以避免被警告条遮挡 */
+#forceUpdateModal .modal-dialog {
+    margin-top: 110px;      /* 56px 导航栏 + ~30px 警告条 + 间距 */
+}
+
+@media (max-width: 767.98px) {
+    #forceUpdateModal .modal-dialog {
+        margin-top: 90px;   /* 移动端导航栏较矮 */
+    }
 }
 
 /* ==================== 产品模块（ProductAD） ==================== */
