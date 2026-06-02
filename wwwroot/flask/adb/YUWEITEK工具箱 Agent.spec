@@ -5,7 +5,7 @@ a = Analysis(
     ['adb_server.py'],
     pathex=[],
     binaries=[],
-    datas=[('..\\..\\index.html', '.'), ('..\\..\\css', 'css'), ('..\\..\\js', 'js'), ('..\\..\\img', 'img'), ('..\\..\\lib', 'lib'), ('..\\..\\app.ico', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\ffprobe.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\flask\\appsettings.json', '.')],
+    datas=[('..\\..\\index.html', '.'), ('..\\..\\css', 'css'), ('..\\..\\js', 'js'), ('..\\..\\img', 'img'), ('..\\..\\lib', 'lib'), ('..\\..\\app.ico', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\ffprobe.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\flask\\appsettings.json', '.')],
     hiddenimports=['pystray', 'PIL'],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载）\\wwwroot\\app.ico'],
+    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局）\\wwwroot\\app.ico'],
 )
