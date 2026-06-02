@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import subprocess, sys, os
+import subprocess, sys, os, re
 
 def run(cmd, cwd=None):
     print(f"  Exec: {cmd}")
@@ -9,10 +9,80 @@ def run(cmd, cwd=None):
         return False
     return True
 
+def get_current_version(root):
+    """从 config.py 读取当前版本号"""
+    config_py = os.path.join(root, "flask", "adb", "config.py")
+    if os.path.isfile(config_py):
+        with open(config_py, "r", encoding="utf-8") as f:
+            m = re.search(r'APP_VERSION\s*=\s*"([^"]+)"', f.read())
+            if m:
+                return m.group(1)
+    return "unknown"
+
+def update_version(root, new_version):
+    """更新三个文件的版本号"""
+    replacements = [
+        (
+            os.path.join(root, "installer.iss"),
+            r'(#define\s+MyAppVersion\s+")([^"]+)(")',
+            "installer.iss → #define MyAppVersion",
+        ),
+        (
+            os.path.join(root, "flask", "adb", "config.py"),
+            r'(APP_VERSION\s*=\s*")([^"]+)(")',
+            "config.py → APP_VERSION",
+        ),
+        (
+            os.path.join(root, "js", "core", "config.js"),
+            r'(const\s+FRONTEND_VERSION\s*=\s*")([^"]+)(")',
+            "config.js → FRONTEND_VERSION",
+        ),
+    ]
+    ok = 0
+    for file_path, pattern, label in replacements:
+        if not os.path.isfile(file_path):
+            print(f"  [SKIP] {label}")
+            continue
+        with open(file_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        match = re.search(pattern, content)
+        if not match:
+            print(f"  [WARN] 未匹配: {label}")
+            continue
+        old_ver = match.group(2)
+        if old_ver == new_version:
+            print(f"  [OK]   {label}  已是 {new_version}")
+            ok += 1
+            continue
+        new_content = re.sub(pattern, rf'\g<1>{new_version}\g<3>', content)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        print(f"  [OK]   {label}  {old_ver} → {new_version}")
+        ok += 1
+    return ok
+
 def main():
     root = os.path.dirname(os.path.abspath(__file__))
     os.chdir(root)
     print(f"Dir: {root}\n")
+
+    # Step 0: 版本号更新
+    current_ver = get_current_version(root)
+    print("=" * 50)
+    print(f"  当前版本: {current_ver}")
+    print("=" * 50)
+    ver_input = input("请输入新版本号（直接回车跳过，保持当前版本）: ").strip()
+
+    if ver_input:
+        if not re.match(r'^\d+\.\d+\.\d+$', ver_input):
+            print(f"\n[ERROR] 版本号格式不正确: {ver_input}，请使用 x.y.z 格式")
+            input("Press Enter to exit...")
+            return 1
+        print(f"\n更新版本号: {current_ver} → {ver_input}\n")
+        update_version(root, ver_input)
+        print()
+    else:
+        print(f"  保持当前版本: {current_ver}\n")
 
     # Step 1: PyInstaller
     print("=" * 40)
@@ -155,15 +225,7 @@ def main():
     else:
         print("Temp EXE not found, skip.")
 
-    # 从 config.py 动态读取版本号
-    app_version = "unknown"
-    config_py = os.path.join(flask_root, "adb", "config.py")
-    if os.path.isfile(config_py):
-        import re
-        with open(config_py, "r", encoding="utf-8") as f:
-            m = re.search(r'APP_VERSION\s*=\s*"([^"]+)"', f.read())
-            if m:
-                app_version = m.group(1)
+    app_version = get_current_version(root)
     setup_name = f"YUWEITEK工具箱 Agent_{app_version}_Setup.exe"
     print(f"\n{'=' * 40}")
     print("  All done!")
