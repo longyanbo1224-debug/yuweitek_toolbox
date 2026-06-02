@@ -231,12 +231,12 @@ $('#checkUpdateBtn').on('click', function () {
                     showRecommendUpdateModal(updateUrl, changelog, latestVersion);
                 }
             } else {
-                alert('当前已经是最新版本 (' + FRONTEND_VERSION + ')');
+                showLatestVersionModal(FRONTEND_VERSION);
             }
         })
         .catch(error => {
             console.error('检查更新失败:', error);
-            alert('检查更新失败，请稍后重试。\n' + (error.message || '网络错误'));
+            showUpdateErrorModal(error.message || '网络错误');
         })
         .finally(() => $btn.text(originalText).prop('disabled', false));
 });
@@ -256,6 +256,56 @@ $('.history-version-link, .history-version-link-mobile').on('click', function ()
     window.open('https://github.akams.cn/', '_blank');
     showHistoryVersionGuide();
 });
+
+function showLatestVersionModal(version) {
+    if ($('#latestVersionModal').length) return;
+    const modalHtml = `
+    <div class="modal fade" id="latestVersionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">✅ 已是最新版本</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-0">当前版本已经是最新版本：<strong>${escapeHtml(version)}</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('body').append(modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('latestVersionModal'));
+    modal.show();
+    $('#latestVersionModal').on('hidden.bs.modal', function () { $(this).remove(); });
+}
+
+function showUpdateErrorModal(message) {
+    if ($('#updateErrorModal').length) return;
+    const modalHtml = `
+    <div class="modal fade" id="updateErrorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">检查更新失败</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-0">检查更新失败，请稍后重试。<br><small class="text-muted">${escapeHtml(message)}</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">知道了</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('body').append(modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('updateErrorModal'));
+    modal.show();
+    $('#updateErrorModal').on('hidden.bs.modal', function () { $(this).remove(); });
+}
 
 function showHistoryVersionGuide() {
     if ($('#historyVersionGuideModal').length) return;
