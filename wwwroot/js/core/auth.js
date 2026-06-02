@@ -1,6 +1,20 @@
 // js/core/auth.js
 // 授权管理、版本检查、激活模态框
 
+// 缓存远程引导图地址，供 showHistoryVersionGuide 等无 API 响应上下文的函数使用
+let cachedGuideImage = '';
+
+/**
+ * 生成引导图 HTML（来自 update.json 的 guide_image），为空时不显示
+ * @param {string} guideImage - 引导图 URL
+ */
+function buildGuideImageHtml(guideImage) {
+    if (guideImage && guideImage.trim()) {
+        return `<img src="${escapeHtml(guideImage)}" alt="下载操作提示" class="update-guide-img w-100">`;
+    }
+    return '';
+}
+
 function checkLicenseOnly() {
     apiFetch('/api/check_license')
         .then(res => res.json())
@@ -22,8 +36,10 @@ function checkVersionAndProceed() {
         .then(response => {
             const minRequired = response.data.min_required;
             const updateUrl = response.data.update_url;
+            const guideImage = response.data.guide_image || '';
+            cachedGuideImage = guideImage;
             if (compareVersions(FRONTEND_VERSION, minRequired) < 0) {
-                showForceUpdateModal(updateUrl, response.data.changelog);
+                showForceUpdateModal(updateUrl, response.data.changelog, guideImage);
                 disableAllTools();
             } else {
                 checkLicenseOnly();
@@ -35,7 +51,7 @@ function checkVersionAndProceed() {
         });
 }
 
-function showForceUpdateModal(updateUrl, changelog) {
+function showForceUpdateModal(updateUrl, changelog, guideImage) {
     if ($('#forceUpdateModal').length) $('#forceUpdateModal').remove();
     const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
     const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
@@ -57,7 +73,7 @@ function showForceUpdateModal(updateUrl, changelog) {
                         <div><span class="version-label">需要更新</span><span class="version-value" style="color:#dc3545">立即下载</span></div>
                     </div>
                     ${changelogHtml}
-                    <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img w-100">
+                    ${buildGuideImageHtml(guideImage)}
                     <div class="update-link-box">
                         <input type="text" id="forceReleasesUrlInput" value="${releasesUrl}" readonly>
                         <button class="btn btn-sm btn-outline-secondary" type="button" id="forceCopyReleasesBtn" title="复制链接">
@@ -103,7 +119,7 @@ function fallbackCopyText(text) {
     document.body.removeChild(textarea);
 }
 
-function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
+function showRecommendUpdateModal(updateUrl, changelog, latestVersion, guideImage) {
     if ($('#recommendUpdateModal').length) return;
     const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
     const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
@@ -126,7 +142,7 @@ function showRecommendUpdateModal(updateUrl, changelog, latestVersion) {
                             <div><span class="version-label">最新版本</span><span class="version-value" style="color:#0ea5e9">${escapeHtml(latestVersion)}</span></div>
                         </div>
                         ${changelogHtml}
-                        <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img w-100">
+                        ${buildGuideImageHtml(guideImage)}
                         <div class="update-link-box">
                             <input type="text" id="recommendReleasesUrlInput" value="${releasesUrl}" readonly>
                             <button class="btn btn-sm btn-outline-secondary" type="button" id="recommendCopyReleasesBtn" title="复制链接">
@@ -229,13 +245,15 @@ $('#checkUpdateBtn').on('click', function () {
             const minRequired = response.data.min_required;
             const updateUrl = response.data.update_url;
             const changelog = response.data.changelog || '';
+            const guideImage = response.data.guide_image || '';
+            cachedGuideImage = guideImage;
             if (compareVersions(FRONTEND_VERSION, latestVersion) < 0) {
                 const isForce = compareVersions(FRONTEND_VERSION, minRequired) < 0;
                 if (isForce) {
-                    showForceUpdateModal(updateUrl, changelog);
+                    showForceUpdateModal(updateUrl, changelog, guideImage);
                     disableAllTools();
                 } else {
-                    showRecommendUpdateModal(updateUrl, changelog, latestVersion);
+                    showRecommendUpdateModal(updateUrl, changelog, latestVersion, guideImage);
                 }
             } else {
                 showLatestVersionModal(FRONTEND_VERSION);
@@ -321,7 +339,7 @@ function showHistoryVersionGuide() {
                     <div class="update-icon icon-warning"><i class="bi bi-clock-history"></i></div>
                     <div class="update-title">历史版本下载</div>
                     <div class="update-subtitle">请在已打开的页面中粘贴链接，查看历史版本</div>
-                    <img src="img/ScreenShot_2026-06-02_092621_414.png" alt="下载操作提示" class="update-guide-img w-100">
+                    ${buildGuideImageHtml(cachedGuideImage)}
                     <div class="update-actions">
                         <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">知道了</button>
                     </div>

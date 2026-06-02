@@ -47,7 +47,8 @@ def get_version():
             'current': APP_VERSION,
             'latest_version': info.get('version'),
             'min_required': info.get('min_required', info.get('version')),
-            'changelog': info.get('changelog', '')
+            'changelog': info.get('changelog', ''),
+            'guide_image': info.get('guide_image', '')
         })
     else:
         return jsonify({
