@@ -36,6 +36,8 @@ function initLatLngMap() {
 function updateCoordinateDisplay(lng, lat) {
     $("#current-coordinate").text(lat.toFixed(6) + ", " + lng.toFixed(6));
     $("#coordinate-input").val(lat.toFixed(6) + ", " + lng.toFixed(6));
+    // 同步到 localStorage，供 GPS 指令生成等工具读取
+    try { localStorage.setItem("yuweitek_last_latlng", lat.toFixed(6) + "," + lng.toFixed(6)); } catch (e) {}
 }
 
 function moveMapToLocation(lng, lat) {
@@ -309,7 +311,23 @@ $(document).ready(function () {
         $(this).html('<i class="fas fa-check"></i> 已复制');
         setTimeout(() => $(this).html('<i class="fas fa-copy"></i> 复制'), 2000);
     });
-    $("#locate-btn").click(function () { moveMapToLocation(116.4074, 39.9042); showToast("已定位到默认位置"); });
+    $("#locate-btn").click(function () {
+        if (!navigator.geolocation) {
+            showToast("浏览器不支持定位");
+            return;
+        }
+        showToast("正在获取位置...");
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+            moveMapToLocation(lng, lat);
+            updateCoordinateDisplay(lng, lat);
+            reverseGeocode(lng, lat);
+            showToast("已定位到当前位置");
+        }, function (err) {
+            showToast("定位失败: " + err.message);
+        }, { enableHighAccuracy: true, timeout: 10000 });
+    });
     $("#download-sample-btn").click(downloadSampleFile);
     $("#upload-btn").click(function () {
         const fileInput = document.getElementById('batch-file');

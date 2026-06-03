@@ -16,7 +16,7 @@
     <script src="./lib/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script src="./lib/bootstrap/dist/js/bootstrap.bundle.min.js" type="text/javascript"></script>
     <script src="./lib/axios@1.7.9.min.js" type="text/javascript"></script>
-    <script src="/lib/clipboard@2.0.11.min.js" type="text/javascript"></script>
+    <script src="./lib/clipboard@2.0.11.min.js" type="text/javascript"></script>
     <script src="./lib/sortable.min.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" type="text/javascript"></script>
 </head>
@@ -83,6 +83,9 @@
                         <a class="sidebar-flyout-item" menu-type="H264Convert" href="#H264Convert">
                             <i class="bi bi-film"></i>H264转MP4工具
                         </a>
+                        <a class="sidebar-flyout-item" menu-type="TimeCalc" href="#TimeCalc">
+                            <i class="bi bi-clock-history"></i>时间计算器
+                        </a>
                     </div>
                 </div>
                 <!-- 终端命令调试工具 -->
@@ -103,6 +106,9 @@
                         <a class="sidebar-flyout-item" menu-type="RareCharTool" href="#RareCharTool">
                             <i class="bi bi-vector-pen"></i>生僻字指令生成器
                         </a>
+                        <a class="sidebar-flyout-item" menu-type="KmNmiConvert" href="#KmNmiConvert">
+                            <i class="bi bi-arrow-left-right"></i>公里海里转换指令生成工具
+                        </a>
                     </div>
                 </div>
                 <!-- 其他工具 -->
@@ -114,12 +120,14 @@
                     </div>
                     <div class="sidebar-flyout">
                         <div class="sidebar-flyout-title">其他工具(友情链接)</div>
+                        <!--
                         <a class="sidebar-flyout-item" href="https://www.shijianjisuanqi.com/" target="_blank">
                             <i class="bi bi-clock"></i>时间计算工具
                         </a>
                         <a class="sidebar-flyout-item" href="https://convertlive.com/zh/u/%E8%BD%AC%E6%8D%A2/%E5%85%AC%E9%87%8C/%E8%87%AA/%E6%B5%B7%E9%87%8C" target="_blank">
                             <i class="bi bi-arrow-left-right"></i>海里公里转换工具
                         </a>
+                        -->
                         <a class="sidebar-flyout-item" href="https://tool.lu/timestamp/" target="_blank">
                             <i class="bi bi-clock-history"></i>时间戳转换工具
                         </a>
@@ -198,6 +206,7 @@
                                     <a class="list-group-item list-group-item-action" menu-type="DataTools" href="#DataTools"><i class="bi bi-file-spreadsheet me-2"></i>数据字段处理工具V5.2</a>
                                     <a class="list-group-item list-group-item-action" menu-type="LatLngQuery" href="#LatLngQuery"><i class="bi bi-map me-2"></i>经纬度坐标查询工具</a>
                                     <a class="list-group-item list-group-item-action" menu-type="H264Convert" href="#H264Convert"><i class="bi bi-film me-2"></i>H264转MP4工具</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="TimeCalc" href="#TimeCalc"><i class="bi bi-clock-history me-2"></i>时间计算器</a>
                                 </div>
                             </div>
                         </div>
@@ -213,6 +222,7 @@
                                     <a class="list-group-item list-group-item-action" href="http://yuweicloud.com:8990/server/mainIndex.action;cm=E73E06307A2BD318BFB317ADEF280CCC" target="_blank"><i class="bi bi-cloud me-2"></i>云Monitor</a>
                                     <a class="list-group-item list-group-item-action" menu-type="AdbTool" href="#AdbTool"><i class="bi bi-usb-plug me-2"></i>ADB命令调试工具</a>
                                     <a class="list-group-item list-group-item-action" menu-type="RareCharTool" href="#RareCharTool"><i class="bi bi-vector-pen me-2"></i>生僻字指令生成器</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="KmNmiConvert" href="#KmNmiConvert"><i class="bi bi-arrow-left-right me-2"></i>公里海里转换指令生成工具</a>
                                 </div>
                             </div>
                         </div>
@@ -225,8 +235,10 @@
                         <div id="collapseOtherTools" class="accordion-collapse collapse" aria-labelledby="headingOtherTools">
                             <div class="accordion-body p-0">
                                 <div class="list-group list-group-flush">
+                                    <!--
                                     <a class="list-group-item list-group-item-action" href="https://www.shijianjisuanqi.com/" target="_blank"><i class="bi bi-clock me-2"></i>时间计算工具</a>
                                     <a class="list-group-item list-group-item-action" href="https://convertlive.com/zh/u/%E8%BD%AC%E6%8D%A2/%E5%85%AC%E9%87%8C/%E8%87%AA/%E6%B5%B7%E9%87%8C" target="_blank"><i class="bi bi-arrow-left-right me-2"></i>海里公里转换工具</a>
+                                    -->
                                     <a class="list-group-item list-group-item-action" href="https://tool.lu/timestamp/" target="_blank"><i class="bi bi-clock-history me-2"></i>时间戳转换工具</a>
                                 </div>
                             </div>
@@ -1207,6 +1219,452 @@
         </div>
         <!-- H264转MP4工具 end -->
 
+        <!-- 公里海里转换工具 start -->
+        <div class="container hide" id="KmNmiConvert">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-arrow-left-right"></i> 公里海里转换指令生成工具</h2>
+                <p class="text-muted">公里 (km) ↔ 海里 (nmi) 双向实时换算 · GPS 指令生成</p>
+            </div>
+
+            <!-- 双向转换卡片 -->
+            <div class="card km-nmi-card mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center g-3">
+                        <!-- 公里输入 -->
+                        <div class="col-md-5">
+                            <div class="km-nmi-input-group">
+                                <div class="km-nmi-label">
+                                    <span class="km-nmi-unit-badge bg-primary-subtle text-primary">km</span>
+                                    <span class="fw-semibold">公里</span>
+                                </div>
+                                <div class="input-group">
+                                    <input type="number" class="form-control km-nmi-input" id="kmInput"
+                                        placeholder="输入公里值" step="any" autocomplete="off">
+                                    <button class="btn btn-outline-secondary km-nmi-copy-btn" type="button"
+                                        data-target="#kmInput" title="复制">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 交换按钮 -->
+                        <div class="col-md-2 text-center">
+                            <button class="btn btn-primary km-nmi-swap-btn" id="swapKmNmi" title="交换单位">
+                                <i class="bi bi-arrow-left-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- 海里输入 -->
+                        <div class="col-md-5">
+                            <div class="km-nmi-input-group">
+                                <div class="km-nmi-label">
+                                    <span class="km-nmi-unit-badge bg-success-subtle text-success">nmi</span>
+                                    <span class="fw-semibold">海里</span>
+                                </div>
+                                <div class="input-group">
+                                    <input type="number" class="form-control km-nmi-input" id="nmiInput"
+                                        placeholder="输入海里值" step="any" autocomplete="off">
+                                    <button class="btn btn-outline-secondary km-nmi-copy-btn" type="button"
+                                        data-target="#nmiInput" title="复制">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快捷按钮 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="km-nmi-quick-section">
+                                <span class="km-nmi-quick-title"><i class="bi bi-lightning-fill text-warning me-1"></i>常用公里值</span>
+                                <div class="km-nmi-quick-btns">
+                                    <button class="btn btn-outline-primary btn-sm km-nmi-quick-btn" data-value="1" data-dir="km">1</button>
+                                    <button class="btn btn-outline-primary btn-sm km-nmi-quick-btn" data-value="5" data-dir="km">5</button>
+                                    <button class="btn btn-outline-primary btn-sm km-nmi-quick-btn" data-value="10" data-dir="km">10</button>
+                                    <button class="btn btn-outline-primary btn-sm km-nmi-quick-btn" data-value="50" data-dir="km">50</button>
+                                    <button class="btn btn-outline-primary btn-sm km-nmi-quick-btn" data-value="100" data-dir="km">100</button>
+                                    <button class="btn btn-outline-primary btn-sm km-nmi-quick-btn" data-value="1852" data-dir="km">1852</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="km-nmi-quick-section">
+                                <span class="km-nmi-quick-title"><i class="bi bi-lightning-fill text-warning me-1"></i>常用海里值</span>
+                                <div class="km-nmi-quick-btns">
+                                    <button class="btn btn-outline-success btn-sm km-nmi-quick-btn" data-value="1" data-dir="nmi">1</button>
+                                    <button class="btn btn-outline-success btn-sm km-nmi-quick-btn" data-value="5" data-dir="nmi">5</button>
+                                    <button class="btn btn-outline-success btn-sm km-nmi-quick-btn" data-value="10" data-dir="nmi">10</button>
+                                    <button class="btn btn-outline-success btn-sm km-nmi-quick-btn" data-value="50" data-dir="nmi">50</button>
+                                    <button class="btn btn-outline-success btn-sm km-nmi-quick-btn" data-value="100" data-dir="nmi">100</button>
+                                    <button class="btn btn-outline-success btn-sm km-nmi-quick-btn" data-value="1000" data-dir="nmi">1000</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 精度设置 -->
+            <div class="card mb-4">
+                <div class="card-body d-flex align-items-center gap-3 flex-wrap">
+                    <span class="fw-semibold"><i class="bi bi-sliders me-1"></i>小数精度</span>
+                    <input type="range" class="form-range km-nmi-precision-range" id="precisionRange"
+                        min="0" max="10" value="6" style="max-width: 260px;">
+                    <span class="badge bg-secondary" id="precisionValue">6</span> 位
+                    <button class="btn btn-outline-danger btn-sm ms-auto" id="clearKmNmi">
+                        <i class="bi bi-x-circle me-1"></i>清空
+                    </button>
+                </div>
+            </div>
+
+            <!-- 公式说明 + 参考表 -->
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <div class="card h-100">
+                        <div class="card-header"><i class="bi bi-info-circle me-2"></i>换算公式</div>
+                        <div class="card-body">
+                            <div class="km-nmi-formula">
+                                <div class="km-nmi-formula-row">
+                                    <span class="km-nmi-formula-label">公里 → 海里</span>
+                                    <code>海里 = 公里 × 0.5399568</code>
+                                </div>
+                                <div class="km-nmi-formula-row">
+                                    <span class="km-nmi-formula-label">海里 → 公里</span>
+                                    <code>公里 = 海里 × 1.852</code>
+                                </div>
+                                <hr>
+                                <p class="text-muted small mb-0">
+                                    1 海里 (nmi) = 1.852 公里 (km)，为国际标准定义。<br>
+                                    1 公里 ≈ 0.53996 海里。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card h-100">
+                        <div class="card-header"><i class="bi bi-table me-2"></i>常用参考值</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm table-hover mb-0 km-nmi-ref-table">
+                                <thead class="table-light">
+                                    <tr><th>公里 (km)</th><th>海里 (nmi)</th><th class="text-end">海里 (nmi)</th><th class="text-end">公里 (km)</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1</td><td>0.54</td><td class="text-end">1</td><td class="text-end">1.85</td></tr>
+                                    <tr><td>5</td><td>2.70</td><td class="text-end">5</td><td class="text-end">9.26</td></tr>
+                                    <tr><td>10</td><td>5.40</td><td class="text-end">10</td><td class="text-end">18.52</td></tr>
+                                    <tr><td>50</td><td>27.00</td><td class="text-end">50</td><td class="text-end">92.60</td></tr>
+                                    <tr><td>100</td><td>54.00</td><td class="text-end">100</td><td class="text-end">185.20</td></tr>
+                                    <tr><td>1852</td><td>1000.00</td><td class="text-end">1000</td><td class="text-end">1852.00</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPS 指令生成 -->
+            <div class="card km-nmi-card mt-4 mb-4">
+                <div class="card-header"><i class="bi bi-broadcast-pin me-2"></i>GPS 指令生成（*#27*）</div>
+                <div class="card-body">
+                    <!-- 经纬度 -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">经度 (jjj.jjjjjj)</label>
+                            <input type="number" class="form-control" id="gpsLng" step="0.000001" placeholder="114.031245" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">纬度 (www.wwwwww)</label>
+                            <input type="number" class="form-control" id="gpsLat" step="0.000001" placeholder="22.012453" autocomplete="off">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label invisible">获取</label>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-primary" id="gpsGetLatLng" title="获取经纬度工具最近一次查询的坐标">
+                                    <i class="bi bi-geo-alt me-1"></i>获取坐标
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Flag / 模式 / 卫星数 / 方向 -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Flag</label>
+                            <select class="form-select" id="gpsFlag">
+                                <option value="0" selected>0 - 东经北纬</option>
+                                <option value="1">1 - 西经北纬</option>
+                                <option value="2">2 - 东经南纬</option>
+                                <option value="3">3 - 西经南纬</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">模式 (mode)</label>
+                            <select class="form-select" id="gpsMode">
+                                <option value="3" selected>3 - 3D定位</option>
+                                <option value="2">2 - 2D定位</option>
+                                <option value="0">0 - 不定位</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">卫星数</label>
+                            <input type="number" class="form-control" id="gpsSatellite" value="13" min="0" max="99" autocomplete="off">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">运动方向 (°)</label>
+                            <input type="number" class="form-control" id="gpsHeading" value="90.01" step="0.01" min="0" max="360" autocomplete="off">
+                        </div>
+                    </div>
+                    <!-- 速度 -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label">速度（公里/小时）</label>
+                            <input type="number" class="form-control" id="gpsSpeedKm" step="0.01" placeholder="输入 km/h" autocomplete="off">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end justify-content-center">
+                            <span class="fw-bold text-muted">=</span>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">速度（海里/小时）</label>
+                            <input type="number" class="form-control" id="gpsSpeedNmi" step="0.01" placeholder="自动换算 nmi/h" readonly>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <span class="text-muted small">1 km/h ≈ 0.54 nmi/h</span>
+                        </div>
+                    </div>
+                    <!-- 生成按钮 -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-primary" id="gpsGenerateBtn">
+                            <i class="bi bi-lightning me-1"></i>生成指令
+                        </button>
+                        <button class="btn btn-outline-secondary" id="gpsClearBtn">
+                            <i class="bi bi-x-circle me-1"></i>清空
+                        </button>
+                    </div>
+                    <!-- 指令输出 -->
+                    <div class="input-group">
+                        <input type="text" class="form-control gps-cmd-output" id="gpsCmdOutput"
+                            readonly placeholder="生成的指令将显示在这里...">
+                        <button class="btn btn-outline-secondary gps-cmd-copy" id="gpsCmdCopy" title="复制指令">
+                            <i class="bi bi-clipboard"></i> 复制指令
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 公里海里转换工具 end -->
+
+        <!-- 时间计算器 start -->
+        <div class="container hide" id="TimeCalc">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-clock-history"></i> 时间计算器</h2>
+                <p class="text-muted">日期/时间差计算 · 日期推算 · 时间单位转换</p>
+            </div>
+
+            <!-- ① 距离此刻时间计算 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-hourglass-split me-2"></i>距离此刻时间计算</div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">参考时间</label>
+                            <input type="datetime-local" class="form-control" id="tcRefTime" step="1">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" id="tcRefTimeBtn">计算</button>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label invisible">结果</label>
+                            <div class="tc-result-box" id="tcRefTimeResult">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ② 日期间隔计算器 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-calendar-range me-2"></i>日期间隔计算器</div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">开始日期</label>
+                            <input type="date" class="form-control" id="tcDateStart">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">结束日期</label>
+                            <input type="date" class="form-control" id="tcDateEnd">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" id="tcDateDiffBtn">计算</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label invisible">结果</label>
+                            <div class="tc-result-box" id="tcDateDiffResult">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ 时间间隔计算器 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-stopwatch me-2"></i>时间间隔计算器</div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">开始时间</label>
+                            <input type="datetime-local" class="form-control" id="tcTimeStart" step="1">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">结束时间</label>
+                            <input type="datetime-local" class="form-control" id="tcTimeEnd" step="1">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" id="tcTimeDiffBtn">计算</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label invisible">结果</label>
+                            <div class="tc-result-box" id="tcTimeDiffResult">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ④ 日期推算计算器 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-calendar-plus me-2"></i>日期推算计算器</div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">参考日期</label>
+                            <input type="date" class="form-control" id="tcDateRef">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">日期差（天）</label>
+                            <input type="number" class="form-control" id="tcDateOffset" value="100">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100" id="tcDateOffsetBtn">计算</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label invisible">结果</label>
+                            <div class="tc-result-box" id="tcDateOffsetResult">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⑤ 时间推算计算器 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-clock me-2"></i>时间推算计算器</div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">参考时间</label>
+                            <input type="datetime-local" class="form-control" id="tcTimeRef" step="1">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">时间差</label>
+                            <input type="number" class="form-control" id="tcTimeOffset" value="100">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">单位</label>
+                            <select class="form-select" id="tcTimeOffsetUnit">
+                                <option value="ms">毫秒</option>
+                                <option value="s">秒</option>
+                                <option value="min">分</option>
+                                <option value="h">时</option>
+                                <option value="d" selected>天</option>
+                                <option value="w">周</option>
+                                <option value="m">月(30天)</option>
+                                <option value="y">年(365天)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button class="btn btn-primary w-100" id="tcTimeOffsetBtn">计算</button>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label invisible">结果</label>
+                            <div class="tc-result-box" id="tcTimeOffsetResult">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⑥ 时间单位转换 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-arrow-repeat me-2"></i>时间单位转换</div>
+                <div class="card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-3">
+                            <input type="number" class="form-control tc-unit-input" id="tcUnitFrom" value="1" step="any">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select tc-unit-select" id="tcUnitFromType">
+                                <option value="ms">毫秒</option>
+                                <option value="s">秒</option>
+                                <option value="min">分</option>
+                                <option value="h">时</option>
+                                <option value="d">天</option>
+                                <option value="w">周</option>
+                                <option value="m">月(30天)</option>
+                                <option value="y" selected>年(365天)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <button class="btn btn-outline-primary tc-swap-unit-btn" id="tcSwapUnit" title="交换单位">
+                                <i class="bi bi-arrow-left-right"></i>
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" class="form-control tc-unit-input" id="tcUnitTo" step="any" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select tc-unit-select" id="tcUnitToType">
+                                <option value="ms">毫秒</option>
+                                <option value="s">秒</option>
+                                <option value="min">分</option>
+                                <option value="h">时</option>
+                                <option value="d" selected>天</option>
+                                <option value="w">周</option>
+                                <option value="m">月(30天)</option>
+                                <option value="y">年(365天)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ⑦ 常用时间单位换算 -->
+            <div class="card mb-3">
+                <div class="card-header"><i class="bi bi-table me-2"></i>常用时间单位换算</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0 tc-ref-table">
+                            <tbody>
+                                <tr><td>1分 = 60秒</td><td>1小时 = 60分钟 = 3600秒</td></tr>
+                                <tr><td>1日 = 24小时 = 1440分钟</td><td>1日 = 86400秒</td></tr>
+                                <tr><td>1年 = 12月 = 365天</td><td>一世纪 = 100年</td></tr>
+                                <tr><td>一甲子 = 60年</td><td>一世 = 30年</td></tr>
+                                <tr><td>一代 = 25~30年</td><td>一纪 = 12年</td></tr>
+                                <tr><td>一旬 = 10天（按日）</td><td>一旬 = 10年（按年）</td></tr>
+                                <tr><td>一时辰 = 2小时</td><td>一须臾 = 48分钟</td></tr>
+                                <tr><td>一炷香 = 30分钟</td><td>一盏茶 = 10分钟</td></tr>
+                                <tr><td>一罗刹 = 144秒</td><td>一息 = 21.6秒</td></tr>
+                                <tr><td>一弹指 = 7.2秒</td><td>一瞬间 = 0.36秒</td></tr>
+                                <tr><td>一刹那 = 0.018秒</td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 时间计算器 end -->
+
         <!-- ADB工具 start -->
         <div class="container hide" id="AdbTool">
             <div class="tool-header mb-4">
@@ -1551,22 +2009,24 @@
     <!-- 激活模态框 end -->
 
     <!-- 核心模块（必须按顺序） -->
-    <script src="/js/core/config.js"></script>
-    <script src="/js/core/utils.js"></script>
-    <script src="/js/core/auth.js"></script>
+    <script src="./js/core/config.js"></script>
+    <script src="./js/core/utils.js"></script>
+    <script src="./js/core/auth.js"></script>
 
     <!-- 功能模块 -->
-    <script src="/js/modules/hex-convert.js"></script>
-    <script src="/js/modules/data-processor.js"></script>
-    <script src="/js/modules/jt-parse.js"></script>
-    <script src="/js/modules/latlng-query.js"></script>
-    <script src="/js/modules/video-convert.js"></script>
-    <script src="/js/modules/adb-tools.js"></script>
-    <script src="/js/modules/ai-assistant.js"></script>
-    <script src="/js/modules/rare-char.js"></script>
+    <script src="./js/modules/hex-convert.js"></script>
+    <script src="./js/modules/data-processor.js"></script>
+    <script src="./js/modules/jt-parse.js"></script>
+    <script src="./js/modules/latlng-query.js"></script>
+    <script src="./js/modules/video-convert.js"></script>
+    <script src="./js/modules/adb-tools.js"></script>
+    <script src="./js/modules/ai-assistant.js"></script>
+    <script src="./js/modules/rare-char.js"></script>
+    <script src="./js/modules/km-nmi-convert.js"></script>
+    <script src="./js/modules/time-calc.js"></script>
 
     <!-- 入口文件（最后加载） -->
-    <script src="/js/site.js"></script>
+    <script src="./js/site.js"></script>
 </body>
 
 </html>

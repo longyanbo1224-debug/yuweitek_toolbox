@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C \"/e/Users/yw/Desktop/YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局\\)\" add wwwroot/js/core/auth.js wwwroot/flask/adb/routes/license.py wwwroot/index.html wwwroot/CHANGELOG.md)",
+      "Bash(git -C \"/e/Users/yw/Desktop/YUWEITEK工具箱 Agent v1.3.1（Hex支持批量转换 inno支持中文显示 修改更新程序跳转选择节点版本下载 优化移动端按钮布局\\)\" status)",
+      "Bash(git config *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'feat: 更新弹窗引导图改为 update.json 动态加载，移除备案信息显示 *)",
+      "Bash(git push *)"
+    ]
+  }
+}

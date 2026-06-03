@@ -36,7 +36,9 @@ $(document).ready(function () {
         'LatLngQuery': '经纬度坐标查询工具 地图',
         'H264Convert': 'H264转MP4工具 视频转换',
         'AdbTool': 'ADB命令调试工具 安卓调试',
-        'RareCharTool': '生僻字指令生成器 点阵'
+        'RareCharTool': '生僻字指令生成器 点阵',
+        'KmNmiConvert': '公里海里转换指令生成工具 海里 公里 km nmi 航海 GPS 指令',
+        'TimeCalc': '时间计算器 日期 时间差 推算 单位转换'
     };
 
     // 分组映射
@@ -44,7 +46,9 @@ $(document).ready(function () {
         'JT808Parse': '交通解析', 'JT809Parse': '交通解析', 'JT1078Parse': '交通解析',
         'JT19056Parse': '交通解析', 'JT905Parse': '交通解析', 'JTSBParse': '交通解析',
         'HexParse': '数据处理', 'DataTools': '数据处理', 'LatLngQuery': '数据处理', 'H264Convert': '数据处理',
-        'AdbTool': '终端调试', 'RareCharTool': '终端调试'
+        'AdbTool': '终端调试', 'RareCharTool': '终端调试',
+        'KmNmiConvert': '终端调试',
+        'TimeCalc': '数据处理'
     };
 
     // ---------- 3. 工具切换函数 ----------

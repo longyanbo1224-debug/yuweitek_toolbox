@@ -8,7 +8,9 @@
       "Bash(git restore *)",
       "Bash(xxd)",
       "Bash(python -c ' *)",
-      "Bash(python -)"
+      "Bash(python -)",
+      "Bash(git rm *)",
+      "Bash(git reset *)"
     ]
   }
 }

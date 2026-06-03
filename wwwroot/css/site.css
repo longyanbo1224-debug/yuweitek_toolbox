@@ -2680,3 +2680,539 @@ footer .container-fluid {
         margin-left: 20px;
     }
 }
+
+/* ==================== 公里海里转换工具 ==================== */
+
+/* 卡片背景 */
+#KmNmiConvert .km-nmi-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-body) 100%);
+    border: 1px solid var(--border-color);
+}
+
+/* 输入组 */
+#KmNmiConvert .km-nmi-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+#KmNmiConvert .km-nmi-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#KmNmiConvert .km-nmi-unit-badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+#KmNmiConvert .km-nmi-input {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#KmNmiConvert .km-nmi-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+}
+
+#KmNmiConvert .km-nmi-input::placeholder {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+/* 交换按钮 */
+#KmNmiConvert .km-nmi-swap-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.25);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#KmNmiConvert .km-nmi-swap-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.35);
+}
+
+#KmNmiConvert .km-nmi-swap-btn i {
+    transition: transform 0.3s ease;
+}
+
+/* 复制按钮 */
+#KmNmiConvert .km-nmi-copy-btn {
+    border-radius: 0 10px 10px 0;
+    border: 2px solid var(--border-color);
+    border-left: 0;
+    color: var(--text-secondary);
+}
+
+#KmNmiConvert .km-nmi-copy-btn:hover {
+    color: #0d6efd;
+}
+
+/* 快捷按钮区 */
+#KmNmiConvert .km-nmi-quick-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#KmNmiConvert .km-nmi-quick-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+#KmNmiConvert .km-nmi-quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+#KmNmiConvert .km-nmi-quick-btn {
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    min-width: 48px;
+    transition: all 0.15s;
+}
+
+#KmNmiConvert .km-nmi-quick-btn:active {
+    transform: scale(0.95);
+}
+
+/* 精度滑块 */
+#KmNmiConvert .km-nmi-precision-range {
+    cursor: pointer;
+}
+
+/* 公式说明 */
+#KmNmiConvert .km-nmi-formula {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+#KmNmiConvert .km-nmi-formula-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+#KmNmiConvert .km-nmi-formula-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 80px;
+}
+
+#KmNmiConvert .km-nmi-formula-row code {
+    font-size: 0.9rem;
+    background: var(--bg-code);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    color: #d63384;
+}
+
+/* 参考表 */
+#KmNmiConvert .km-nmi-ref-table th,
+#KmNmiConvert .km-nmi-ref-table td {
+    padding: 0.5rem 1rem;
+    vertical-align: middle;
+}
+
+#KmNmiConvert .km-nmi-ref-table thead th {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+#KmNmiConvert .km-nmi-ref-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+/* 移动端适配 */
+@media (max-width: 767.98px) {
+    #KmNmiConvert .km-nmi-input {
+        font-size: 1.3rem;
+        padding: 0.5rem;
+    }
+
+    #KmNmiConvert .km-nmi-swap-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+
+    #KmNmiConvert .km-nmi-formula-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+
+    #KmNmiConvert .km-nmi-ref-table {
+        font-size: 0.85rem;
+    }
+}
+
+/* ==================== 深色模式 - 公里海里转换工具 ==================== */
+
+body.theme-dark #KmNmiConvert .km-nmi-card {
+    background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+    border-color: #2a2a4a;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-input {
+    background-color: #0f3460;
+    border-color: #3a3a5c;
+    color: #e9ecef;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-input:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.15);
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-input::placeholder {
+    color: #6c757d;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-copy-btn {
+    border-color: #3a3a5c;
+    color: #8a8a9a;
+    background-color: transparent;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-copy-btn:hover {
+    color: #4dabf7;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-formula-row code {
+    background: #1e1e3a;
+    color: #f783ac;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-ref-table thead th {
+    background-color: #1e1e3a;
+    border-bottom-color: #3a3a5c;
+    color: #8a8a9a;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-ref-table tbody td {
+    border-color: #2a2a4a;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-unit-badge.bg-primary-subtle {
+    background-color: rgba(13, 110, 253, 0.2) !important;
+}
+
+body.theme-dark #KmNmiConvert .km-nmi-unit-badge.bg-success-subtle {
+    background-color: rgba(25, 135, 84, 0.2) !important;
+}
+
+/* GPS 指令输出框 */
+#KmNmiConvert .gps-cmd-output {
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: var(--bg-code);
+    color: #d63384;
+    border: 2px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+}
+
+#KmNmiConvert .gps-cmd-output:focus {
+    box-shadow: none;
+    border-color: var(--border-color);
+}
+
+body.theme-dark #KmNmiConvert .gps-cmd-output {
+    background: #1e1e3a;
+    color: #f783ac;
+    border-color: #3a3a5c;
+}
+
+/* GPS 无效输入提示 */
+#KmNmiConvert .form-control.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.15rem rgba(220,53,69,0.15);
+}
+
+/* ==================== 时间计算器 ==================== */
+
+/* 卡片 */
+#TimeCalc .card {
+    border: 1px solid var(--border-light);
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s, transform 0.2s;
+    overflow: hidden;
+}
+
+#TimeCalc .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+}
+
+/* 卡片头部 - 左侧彩色竖条 */
+#TimeCalc .card-header {
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: var(--bg-code);
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-light);
+    border-left: 4px solid #0d6efd;
+    padding: 0.7rem 1rem;
+    letter-spacing: 0.02em;
+}
+
+#TimeCalc .card-body {
+    padding: 1.2rem 1.4rem;
+}
+
+/* 输入框统一 */
+#TimeCalc .form-control,
+#TimeCalc .form-select {
+    border-radius: 10px;
+    border: 1.5px solid var(--border-color);
+    padding: 0.5rem 0.8rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#TimeCalc .form-control:focus,
+#TimeCalc .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.1);
+}
+
+/* label */
+#TimeCalc .form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* 计算按钮 */
+#TimeCalc .btn-primary {
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    box-shadow: 0 2px 6px rgba(13,110,253,0.2);
+    transition: all 0.2s;
+}
+
+#TimeCalc .btn-primary:hover {
+    box-shadow: 0 4px 12px rgba(13,110,253,0.3);
+    transform: translateY(-1px);
+}
+
+/* 结果展示框 */
+#TimeCalc .tc-result-box {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
+    border: 1.5px solid #b6d4fe;
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    color: #0a58ca;
+    letter-spacing: 0.01em;
+}
+
+/* 单位转换区 */
+#TimeCalc .tc-unit-input {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    padding: 0.6rem;
+}
+
+#TimeCalc .tc-unit-input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.12);
+}
+
+#TimeCalc .tc-unit-select {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* 交换单位按钮 */
+#TimeCalc .tc-swap-unit-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    border: 2px solid #0d6efd;
+    color: #0d6efd;
+    background: #fff;
+    transition: all 0.25s;
+}
+
+#TimeCalc .tc-swap-unit-btn:hover {
+    background: #0d6efd;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(13,110,253,0.3);
+}
+
+#TimeCalc .tc-swap-unit-btn i {
+    transition: transform 0.3s ease;
+}
+
+#TimeCalc .tc-swap-unit-btn:hover i {
+    transform: rotate(180deg);
+}
+
+/* 参考表 */
+#TimeCalc .tc-ref-table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#TimeCalc .tc-ref-table td {
+    padding: 0.6rem 1.2rem;
+    vertical-align: middle;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.9rem;
+}
+
+#TimeCalc .tc-ref-table tbody tr:nth-child(odd) {
+    background: rgba(13,110,253,0.02);
+}
+
+#TimeCalc .tc-ref-table tbody tr:hover {
+    background: rgba(13,110,253,0.06);
+}
+
+/* 移动端适配 */
+@media (max-width: 767.98px) {
+    #TimeCalc .card-body {
+        padding: 1rem;
+    }
+
+    #TimeCalc .tc-unit-input {
+        font-size: 1.2rem;
+    }
+
+    #TimeCalc .tc-result-box {
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    #TimeCalc .card-header {
+        font-size: 0.85rem;
+    }
+
+    #TimeCalc .tc-swap-unit-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+}
+
+/* ==================== 深色模式 - 时间计算器 ==================== */
+
+body.theme-dark #TimeCalc .card {
+    border-color: #2a2a4a;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+body.theme-dark #TimeCalc .card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+body.theme-dark #TimeCalc .card-header {
+    background: #1a1a30;
+    border-left-color: #4dabf7;
+    border-bottom-color: #2a2a4a;
+    color: #c0c0d0;
+}
+
+body.theme-dark #TimeCalc .form-control,
+body.theme-dark #TimeCalc .form-select {
+    background-color: #1e1e3a;
+    border-color: #3a3a5c;
+    color: #e0e0e8;
+}
+
+body.theme-dark #TimeCalc .form-control:focus,
+body.theme-dark #TimeCalc .form-select:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 3px rgba(77,171,247,0.15);
+    background-color: #22223a;
+}
+
+body.theme-dark #TimeCalc .tc-result-box {
+    background: linear-gradient(135deg, #1a2744 0%, #162038 100%);
+    border-color: #2a4a7a;
+    color: #74c0fc;
+}
+
+body.theme-dark #TimeCalc .tc-unit-input {
+    background-color: #1e1e3a;
+    border-color: #3a3a5c;
+    color: #e0e0e8;
+}
+
+body.theme-dark #TimeCalc .tc-unit-input:focus {
+    border-color: #4dabf7;
+    box-shadow: 0 0 0 3px rgba(77,171,247,0.15);
+}
+
+body.theme-dark #TimeCalc .tc-swap-unit-btn {
+    background: #1e1e3a;
+    border-color: #4dabf7;
+    color: #4dabf7;
+}
+
+body.theme-dark #TimeCalc .tc-swap-unit-btn:hover {
+    background: #4dabf7;
+    color: #1a1a2e;
+    box-shadow: 0 3px 10px rgba(77,171,247,0.3);
+}
+
+body.theme-dark #TimeCalc .tc-ref-table td {
+    border-bottom-color: #2a2a4a;
+    color: #c0c0d0;
+}
+
+body.theme-dark #TimeCalc .tc-ref-table tbody tr:nth-child(odd) {
+    background: rgba(77,171,247,0.04);
+}
+
+body.theme-dark #TimeCalc .tc-ref-table tbody tr:hover {
+    background: rgba(77,171,247,0.08);
+}
