@@ -127,7 +127,7 @@ def show_splash_screen(splash_ready_callback):
     # ---------- 文字 ----------
     canvas.create_text(cx, 175, text='YUWEITEK工具箱',
                        fill='#f1f5f9', font=('Microsoft YaHei UI', 18, 'bold'))
-    canvas.create_text(cx, 205, text='道路运输车辆卫星定位协议解析工具',
+    canvas.create_text(cx, 205, text='深圳市有为信息技术发展有限公司',
                        fill='#94a3b8', font=('Microsoft YaHei UI', 10))
 
     # ---------- 进度条 ----------
