@@ -46,8 +46,13 @@ $(document).ready(function () {
     $("#swapKmNmi").on("click", function () {
         var kmVal = $kmInput.val();
         var nmiVal = $nmiInput.val();
+        converting = true;
         $kmInput.val(nmiVal);
         $nmiInput.val(kmVal);
+        converting = false;
+        // 触发换算
+        if (nmiVal) $kmInput.trigger("input");
+        else if (kmVal) $nmiInput.trigger("input");
         // 添加旋转动画
         $(this).find("i").css("transform", "rotate(180deg)");
         setTimeout(function () {
@@ -64,9 +69,14 @@ $(document).ready(function () {
 
     function recalculate() {
         var kmVal = parseFloat($kmInput.val());
+        var nmiVal = parseFloat($nmiInput.val());
         if (!isNaN(kmVal)) {
             converting = true;
             $nmiInput.val((kmVal * KM_TO_NMI).toFixed(precision));
+            converting = false;
+        } else if (!isNaN(nmiVal)) {
+            converting = true;
+            $kmInput.val((nmiVal * NMI_TO_KM).toFixed(precision));
             converting = false;
         }
     }
@@ -153,35 +163,6 @@ $(document).ready(function () {
         }
     });
 
-    // 从经纬度坐标查询工具获取（从 localStorage 读取最近一次坐标）
-    $("#gpsGetLatLng").on("click", function () {
-        // 优先从 localStorage 读取，其次从 DOM 读取
-        var raw = "";
-        try { raw = localStorage.getItem("yuweitek_last_latlng") || ""; } catch (e) {}
-        if (!raw) {
-            raw = ($("#coordinate-input").val() || "").trim();
-        }
-        if (!raw) {
-            showToast("暂无坐标数据，请先使用经纬度坐标查询工具查询");
-            return;
-        }
-        // 格式: "纬度,经度" 或 "纬度, 经度"
-        var parts = raw.split(",");
-        if (parts.length >= 2) {
-            var lat = parseFloat(parts[0].trim());
-            var lng = parseFloat(parts[1].trim());
-            if (!isNaN(lat) && !isNaN(lng)) {
-                $("#gpsLat").val(lat.toFixed(6));
-                $("#gpsLng").val(lng.toFixed(6));
-                showToast("已获取坐标: " + lat.toFixed(6) + ", " + lng.toFixed(6));
-            } else {
-                showToast("经纬度格式无效");
-            }
-        } else {
-            showToast("经纬度格式无效");
-        }
-    });
-
     // 生成指令
     $("#gpsGenerateBtn").on("click", function () {
         var lng = parseFloat($("#gpsLng").val());
@@ -217,7 +198,7 @@ $(document).ready(function () {
         $("#gpsHeading").removeClass("is-invalid");
 
         if (isNaN(speedNmi)) {
-            showToast("请输入速度（km/h）");
+            showToast("请先输入速度（km/h）");
             $gpsSpeedKm.addClass("is-invalid");
             return;
         }
@@ -272,5 +253,190 @@ $(document).ready(function () {
 
     clipboardGps.on("error", function () {
         showToast("复制失败，请手动复制");
+    });
+
+    // ==================== 地图选点 ====================
+
+    var pickMap = null;
+    var pickMarker = null;
+    var pickLat = null;
+    var pickLng = null;
+    var pickTk = "485f0753096883fe9ddb2c1e2ffc49da";
+    var pickApiReady = false; // 天地图 API 是否已就绪
+
+    // 页面加载时立即开始加载天地图 API（与 latlng-query.js 并行，不重复加载）
+    (function preloadTiandituApi() {
+        if (typeof T !== 'undefined') { pickApiReady = true; return; }
+        if (document.querySelectorAll('script[src*="tianditu.gov.cn"]').length > 0) {
+            // 已有 script 标签（latlng-query.js 加载的），等它加载完
+            var wait = setInterval(function () {
+                if (typeof T !== 'undefined') { pickApiReady = true; clearInterval(wait); }
+            }, 100);
+            setTimeout(function () { clearInterval(wait); }, 15000);
+            return;
+        }
+        var s = document.createElement('script');
+        s.src = 'https://api.tianditu.gov.cn/api?v=4.0&tk=' + pickTk;
+        s.onload = function () { pickApiReady = true; };
+        s.onerror = function () { console.warn("天地图 API 预加载失败"); };
+        document.head.appendChild(s);
+    })();
+
+    // 等待天地图 API 就绪
+    function waitForTianditu(callback) {
+        if (typeof T !== 'undefined' || pickApiReady) return callback();
+        var check = setInterval(function () {
+            if (typeof T !== 'undefined' || pickApiReady) { clearInterval(check); callback(); }
+        }, 100);
+        setTimeout(function () { clearInterval(check); }, 15000);
+    }
+
+    // 向指定坐标添加/移动标记
+    function setPickMarker(lng, lat) {
+        pickLng = lng;
+        pickLat = lat;
+        var lnglat = new T.LngLat(lng, lat);
+        if (!pickMarker) {
+            pickMarker = new T.Marker(lnglat);
+            pickMap.addOverLay(pickMarker);
+        } else {
+            pickMarker.setLngLat(lnglat);
+        }
+        pickMarker.show();
+        $("#mapPickCoord").text(lat.toFixed(6) + ", " + lng.toFixed(6))
+            .removeClass("bg-secondary").addClass("bg-success text-white");
+        $("#mapPickConfirm").prop("disabled", false);
+    }
+
+    // 创建地图并初始化
+    function buildPickMap() {
+        var container = document.getElementById('mapPickContainer');
+        if (!container) return;
+
+        // 确保容器干净
+        container.innerHTML = '';
+        container.offsetWidth; // 强制 reflow
+
+        // 创建地图实例
+        pickMap = new T.Map(container);
+        pickMap.enableScrollWheelZoom();
+
+        // 默认中心：中国
+        pickMap.centerAndZoom(new T.LngLat(104.19, 35.86), 5);
+
+        // 等浏览器完成布局后，再 checkResize + 设定正确中心
+        setTimeout(function () {
+            if (!pickMap) return;
+            pickMap.checkResize();
+
+            var lat = parseFloat($("#gpsLat").val());
+            var lng = parseFloat($("#gpsLng").val());
+            // 输入框为空时，从 localStorage 读取上次坐标
+            if (isNaN(lat) || isNaN(lng)) {
+                try {
+                    var saved = localStorage.getItem("yuweitek_last_latlng") || "";
+                    if (saved) {
+                        var p = saved.split(",");
+                        if (p.length >= 2) { lat = parseFloat(p[0]); lng = parseFloat(p[1]); }
+                    }
+                } catch (e) {}
+            }
+            if (!isNaN(lat) && !isNaN(lng)) {
+                pickMap.centerAndZoom(new T.LngLat(lng, lat), 15);
+                setPickMarker(lng, lat);
+            } else {
+                pickLat = null;
+                pickLng = null;
+                $("#mapPickCoord").text("点击地图选择坐标").removeClass("bg-success text-white").addClass("bg-secondary");
+                $("#mapPickConfirm").prop("disabled", true);
+            }
+        }, 300);
+
+        // 天地图 API 点击事件
+        pickMap.addEventListener("click", function (e) {
+            if (e && e.lnglat) {
+                setPickMarker(e.lnglat.lng, e.lnglat.lat);
+            }
+        });
+    }
+
+    // 销毁地图
+    function destroyPickMap() {
+        pickMap = null;
+        pickMarker = null;
+        pickLat = null;
+        pickLng = null;
+        var container = document.getElementById('mapPickContainer');
+        if (container) container.innerHTML = '';
+    }
+
+    // 地址搜索（天地图地理编码）
+    function searchPickAddress(address) {
+        if (!address) { showToast("请输入地址"); return; }
+        if (!pickMap) { showToast("地图尚未加载完成"); return; }
+        var params = { keyWord: address };
+        var ds = encodeURIComponent(JSON.stringify(params));
+        var url = 'https://api.tianditu.gov.cn/geocoder?ds=' + ds + '&tk=' + pickTk;
+        fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.status === "0" && data.location) {
+                    var lng = parseFloat(data.location.lon);
+                    var lat = parseFloat(data.location.lat);
+                    var lnglat = new T.LngLat(lng, lat);
+                    pickMap.centerAndZoom(lnglat, 16);
+                    setPickMarker(lng, lat);
+                    showToast("已定位到: " + address);
+                } else {
+                    showToast(data.msg || "未找到该地址");
+                }
+            })
+            .catch(function () {
+                showToast("搜索失败，请检查网络连接");
+            });
+    }
+
+    // 点击"地图选点"按钮
+    $("#gpsMapPick").on("click", function () {
+        waitForTianditu(function () {
+            var modalEl = document.getElementById('mapPickModal');
+            var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+            // Modal 动画结束后，等一帧让浏览器完成布局，再创建地图
+            $(modalEl).one('shown.bs.modal', function () {
+                requestAnimationFrame(function () {
+                    buildPickMap();
+                });
+            });
+        });
+    });
+
+    // Modal 关闭时销毁地图
+    $('#mapPickModal').on('hidden.bs.modal', function () {
+        destroyPickMap();
+    });
+
+    // 地址搜索按钮
+    $("#mapPickSearchBtn").on("click", function () {
+        searchPickAddress($("#mapPickSearch").val().trim());
+    });
+
+    // 地址搜索回车
+    $("#mapPickSearch").on("keydown", function (e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            searchPickAddress($(this).val().trim());
+        }
+    });
+
+    // 确认选点
+    $("#mapPickConfirm").on("click", function () {
+        if (pickLat !== null && pickLng !== null) {
+            $("#gpsLat").val(pickLat.toFixed(6));
+            $("#gpsLng").val(pickLng.toFixed(6));
+            try { localStorage.setItem("yuweitek_last_latlng", pickLat.toFixed(6) + "," + pickLng.toFixed(6)); } catch (e) {}
+            showToast("已选取坐标: " + pickLat.toFixed(6) + ", " + pickLng.toFixed(6));
+            bootstrap.Modal.getInstance(document.getElementById('mapPickModal')).hide();
+        }
     });
 });

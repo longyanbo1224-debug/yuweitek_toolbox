@@ -1361,6 +1361,37 @@ body.theme-dark #H264Convert .form-text {
   }
 }
 
+/* ==================== 地图选点 Modal ==================== */
+#mapPickContainer {
+  height: 400px;
+  width: 100%;
+  background-color: #f0f0f0;
+}
+
+.map-pick-search-bar {
+  background-color: #f8f9fa;
+}
+
+.map-pick-coord {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  #mapPickContainer {
+    height: 300px;
+  }
+}
+
+body.theme-dark #mapPickContainer {
+  background-color: #2a2a2a;
+}
+
+body.theme-dark .map-pick-search-bar {
+  background-color: #2a2a2a;
+  border-color: #444 !important;
+}
+
 /* ==================== ADB 工具 ==================== */
 #commandButtons {
   margin-top: 10px;
