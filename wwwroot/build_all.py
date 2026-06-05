@@ -220,7 +220,7 @@ def main():
 
     # Cleanup
     print(f"\n{'=' * 40}")
-    print("  Cleaning up...")
+    print("  Cleaning up temp files...")
     print(f"{'=' * 40}")
 
     tmp_exe = os.path.join(dist_dir, "YUWEITEK工具箱 Agent.exe")
@@ -229,6 +229,12 @@ def main():
         print("Deleted temp EXE")
     else:
         print("Temp EXE not found, skip.")
+
+    # Step 3: 清理 Git LFS 旧版本，释放磁盘空间
+    print(f"\n{'=' * 40}")
+    print("  Cleaning LFS old objects...")
+    print(f"{'=' * 40}\n")
+    run("git lfs prune")
 
     app_version = get_current_version(root)
     setup_name = f"YUWEITEK工具箱 Agent_{app_version}_Setup.exe"
