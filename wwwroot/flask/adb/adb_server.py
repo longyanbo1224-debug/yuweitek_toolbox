@@ -105,13 +105,7 @@ def show_splash_screen(splash_ready_callback):
         logo_path = os.path.join(logo_base, 'img', 'favicon.png')
         if os.path.exists(logo_path):
             pil_img = Image.open(logo_path).convert('RGBA').resize((72, 72), Image.LANCZOS)
-            # 在深色背景上加白色圆形衬底，让 logo 更醒目
-            bg = Image.new('RGBA', (80, 80), (0, 0, 0, 0))
-            from PIL import ImageDraw
-            draw = ImageDraw.Draw(bg)
-            draw.ellipse([0, 0, 79, 79], fill=(255, 255, 255, 230))
-            bg.paste(pil_img, (4, 4), pil_img)
-            logo_img_obj = ImageTk.PhotoImage(bg)
+            logo_img_obj = ImageTk.PhotoImage(pil_img)
             canvas.logo_img_obj = logo_img_obj  # 防止 GC 回收
             canvas.create_image(cx, cy, image=logo_img_obj)
         else:
@@ -147,7 +141,9 @@ def show_splash_screen(splash_ready_callback):
                        fill='#475569', font=('Microsoft YaHei UI', 8))
 
     # ---------- 动画状态 ----------
-    splash_state = {'progress': 0, 'angle': 0, 'alive': True}
+    splash_state = {'progress': 0, 'angle': 0, 'alive': True,
+                    'flask_ready': False, 'start_time': time.time()}
+    MIN_DISPLAY_SECONDS = 3.0  # 最低显示时间，保证动画完整展示
 
     def animate():
         if not splash_state['alive']:
@@ -155,11 +151,34 @@ def show_splash_screen(splash_ready_callback):
         # 圆环旋转
         splash_state['angle'] += 6
         draw_ring(splash_state['angle'])
-        # 进度条缓慢推进（最多到 80%，等 Flask 就绪后推到 100%）
-        if splash_state['progress'] < 80:
-            splash_state['progress'] += 0.5
-            bar_end = bar_x1 + 1 + (bar_x2 - bar_x1 - 2) * splash_state['progress'] / 100
-            canvas.coords(bar_fill, bar_x1+1, bar_y1+1, bar_end, bar_y2-1)
+
+        current = splash_state['progress']
+
+        if splash_state['flask_ready']:
+            # Flask 已就绪：检查最低显示时间是否满足
+            elapsed = time.time() - splash_state['start_time']
+            if elapsed >= MIN_DISPLAY_SECONDS and current >= 98:
+                # 时间到且进度接近满 → 关闭 splash
+                splash_state['alive'] = False
+                try:
+                    root.after(0, lambda: (root.destroy(), splash_ready_callback()))
+                except Exception:
+                    splash_ready_callback()
+                return
+            elif current < 98:
+                # 平滑推进到 100%（每次 +2%，约 1 秒走完剩余）
+                splash_state['progress'] = min(current + 2, 100)
+                bar_end = bar_x1 + 1 + (bar_x2 - bar_x1 - 2) * splash_state['progress'] / 100
+                canvas.coords(bar_fill, bar_x1+1, bar_y1+1, bar_end, bar_y2-1)
+                if splash_state['progress'] >= 95:
+                    canvas.itemconfigure(status_text, text='启动完成！')
+        else:
+            # Flask 未就绪：进度条缓慢推进（最多到 80%）
+            if current < 80:
+                splash_state['progress'] = min(current + 0.5, 80)
+                bar_end = bar_x1 + 1 + (bar_x2 - bar_x1 - 2) * splash_state['progress'] / 100
+                canvas.coords(bar_fill, bar_x1+1, bar_y1+1, bar_end, bar_y2-1)
+
         root.after(50, animate)
 
     animate()
@@ -176,18 +195,9 @@ def show_splash_screen(splash_ready_callback):
             except Exception:
                 time.sleep(0.2)
 
-        # Flask 就绪 → 进度推到 100%
+        # Flask 就绪 → 通知动画开始收尾，由 animate() 负责关闭
         if splash_state['alive']:
-            splash_state['progress'] = 100
-            bar_end = bar_x2 - 1
-            canvas.coords(bar_fill, bar_x1+1, bar_y1+1, bar_end, bar_y2-1)
-            canvas.itemconfigure(status_text, text='启动完成！')
-            time.sleep(0.4)
-            splash_state['alive'] = False
-            try:
-                root.after(0, lambda: (root.destroy(), splash_ready_callback()))
-            except Exception:
-                splash_ready_callback()
+            splash_state['flask_ready'] = True
 
     poll_thread = Thread(target=poll_flask, daemon=True)
     poll_thread.start()

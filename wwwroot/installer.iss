@@ -31,6 +31,9 @@ SetupLogging=yes
 DisableWelcomePage=no
 DisableProgramGroupPage=yes
 DisableReadyPage=no
+CloseApplications=yes
+RestartApplications=no
+AppMutex=Global\YUWEITEK_TOOLBOX_MUTEX
 
 ; 版本信息（写入exe属性）
 VersionInfoVersion={#MyAppVersion}
@@ -66,3 +69,23 @@ Filename: "{app}\{#MyAppExeName}"; Description: "立即运行 {#MyAppName}(&R)";
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}\logs"
 Type: files; Name: "{app}\*.log"
+
+[Code]
+// 安装前强制杀掉旧版本进程，防止托盘程序无法被默认 CloseApplications 关闭
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+  ExeName: String;
+begin
+  ExeName := '{#MyAppExeName}';
+  // 先尝试 taskkill（带 /f 强制终止，/im 按进程名匹配）
+  Exec('taskkill.exe', '/f /im "' + ExeName + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  // taskkill 返回 0=成功杀掉, 128=进程不存在（也算成功）
+  // 等待一小段时间确保进程完全退出
+  Sleep(1000);
+  // 如果 taskkill 失败（进程仍存在），尝试再次杀
+  Exec('taskkill.exe', '/f /im "' + ExeName + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Sleep(500);
+  // 返回空字符串表示成功，非空表示失败（会阻断安装）
+  Result := '';
+end;
