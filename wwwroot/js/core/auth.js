@@ -194,7 +194,7 @@ $('#copyMachineCodeBtn').click(function () {
     const machineCode = $('#machineCodeDisplay').val();
     if (!machineCode) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(machineCode).then(() => alert('机器码已复制到剪贴板')).catch(() => fallbackCopy(machineCode));
+        navigator.clipboard.writeText(machineCode).then(() => showCopySuccessModal()).catch(() => fallbackCopy(machineCode));
     } else {
         fallbackCopy(machineCode);
     }
@@ -206,7 +206,51 @@ function fallbackCopy(text) {
     textarea.select();
     document.execCommand('copy');
     document.body.removeChild(textarea);
-    alert('机器码已复制到剪贴板');
+    showCopySuccessModal();
+}
+function showCopySuccessModal() {
+    if ($('#copySuccessModal').length) return;
+    const modalHtml = `
+    <div class="modal fade update-modal" id="copySuccessModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="update-icon icon-success"><i class="bi bi-check-lg" style="font-size:2rem"></i></div>
+                    <div class="update-title">复制成功</div>
+                    <div class="update-subtitle">机器码已复制到剪贴板</div>
+                    <div class="update-actions" style="margin-top:1.25rem">
+                        <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">知道了</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('body').append(modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+    modal.show();
+    $('#copySuccessModal').on('hidden.bs.modal', function () { $(this).remove(); });
+}
+function showActivateSuccessModal(expire) {
+    if ($('#activateSuccessModal').length) return;
+    const modalHtml = `
+    <div class="modal fade update-modal" id="activateSuccessModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="update-icon icon-success"><i class="bi bi-check-lg" style="font-size:2rem"></i></div>
+                    <div class="update-title">激活成功</div>
+                    <div class="update-subtitle">有效期至：<strong>${escapeHtml(expire)}</strong></div>
+                    <div class="update-actions" style="margin-top:1.25rem">
+                        <button type="button" class="update-btn-primary" data-bs-dismiss="modal">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('body').append(modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('activateSuccessModal'));
+    modal.show();
+    $('#activateSuccessModal').on('hidden.bs.modal', function () { $(this).remove(); location.reload(); });
 }
 
 // 激活按钮事件
@@ -225,8 +269,7 @@ $('#activateBtn').click(function () {
         .then(data => {
             if (data.success) {
                 $('#activateModal').modal('hide');
-                alert(`激活成功！有效期至：${data.expire}`);
-                location.reload();
+                showActivateSuccessModal(data.expire);
             } else {
                 $('#activateError').text(data.error);
             }
@@ -353,6 +396,30 @@ function showHistoryVersionGuide() {
     $('#historyVersionGuideModal').on('hidden.bs.modal', function () { $(this).remove(); });
 }
 
+function showClipboardErrorModal(message) {
+    if ($('#clipboardErrorModal').length) return;
+    const modalHtml = `
+    <div class="modal fade update-modal" id="clipboardErrorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"></button>
+                    <div class="update-icon icon-warning"><i class="bi bi-clipboard-x"></i></div>
+                    <div class="update-title">剪贴板不可用</div>
+                    <div class="update-subtitle">${escapeHtml(message)}</div>
+                    <div class="update-actions" style="margin-top:1.25rem">
+                        <button type="button" class="update-btn-secondary" data-bs-dismiss="modal">知道了</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`;
+    $('body').append(modalHtml);
+    const modal = new bootstrap.Modal(document.getElementById('clipboardErrorModal'));
+    modal.show();
+    $('#clipboardErrorModal').on('hidden.bs.modal', function () { $(this).remove(); });
+}
+
 // 页面加载时检查授权和版本
 $(document).ready(function () {
     checkVersionAndProceed();
@@ -363,7 +430,7 @@ $(document).ready(function () {
             navigator.clipboard.readText().then(text => {
                 $('#licenseInput').val(text.trim());
             }).catch(() => {
-                alert('无法读取剪贴板，请手动输入');
+                showClipboardErrorModal('无法读取剪贴板，请手动输入授权码');
             });
         } else {
             // 兼容非 HTTPS 环境
@@ -376,7 +443,7 @@ $(document).ready(function () {
             if (pasted) {
                 $('#licenseInput').val(pasted.trim());
             } else {
-                alert('请手动粘贴授权码（Ctrl+V）');
+                showClipboardErrorModal('请手动粘贴授权码（Ctrl+V）');
             }
         }
     });

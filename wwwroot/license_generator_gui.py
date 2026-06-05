@@ -144,7 +144,7 @@ def init_excel():
         wb = Workbook()
         ws = wb.active
         ws.title = "授权记录"
-        ws.append(['序号', '机器码', '用户名', '授权人', '状态', '授权方式', '授权码', '有效期', '备注', '注册时间'])
+        ws.append(['序号', '机器码', '用户名', '授权人', '状态', '授权方式', '授权码', '有效期', '备注', '注册时间', '最后更新时间'])
         wb.save(excel_path)
 
 def get_next_sequence():
@@ -167,18 +167,81 @@ def save_license_record(machine_code, expire_date, license_code, authorized_to, 
         init_excel()
         excel_path = get_excel_file_path()
         expire_display = expire_date if expire_date else '永久'
-        generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         seq = get_next_sequence()
         wb = load_workbook(excel_path)
         ws = wb.active
-        # 新格式：序号、机器码、用户名、授权人、状态、授权方式、授权码、有效期、备注、注册时间
-        ws.append([seq, machine_code, authorized_to, authorized_by, '已授权', '本地', license_code, expire_display, remark, generated_at])
+        # 序号、机器码、用户名、授权人、状态、授权方式、授权码、有效期、备注、注册时间、最后更新时间
+        ws.append([seq, machine_code, authorized_to, authorized_by, '已授权', '本地', license_code, expire_display, remark, now_str, now_str])
         wb.save(excel_path)
         return True, None
     except PermissionError:
         return False, "license.xlsx 文件被占用，请关闭 Excel 后重试"
     except Exception as e:
         return False, str(e)
+
+
+def update_license_record(machine_code, expire_date, license_code, authorized_to, authorized_by, remark=""):
+    """更新已有机器码的授权记录（原地更新），返回 (成功, 错误信息)"""
+    try:
+        excel_path = get_excel_file_path()
+        if not os.path.exists(excel_path):
+            return False, "license.xlsx 不存在"
+        expire_display = expire_date if expire_date else '永久'
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        wb = load_workbook(excel_path)
+        ws = wb.active
+
+        # 检查并补齐「最后更新时间」表头
+        headers = [cell.value for cell in ws[1]]
+        if '最后更新时间' not in headers:
+            ws.cell(row=1, column=len(headers) + 1, value='最后更新时间')
+            headers.append('最后更新时间')
+
+        # 构建列名到索引的映射（1-based）
+        col_map = {h: i + 1 for i, h in enumerate(headers) if h}
+
+        # 查找机器码匹配的行
+        machine_col = col_map.get('机器码', 2)
+        found_row = None
+        for row in ws.iter_rows(min_row=2):
+            if row[machine_col - 1].value == machine_code:
+                found_row = row[0].row
+                break
+
+        if found_row is None:
+            return False, f"未找到机器码 {machine_code} 的记录"
+
+        # 更新各列
+        for col_name, value in [
+            ('用户名', authorized_to),
+            ('授权人', authorized_by),
+            ('授权码', license_code),
+            ('有效期', expire_display),
+            ('备注', remark),
+            ('最后更新时间', now_str),
+        ]:
+            col_idx = col_map.get(col_name)
+            if col_idx:
+                ws.cell(row=found_row, column=col_idx, value=value)
+
+        wb.save(excel_path)
+        return True, None
+    except PermissionError:
+        return False, "license.xlsx 文件被占用，请关闭 Excel 后重试"
+    except Exception as e:
+        return False, str(e)
+
+
+def save_or_update_license_record(machine_code, expire_date, license_code, authorized_to, authorized_by, remark=""):
+    """保存或更新授权记录：已存在则更新原记录，不存在则新增。
+    返回 (成功, 错误信息, 是否为更新)"""
+    if is_machine_code_exists(machine_code):
+        ok, err = update_license_record(machine_code, expire_date, license_code, authorized_to, authorized_by, remark)
+        return ok, err, True
+    else:
+        ok, err = save_license_record(machine_code, expire_date, license_code, authorized_to, authorized_by, remark)
+        return ok, err, False
 
 def is_machine_code_exists(machine_code):
     """检查机器码是否已存在（返回是否已存在）"""
@@ -270,8 +333,8 @@ class BatchProgress:
         self.total = len(machine_codes)
         self.current = 0
         self.success_count = 0
+        self.update_count = 0
         self.fail_count = 0
-        self.skip_count = 0
         self.cancelled = False
         self.auto_close_id = None
 
@@ -310,17 +373,10 @@ class BatchProgress:
         self.status_label.config(text=f"正在处理 ({self.current}/{self.total}): {machine_code[:20]}...")
         self.win.update()
 
-        if is_machine_code_exists(machine_code):
-            if not messagebox.askyesno("重复授权", f"机器码 {machine_code} 已有授权记录，是否继续生成？"):
-                self.skip_count += 1
-                self.status_label.config(text=f"跳过 {machine_code[:20]}...")
-                self.win.after(10, self.process_next)
-                return
-
         expire_date = self.common_params['expire_date'] if self.common_params['expire_date'] != 'permanent' else None
         license_code, error = generate_license_code(machine_code, expire_date)
         if license_code:
-            ok, err = save_license_record(
+            ok, err, is_update = save_or_update_license_record(
                 machine_code,
                 expire_date,
                 license_code,
@@ -329,8 +385,12 @@ class BatchProgress:
                 self.common_params['remark']
             )
             if ok:
-                self.success_count += 1
-                self.status_label.config(text=f"成功生成 {machine_code[:20]}...")
+                if is_update:
+                    self.update_count += 1
+                    self.status_label.config(text=f"已更新 {machine_code[:20]}...")
+                else:
+                    self.success_count += 1
+                    self.status_label.config(text=f"已新增 {machine_code[:20]}...")
             else:
                 self.fail_count += 1
                 self.status_label.config(text=f"保存失败: {err}")
@@ -344,7 +404,7 @@ class BatchProgress:
 
     def finish(self, status):
         self.progress['value'] = self.total
-        msg = f"批量处理{status}：成功 {self.success_count}，失败 {self.fail_count}，跳过 {self.skip_count}"
+        msg = f"批量处理{status}：新增 {self.success_count}，更新 {self.update_count}，失败 {self.fail_count}"
         self.status_label.config(text=msg)
         self.cancel_btn.config(state=NORMAL, text="关闭", command=self.manual_close)
         self.auto_close_id = self.win.after(3000, self.win.destroy)
@@ -570,11 +630,6 @@ class LicenseGeneratorGUI:
             # 恢复生成按钮
             self.generate_btn.config(state=NORMAL)
 
-        # 检查重复
-        if is_machine_code_exists(machine_code):
-            if not messagebox.askyesno("重复授权", f"机器码 {machine_code} 已有授权记录，是否继续生成？"):
-                return
-
         license_code, error = generate_license_code(machine_code, expire_date)
         if license_code:
             self.result_text.delete(1.0, END)
@@ -582,10 +637,11 @@ class LicenseGeneratorGUI:
             # 自动复制到剪贴板
             self.root.clipboard_clear()
             self.root.clipboard_append(license_code)
-            # 保存到 Excel
-            ok, err_msg = save_license_record(machine_code, expire_date, license_code, authorized_to, authorized_by, remark)
+            # 保存或更新 Excel 记录
+            ok, err_msg, is_update = save_or_update_license_record(machine_code, expire_date, license_code, authorized_to, authorized_by, remark)
             if ok:
-                self.status.config(text="授权码生成成功，已保存记录并复制到剪贴板")
+                action = "已更新" if is_update else "已新增"
+                self.status.config(text=f"授权码生成成功，{action}记录并复制到剪贴板")
             else:
                 self.status.config(text=f"授权码生成成功，但保存失败：{err_msg}")
                 messagebox.showerror("保存失败", err_msg)

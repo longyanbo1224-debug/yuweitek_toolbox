@@ -37,6 +37,11 @@ def update_version(root, new_version):
             r'(const\s+FRONTEND_VERSION\s*=\s*")([^"]+)(")',
             "config.js → FRONTEND_VERSION",
         ),
+        (
+            os.path.join(root, "flask", "adb", "adb_server.py"),
+            r"(Powered by YUWEITEK · v)(\d+\.\d+\.\d+)([\"'])",
+            "adb_server.py → Splash 版本号",
+        ),
     ]
     ok = 0
     for file_path, pattern, label in replacements:
@@ -167,7 +172,7 @@ def main():
     pyi_cmd = (
         f'{sys.executable} -m PyInstaller --onefile --windowed '
         f'--name "YUWEITEK工具箱 Agent" {icon_arg} --clean '
-        f'--distpath "{dist_dir}" --hidden-import pystray --hidden-import PIL '
+        f'--distpath "{dist_dir}" --hidden-import pystray --hidden-import PIL --hidden-import tkinter '
         f'{add_data_str} "{os.path.join(adb_dir, "adb_server.py")}"'
     )
 
