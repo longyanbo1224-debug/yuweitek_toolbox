@@ -902,8 +902,15 @@
 
     async function sendCommand(cmdText) {
         const device = document.getElementById('deviceSelect').value;
-        const outputDiv = document.getElementById('commandOutput');
-        if (!device) { outputDiv.innerHTML = '<span class="text-danger">错误：请先选择设备</span>'; return; }
+        const statusBanner = document.getElementById('cmdStatusBanner');
+        const cmdEcho = document.getElementById('cmdEcho');
+        const cmdOutput = document.getElementById('cmdOutput');
+        if (!device) {
+            statusBanner.style.display = 'none';
+            cmdEcho.innerHTML = '<span class="text-muted">等待执行命令...</span>';
+            cmdOutput.innerHTML = '<span class="text-muted">请先选择设备</span>';
+            return;
+        }
         // 自动加 shell 前缀
         cmdText = applyAutoShell(cmdText);
         // 构建完整命令用于显示（去除多余的 adb 前缀，避免显示 "adb -s DEVICE adb shell ..."）
@@ -913,13 +920,16 @@
         }
         // 构建多命令显示：分号分隔时每条命令换行显示
         const cmdParts = displayCmd.split(';').map(p => p.trim()).filter(p => p);
-        let cmdDisplay;
+        let cmdEchoHtml;
         if (cmdParts.length > 1) {
-            cmdDisplay = '[执行命令]\n' + cmdParts.map(p => escapeHtml(`adb -s ${device} ${p}`)).join('\n');
+            cmdEchoHtml = cmdParts.map(p => `<span class="cmd-prompt">$</span> ${escapeHtml(`adb -s ${device} ${p}`)}`).join('\n');
         } else {
-            cmdDisplay = `[执行命令] ${escapeHtml(`adb -s ${device} ${displayCmd}`)}`;
+            cmdEchoHtml = `<span class="cmd-prompt">$</span> ${escapeHtml(`adb -s ${device} ${displayCmd}`)}`;
         }
-        outputDiv.innerHTML = '<span class="text-muted">正在执行命令，请稍候...</span>';
+        // 命令回显区显示，隐藏状态横幅
+        cmdEcho.innerHTML = cmdEchoHtml;
+        statusBanner.style.display = 'none';
+        cmdOutput.innerHTML = '<span class="text-muted"><span class="spinner-border spinner-border-sm me-1" role="status"></span>正在执行...</span>';
         try {
             const res = await apiFetch(`${API_BASE}/send_command`, {
                 method: 'POST',
@@ -928,43 +938,54 @@
             });
             const result = await res.json();
             if (result.error) {
-                outputDiv.innerHTML = `${cmdDisplay}\n\n<span class="text-danger fw-bold">错误：${escapeHtml(result.error)}</span>`;
+                // 错误：红色横幅
+                statusBanner.className = 'cmd-status-banner cmd-status-error';
+                statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行失败</span><span class="cmd-status-rc">' + escapeHtml(result.error) + '</span>';
+                statusBanner.style.display = 'flex';
+                cmdOutput.innerHTML = '';
             }
             else {
-                let output = cmdDisplay + '\n';
-                // 显示返回码：[返回码] 标签为普通文字，状态码带颜色
                 const rc = result.returncode;
-                if (rc === 0) {
-                    output += `[返回码] <span class="text-success fw-bold">${rc} (成功)</span>`;
-                } else {
-                    output += `[返回码] <span class="text-danger fw-bold">${rc} (异常)</span>`;
-                }
-                // 合并 stdout / stderr 显示（adb 很多命令如 push 会把正常输出写到 stderr）
                 const stdout = (result.stdout || '').trim();
                 const stderr = (result.stderr || '').trim();
                 if (rc === 0) {
-                    // 成功时合并输出，不区分 stdout/stderr，值内容标绿色
+                    // 成功：绿色横幅
+                    statusBanner.className = 'cmd-status-banner cmd-status-success';
+                    statusBanner.innerHTML = '<i class="bi bi-check-circle"></i> <span>执行成功</span><span class="cmd-status-rc">返回码: 0</span>';
+                    statusBanner.style.display = 'flex';
+                    // 合并 stdout / stderr（adb 很多命令如 push 会把正常输出写到 stderr）
                     if (stdout || stderr) {
-                        output += `\n\n[输出]`;
-                        if (stdout) output += `\n${formatOutputLines(stdout)}`;
-                        if (stderr) output += `\n${formatOutputLines(stderr)}`;
+                        let out = '';
+                        if (stdout) out += formatOutputLines(stdout);
+                        if (stderr) {
+                            if (out) out += '\n';
+                            out += formatOutputLines(stderr);
+                        }
+                        cmdOutput.innerHTML = out;
                     } else {
-                        output += `\n\n[输出] (无)`;
+                        cmdOutput.innerHTML = '<span class="text-muted">(无输出)</span>';
                     }
                 } else {
-                    // 失败时区分显示
-                    if (stdout) {
-                        output += `\n\n[标准输出]\n${escapeHtml(stdout)}`;
-                    } else {
-                        output += `\n\n[标准输出] (无)`;
-                    }
+                    // 失败：红色横幅
+                    statusBanner.className = 'cmd-status-banner cmd-status-error';
+                    statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行异常</span><span class="cmd-status-rc">返回码: ' + rc + '</span>';
+                    statusBanner.style.display = 'flex';
+                    // 区分 stdout / stderr，stderr 标红
+                    let out = '';
+                    if (stdout) out += escapeHtml(stdout);
                     if (stderr) {
-                        output += `\n\n[标准错误]\n${escapeHtml(stderr)}`;
+                        if (out) out += '\n';
+                        out += '<span class="text-danger">' + escapeHtml(stderr) + '</span>';
                     }
+                    cmdOutput.innerHTML = out || '<span class="text-muted">(无输出)</span>';
                 }
-                outputDiv.innerHTML = output;
             }
-        } catch (error) { outputDiv.innerHTML = `<span class="text-danger">请求失败：${escapeHtml(error.message)}</span>`; }
+        } catch (error) {
+            statusBanner.className = 'cmd-status-banner cmd-status-error';
+            statusBanner.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <span>请求失败</span><span class="cmd-status-rc">' + escapeHtml(error.message) + '</span>';
+            statusBanner.style.display = 'flex';
+            cmdOutput.innerHTML = '';
+        }
     }
 
     async function addCommand() {
@@ -1202,7 +1223,9 @@
     }
 
     function clearOutput() {
-        document.getElementById('commandOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
+        document.getElementById('cmdStatusBanner').style.display = 'none';
+        document.getElementById('cmdEcho').innerHTML = '<span class="text-muted">等待执行命令...</span>';
+        document.getElementById('cmdOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
     }
 
     // ---------- 工具函数 ----------
@@ -1380,7 +1403,9 @@
         loadCommands();
         updateLogcatStatus();
         setInterval(updateLogcatStatus, 5000);
-        document.getElementById('commandOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
+        document.getElementById('cmdStatusBanner').style.display = 'none';
+        document.getElementById('cmdEcho').innerHTML = '<span class="text-muted">等待执行命令...</span>';
+        document.getElementById('cmdOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
 
         // 自动 shell 开关：从 localStorage 恢复状态
         const autoShellToggle = document.getElementById('autoShellToggle');

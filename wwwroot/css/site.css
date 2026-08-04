@@ -494,7 +494,100 @@ body.theme-dark .qa-bubble.assistant {
     color: var(--text-primary);
 }
 
-/* ADB 命令输出 */
+/* ==================== ADB 执行结果：状态横幅 + 终端卡片 ==================== */
+
+/* 终端卡片容器 — 统一圆角 + 溢出裁剪 */
+.cmd-terminal {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+
+/* 状态横幅 — 成功/失败 */
+.cmd-status-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
+}
+.cmd-status-success {
+    background: #d4edda;
+    color: #155724;
+}
+.cmd-status-error {
+    background: #f8d7da;
+    color: #721c24;
+}
+.cmd-status-rc {
+    margin-left: auto;
+    font-weight: 400;
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+/* 命令回显区 — 终端风格 */
+.cmd-echo {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    min-height: 28px;
+    border-bottom: 1px solid #333;
+}
+.cmd-echo .cmd-prompt {
+    color: #4ec9b0;
+    font-weight: 700;
+    user-select: none;
+}
+.cmd-echo .text-muted {
+    color: #6c757d !important;
+}
+
+/* 执行输出区 */
+.cmd-output {
+    background: #fafbfc;
+    color: #212529;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    overflow-y: auto;
+    max-height: calc(100vh - 480px);
+    min-height: 60px;
+}
+
+/* ==================== 深色模式 ==================== */
+body.theme-dark .cmd-terminal {
+    border-color: #30363d;
+}
+body.theme-dark .cmd-status-success {
+    background: rgba(35, 134, 54, 0.25);
+    color: #7ee787;
+}
+body.theme-dark .cmd-status-error {
+    background: rgba(248, 81, 73, 0.2);
+    color: #ffa198;
+}
+body.theme-dark .cmd-echo {
+    background: #0d1117;
+    border-bottom-color: #21262d;
+}
+body.theme-dark .cmd-echo .cmd-prompt {
+    color: #7ee787;
+}
+body.theme-dark .cmd-output {
+    background: #0d1117;
+    color: #c9d1d9;
+}
+
+/* ADB 命令输出（旧版兼容） */
 body.theme-dark #commandOutput {
     background-color: var(--bg-pre) !important;
     border-color: var(--border-color) !important;
@@ -683,6 +776,33 @@ body.theme-dark #RareCharTool textarea.form-control,
 body.theme-dark #RareCharTool input.form-control {
     background-color: var(--bg-input) !important;
     border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* QrParseTool - qr-drop-zone */
+body.theme-dark #QrParseTool .qr-drop-zone {
+    border-color: var(--border-color) !important;
+    background-color: var(--bg-input) !important;
+    color: var(--text-primary) !important;
+}
+
+/* QrParseTool - text-muted */
+body.theme-dark #QrParseTool .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* QrParseTool - card */
+body.theme-dark #QrParseTool .card {
+    background-color: var(--bg-card) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* QrParseTool - table */
+body.theme-dark #QrParseTool .table {
+    color: var(--text-primary) !important;
+}
+
+body.theme-dark #QrParseTool .table-striped > tbody > tr:nth-of-type(odd) > * {
     color: var(--text-primary) !important;
 }
 
@@ -1422,6 +1542,107 @@ body.theme-dark .map-pick-search-bar {
   user-select: none;
 }
 
+/* ==================== ADB 分组 Tab 标签栏（书页层叠风格） ==================== */
+.group-tab-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 0 2px;
+  border-bottom: 2px solid #c8cdd4;
+  align-items: flex-end;
+  cursor: grab;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.group-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+.group-tab-bar.dragging {
+  cursor: grabbing;
+}
+.group-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 16px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  background: #eceef2;
+  color: #888;
+  border: 1px solid #d5d9df;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  margin-right: -5px;
+  margin-bottom: -2px;
+  transition: all 0.12s ease;
+  z-index: 1;
+}
+.group-tab:hover {
+  background: #dfe2e8;
+  color: #555;
+  z-index: 5;
+}
+.group-tab.active {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+  padding-top: 9px;
+  padding-bottom: 7px;
+  margin-top: -2px;
+  z-index: 10;
+  box-shadow: 0 -2px 8px rgba(26,115,232,0.25);
+}
+.group-tab-count {
+  display: inline-block;
+  font-size: 10px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 9px;
+  padding: 0 5px;
+  line-height: 15px;
+  min-width: 16px;
+  text-align: center;
+  font-weight: 600;
+}
+.group-tab.active .group-tab-count {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+/* 深色模式 Tab 栏 */
+body.theme-dark .group-tab-bar {
+  border-bottom-color: #3a3d44;
+}
+body.theme-dark .group-tab {
+  background: #282a2f;
+  color: #888;
+  border-color: #3a3d44;
+}
+body.theme-dark .group-tab:hover {
+  background: #32353b;
+  color: #bbb;
+}
+body.theme-dark .group-tab.active {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+  box-shadow: 0 -2px 8px rgba(26,115,232,0.35);
+}
+body.theme-dark .group-tab-count {
+  background: rgba(255,255,255,0.08);
+  color: #999;
+}
+body.theme-dark .group-tab.active .group-tab-count {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
 #AdbTool > .row {
   margin-left: -5px;
   margin-right: -5px;
@@ -1502,6 +1723,28 @@ body.theme-dark .cmd-row code {
   background-color: #fff;
   color: #212529;
   border-color: #ced4da;
+}
+
+/* ==================== 二维码解析工具 ==================== */
+#QrParseTool .qr-drop-zone:hover {
+  border-color: #3498db !important;
+}
+
+#QrParseTool .qr-drop-zone:empty::before {
+  content: "请在此处粘贴二维码图片或文本内容";
+  color: #7f8c8d;
+  text-align: center;
+}
+
+#QrParseTool .table th {
+  background-color: #e9ecef;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+body.theme-dark #QrParseTool .table th {
+  background-color: var(--bg-card) !important;
+  color: var(--text-primary) !important;
 }
 
 /* ==================== 智能助手悬浮窗 ==================== */

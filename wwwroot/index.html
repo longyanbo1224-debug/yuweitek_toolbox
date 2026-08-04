@@ -18,6 +18,7 @@
     <script src="./lib/axios@1.7.9.min.js" type="text/javascript"></script>
     <script src="./lib/clipboard@2.0.11.min.js" type="text/javascript"></script>
     <script src="./lib/sortable.min.js" type="text/javascript"></script>
+    <script src="./lib/jsQR.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" type="text/javascript"></script>
 </head>
 
@@ -106,6 +107,9 @@
                         <a class="sidebar-flyout-item" menu-type="RareCharTool" href="#RareCharTool">
                             <i class="bi bi-vector-pen"></i>生僻字指令生成器
                         </a>
+                        <a class="sidebar-flyout-item" menu-type="QrParseTool" href="#QrParseTool">
+                            <i class="bi bi-qr-code"></i>二维码解析工具
+                        </a>
                         <a class="sidebar-flyout-item" menu-type="KmNmiConvert" href="#KmNmiConvert">
                             <i class="bi bi-arrow-left-right"></i>公里海里转换指令生成工具
                         </a>
@@ -128,8 +132,17 @@
                             <i class="bi bi-arrow-left-right"></i>海里公里转换工具
                         </a>
                         -->
+                        <a class="sidebar-flyout-item" href="http://www.tingge666.top/" target="_blank">
+                            <i class="bi bi-clock-history"></i>霆哥解析工具大全
+                        </a>
                         <a class="sidebar-flyout-item" href="https://tool.lu/timestamp/" target="_blank">
                             <i class="bi bi-clock-history"></i>时间戳转换工具
+                        </a>
+                        <a class="sidebar-flyout-item" href="http://time.syiban.com/haomiao.php" target="_blank">
+                            <i class="bi bi-clock-history"></i>北京时间精确到毫秒
+                        </a>
+                        <a class="sidebar-flyout-item" href="https://www.toolhelper.cn/Image/ImageToIco" target="_blank">
+                            <i class="bi bi-clock-history"></i>ICO图标转换工具
                         </a>
                     </div>
                 </div>
@@ -222,6 +235,7 @@
                                     <a class="list-group-item list-group-item-action" href="http://yuweicloud.com:8990/server/mainIndex.action;cm=E73E06307A2BD318BFB317ADEF280CCC" target="_blank"><i class="bi bi-cloud me-2"></i>云Monitor</a>
                                     <a class="list-group-item list-group-item-action" menu-type="AdbTool" href="#AdbTool"><i class="bi bi-usb-plug me-2"></i>ADB命令调试工具</a>
                                     <a class="list-group-item list-group-item-action" menu-type="RareCharTool" href="#RareCharTool"><i class="bi bi-vector-pen me-2"></i>生僻字指令生成器</a>
+                                    <a class="list-group-item list-group-item-action" menu-type="QrParseTool" href="#QrParseTool"><i class="bi bi-qr-code me-2"></i>二维码解析工具</a>
                                     <a class="list-group-item list-group-item-action" menu-type="KmNmiConvert" href="#KmNmiConvert"><i class="bi bi-arrow-left-right me-2"></i>公里海里转换指令生成工具</a>
                                 </div>
                             </div>
@@ -1719,7 +1733,8 @@
                                     id="btnRefreshDevices">刷新设备</button>
                                 <span id="adbStatus" class="text-muted"></span>
                             </div>
-                            <div id="commandButtons" class="mt-3"></div>
+                            <div id="groupTabBar" class="group-tab-bar mt-2"></div>
+                            <div id="commandButtons" class="mt-2"></div>
                         </div>
                     </div>
 
@@ -1751,36 +1766,7 @@
                         </div>
                     </div>
 
-                    <!-- 手动命令区域 -->
-                    <div class="card mb-3">
-                        <div class="card-header py-2">
-                            <h4 class="mb-0 fs-5">手动命令</h4>
-                        </div>
-                        <div class="card-body">
-                            <!-- 手动输入命令 -->
-                            <div class="mb-2">
-                                <textarea id="manualCommand" class="form-control form-control-sm"
-                                    placeholder="输入adb命令（如: shell ls /sdcard，不需要加adb前缀）" rows="2"
-                                    style="resize: vertical;"></textarea>
-                            </div>
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                <small class="text-muted me-auto">快捷键: Ctrl+Enter</small>
-                                <button type="button" class="btn btn-primary btn-sm" id="btnSendManual">
-                                    <i class="bi bi-send"></i> 发送
-                                </button>
-                            </div>
-                            <!-- 自然语言生成命令 -->
-                            <div class="input-group input-group-sm">
-                                <input type="text" id="commandInstruction" class="form-control form-control-sm"
-                                    placeholder="用自然语言描述操作（如：开启飞行模式）">
-                                <button type="button" class="btn btn-outline-info btn-sm" id="btnGenerateCommand">
-                                    <i class="bi bi-stars"></i> AI 生成
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                                        <!-- 管理命令区域 -->
+                    <!-- 管理命令区域 -->
                     <div class="card mb-3">
                         <div class="card-header py-2 d-flex justify-content-between align-items-center">
                             <h4 class="mb-0 fs-5">管理命令</h4>
@@ -1812,12 +1798,12 @@
                             </div>
                             <div class="row g-2 mb-2">
                                 <div class="col-12">
-                                    <textarea id="cmdText" class="form-control form-control-sm" placeholder="命令内容（如: shell ls /sdcard）" rows="2" style="resize: vertical; min-height: 40px;" autocomplete="off"></textarea>
+                                    <textarea id="cmdText" class="form-control form-control-sm" placeholder="命令内容（Shell模式：输入 shell 命令即可，无需加 shell 前缀）" rows="2" style="resize: vertical; min-height: 40px;" autocomplete="off"></textarea>
                                 </div>
                             </div>
                             <div class="d-flex flex-wrap gap-1 mb-3 align-items-center">
-                                <small class="text-muted me-auto">
-                                    <i class="bi bi-info-circle"></i> shell 命令请以 "shell " 开头
+                                <small class="text-muted me-auto" id="shellHint">
+                                    <i class="bi bi-info-circle"></i> 已开启"Shell 模式"，无需手动输入 shell 前缀
                                 </small>
                                 <button type="button" class="btn btn-primary btn-sm" id="btnAddCommand">添加</button>
                                 <button type="button" class="btn btn-secondary btn-sm" id="btnUpdateCommand">修改</button>
@@ -1847,6 +1833,8 @@
                                 </div>
                             </div>
 
+                            <!-- 命令列表 Tab 标签栏 -->
+                            <div id="commandListTabBar" class="group-tab-bar mb-2"></div>
                             <!-- 命令列表（复选框形式） -->
                             <div id="commandListContainer" class="border rounded p-2" style="max-height: 350px; overflow-y: auto; background: #fafbfc;">
                                 <div id="commandListEmpty" class="text-center text-muted py-3" style="display:none;">暂无命令</div>
@@ -1856,21 +1844,62 @@
                 </div>
                 <!-- 左侧操作区 end -->
 
-<!-- 右侧结果显示区 (4列) -->
+<!-- 右侧操作+结果显示区 (4列) -->
                 <div class="col-md-4">
                     <div class="sticky-top" style="top: 70px; z-index: 100;">
-                        <div class="card">
-                            <div class="card-header py-2">
-                                <h5 class="mb-0 fs-6">执行结果</h5>
-                            </div>
-                            <div class="card-body d-flex flex-column p-3">
-                                <div id="commandOutput" class="p-2 bg-light border rounded shadow-sm mb-2"
-                                    style="white-space: pre-wrap; font-family: Consolas, monospace; overflow-y: auto; max-height: calc(100vh - 200px);">
-                                    命令执行结果将显示在这里...
+                        <!-- 手动命令 -->
+                        <div class="card mb-3">
+                            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fs-6">手动命令</h5>
+                                <div class="form-check form-switch form-check-inline mb-0">
+                                    <input class="form-check-input" type="checkbox" id="autoShellToggle" checked>
+                                    <label class="form-check-label small text-muted" for="autoShellToggle" title="开启后输入 shell 命令即可，自动智能补全前缀">Shell 模式</label>
                                 </div>
-                                <button type="button" class="btn btn-danger btn-sm w-100"
-                                    id="btnClearOutput">清空</button>
-                                <small class="text-muted d-block text-center mt-1">快捷键: Ctrl+Alt+C</small>
+                            </div>
+                            <div class="card-body p-2">
+                                <textarea id="manualCommand" class="form-control form-control-sm"
+                                    placeholder="输入命令（Shell模式：输入 shell 命令即可，无需加 shell 前缀）" rows="2"
+                                    style="resize: none; overflow-y: hidden; min-height: 40px;"></textarea>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <span class="text-muted small me-auto" id="shellHint">
+                                        <i class="bi bi-info-circle"></i> Shell 模式已开启
+                                    </span>
+                                    <button type="button" class="btn btn-primary btn-sm" id="btnSendManual">
+                                        <i class="bi bi-send"></i> 发送
+                                    </button>
+                                </div>
+                                <div class="input-group input-group-sm mt-2">
+                                    <input type="text" id="commandInstruction" class="form-control form-control-sm"
+                                        placeholder="自然语言描述（如：开启飞行模式）">
+                                    <button type="button" class="btn btn-outline-info btn-sm" id="btnGenerateCommand">
+                                        <i class="bi bi-stars"></i> AI
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 执行结果 -->
+                        <div class="card">
+                            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fs-6">执行结果</h5>
+                                <small class="text-muted">Ctrl+Alt+C 清空</small>
+                            </div>
+                            <div class="card-body d-flex flex-column p-2">
+                                <!-- 状态横幅：成功=绿 / 失败=红，初始隐藏 -->
+                                <div id="cmdStatusBanner" class="cmd-status-banner" style="display:none;"></div>
+                                <!-- 命令回显 + 输出 统一包裹，圆角裁剪 -->
+                                <div class="cmd-terminal">
+                                    <!-- 命令回显区（终端风格） -->
+                                    <div id="cmdEcho" class="cmd-echo">
+                                        <span class="text-muted">等待执行命令...</span>
+                                    </div>
+                                    <!-- 执行输出区 -->
+                                    <div id="cmdOutput" class="cmd-output">
+                                        <span class="text-muted">命令执行结果将显示在这里...</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-2"
+                                    id="btnClearOutput"><i class="bi bi-trash3"></i> 清空结果</button>
                             </div>
                         </div>
                     </div>
@@ -1956,6 +1985,37 @@
             </div>
         </div>
         <!-- 生僻字指令生成器 end -->
+
+        <!-- 二维码解析工具 start -->
+        <div class="container hide" id="QrParseTool">
+            <div class="tool-header mb-4">
+                <h2><i class="bi bi-qr-code"></i> 二维码解析工具</h2>
+                <p class="text-muted">支持粘贴二维码图片或扫描内容，解析CCC代码、设备型号、生产日期、终端ID等信息</p>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div id="qrInputArea" class="qr-drop-zone"
+                            style="min-height: 120px; border: 2px dashed #bdc3c7; border-radius: 8px; padding: 15px; display: flex; justify-content: center; align-items: center; cursor: text; transition: border-color 0.3s ease;">
+                        </div>
+                        <small class="text-muted">在此粘贴二维码图片，或粘贴扫描后的文本内容</small>
+                    </div>
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <button id="qrParseBtn" class="btn btn-primary"><i class="bi bi-search"></i> 解析内容</button>
+                        <button id="qrClearBtn" class="btn btn-outline-secondary"><i class="bi bi-x-circle"></i> 清空</button>
+                        <button id="qrSelectFileBtn" class="btn btn-outline-primary"><i class="bi bi-image"></i> 选择图片</button>
+                        <input type="file" id="qrFileInput" accept="image/*" style="display: none;">
+                    </div>
+                    <div id="qrResult" class="mt-3"></div>
+                </div>
+            </div>
+            <div class="container mt-4 text-center">
+                <footer>
+                    <p>© 2026 二维码解析工具 | YUWEITEK工具箱</p>
+                </footer>
+            </div>
+        </div>
+        <!-- 二维码解析工具 end -->
 
         <!-- 智能助手悬浮窗 -->
         <div id="qaFloatButton" class="qa-float-button" title="智能助手">
@@ -2055,6 +2115,7 @@
     <script src="./js/modules/adb-tools.js"></script>
     <script src="./js/modules/ai-assistant.js"></script>
     <script src="./js/modules/rare-char.js"></script>
+    <script src="./js/modules/qr-parse.js"></script>
     <script src="./js/modules/km-nmi-convert.js"></script>
     <script src="./js/modules/time-calc.js"></script>
 
