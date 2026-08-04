@@ -528,17 +528,45 @@ body.theme-dark .qa-bubble.assistant {
     opacity: 0.75;
 }
 
-/* 命令回显区 — 终端风格 */
+/* 命令回显区 — 终端风格，单行截断，点击展开 */
 .cmd-echo {
     background: #1e1e1e;
     color: #d4d4d4;
-    padding: 8px 12px;
+    padding: 6px 28px 6px 12px;
     font-size: 12px;
     font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
-    white-space: pre-wrap;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     line-height: 1.6;
     min-height: 28px;
     border-bottom: 1px solid #333;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    transition: all 0.15s ease;
+}
+/* 展开指示器 — 右侧下拉箭头 */
+.cmd-echo::after {
+    content: '\F282';
+    font-family: 'bootstrap-icons';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    color: #6c757d;
+    transition: transform 0.15s ease;
+}
+.cmd-echo.expanded {
+    white-space: pre-wrap;
+    overflow-y: auto;
+    max-height: 120px;
+    cursor: default;
+}
+.cmd-echo.expanded::after {
+    transform: translateY(-50%) rotate(180deg);
+    content: '\F286';
 }
 .cmd-echo .cmd-prompt {
     color: #4ec9b0;
@@ -547,6 +575,28 @@ body.theme-dark .qa-bubble.assistant {
 }
 .cmd-echo .text-muted {
     color: #6c757d !important;
+}
+
+/* 手动命令清空按钮 */
+.btn-clear-input {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 12px;
+    padding: 2px 4px;
+    cursor: pointer;
+    line-height: 1;
+    border-radius: 3px;
+    z-index: 5;
+    transition: color 0.15s;
+}
+.btn-clear-input:hover {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.08);
 }
 
 /* 执行输出区 */
@@ -559,7 +609,7 @@ body.theme-dark .qa-bubble.assistant {
     white-space: pre-wrap;
     line-height: 1.55;
     overflow-y: auto;
-    max-height: calc(100vh - 480px);
+    max-height: calc(100vh - 420px);
     min-height: 60px;
 }
 
@@ -582,9 +632,19 @@ body.theme-dark .cmd-echo {
 body.theme-dark .cmd-echo .cmd-prompt {
     color: #7ee787;
 }
+body.theme-dark .cmd-echo::after {
+    color: #484f58;
+}
 body.theme-dark .cmd-output {
     background: #0d1117;
     color: #c9d1d9;
+}
+body.theme-dark .btn-clear-input {
+    color: #6c757d;
+}
+body.theme-dark .btn-clear-input:hover {
+    color: #f85149;
+    background: rgba(248, 81, 73, 0.12);
 }
 
 /* ADB 命令输出（旧版兼容） */

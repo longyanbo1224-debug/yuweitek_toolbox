@@ -48,6 +48,40 @@
         modal.addEventListener('hidden.bs.modal', () => wrapper.remove());
     }
 
+    function showConfirmModal(title, message, onConfirm, confirmClass) {
+        confirmClass = confirmClass || 'btn-danger';
+        const old = document.getElementById('confirmModal');
+        if (old) old.remove();
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+            <div class="modal fade" id="confirmModal" tabindex="-1">
+                <div class="modal-dialog modal-sm modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header py-2">
+                            <h6 class="modal-title">${escapeHtml(title)}</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body py-3 text-center">
+                            <p class="mb-0">${escapeHtml(message)}</p>
+                        </div>
+                        <div class="modal-footer py-1">
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">取消</button>
+                            <button type="button" class="btn btn-sm ${confirmClass}" id="confirmModalOk">确定</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        document.body.appendChild(wrapper);
+        const modal = wrapper.querySelector('.modal');
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+        document.getElementById('confirmModalOk').addEventListener('click', function () {
+            bsModal.hide();
+            if (onConfirm) onConfirm();
+        });
+        modal.addEventListener('hidden.bs.modal', () => wrapper.remove());
+    }
+
     // ---------- Toast 提示 ----------
     function showToast(msg, type) {
         type = type || 'success';
@@ -808,22 +842,23 @@
 
     async function stopLogcat() {
         if (logcatBusy) return;
-        if (!confirm('确定停止日志采集吗？')) return;
-        logcatBusy = true;
-        try {
-            const res = await apiFetch(`${API_BASE}/logcat/stop`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            const data = await res.json();
-            if (data.error) showToast('停止失败：' + data.error, 'error');
-            else {
-                showToast(`日志采集已停止`);
-                window.currentLogcatPath = null;
-                updateLogcatStatus();
-            }
-        } catch (err) { showToast('请求失败：' + err.message, 'error'); }
-        finally { logcatBusy = false; }
+        showConfirmModal('停止日志采集', '确定停止日志采集吗？', async function () {
+            logcatBusy = true;
+            try {
+                const res = await apiFetch(`${API_BASE}/logcat/stop`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.error) showToast('停止失败：' + data.error, 'error');
+                else {
+                    showToast(`日志采集已停止`);
+                    window.currentLogcatPath = null;
+                    updateLogcatStatus();
+                }
+            } catch (err) { showToast('请求失败：' + err.message, 'error'); }
+            finally { logcatBusy = false; }
+        });
     }
 
     async function openFolder() {
@@ -926,8 +961,10 @@
         } else {
             cmdEchoHtml = `<span class="cmd-prompt">$</span> ${escapeHtml(`adb -s ${device} ${displayCmd}`)}`;
         }
-        // 命令回显区显示，隐藏状态横幅
+        // 命令回显区显示（紧凑模式），隐藏状态横幅
         cmdEcho.innerHTML = cmdEchoHtml;
+        cmdEcho.classList.remove('expanded');
+        cmdEcho.title = cmdParts.length > 1 ? '点击展开查看完整命令' : '';
         statusBanner.style.display = 'none';
         cmdOutput.innerHTML = '<span class="text-muted"><span class="spinner-border spinner-border-sm me-1" role="status"></span>正在执行...</span>';
         try {
@@ -1265,20 +1302,34 @@
             renderCommandList(this.value);
         });
 
+        // 清空手动命令输入框
+        document.getElementById('btnClearManual')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            const ta = document.getElementById('manualCommand');
+            ta.value = '';
+            ta.dispatchEvent(new Event('input', { bubbles: true }));
+            ta.focus();
+        });
+
         // 手动发送
         document.getElementById('btnSendManual')?.addEventListener('click', (e) => {
             e.preventDefault();
             const cmd = document.getElementById('manualCommand').value.trim();
             if (cmd) sendCommand(cmd);
-            else alert('请输入命令');
+            else showToast('请输入命令', 'error');
         });
         document.getElementById('manualCommand')?.addEventListener('keydown', function (e) {
             if (e.ctrlKey && e.key === 'Enter') {
                 e.preventDefault();
                 const cmd = this.value.trim();
                 if (cmd) sendCommand(cmd);
-                else alert('请输入命令');
+                else showToast('请输入命令', 'error');
             }
+        });
+
+        // 命令回显区：点击展开/折叠（多行命令时有用）
+        document.getElementById('cmdEcho')?.addEventListener('click', function () {
+            this.classList.toggle('expanded');
         });
 
         // AI 生成指令
@@ -1417,6 +1468,21 @@
                 localStorage.setItem('adb_auto_shell', this.checked);
                 updateAutoShellUI();
             });
+        }
+
+        // ADB 工具面板每次变为可见时，刷新 Shell 提示（确保切换面板后状态同步）
+        const adbToolEl = document.getElementById('AdbTool');
+        if (adbToolEl) {
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        if (!adbToolEl.classList.contains('hide')) {
+                            updateAutoShellUI();
+                        }
+                    }
+                });
+            });
+            observer.observe(adbToolEl, { attributes: true, attributeFilter: ['class'] });
         }
     });
 

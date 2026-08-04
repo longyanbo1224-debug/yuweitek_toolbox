@@ -1847,8 +1847,33 @@
 <!-- 右侧操作+结果显示区 (4列) -->
                 <div class="col-md-4">
                     <div class="sticky-top" style="top: 70px; z-index: 100;">
-                        <!-- 手动命令 -->
+                        <!-- 执行结果 -->
                         <div class="card mb-3">
+                            <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fs-6">执行结果</h5>
+                                <small class="text-muted">Ctrl+Alt+C 清空</small>
+                            </div>
+                            <div class="card-body d-flex flex-column p-2">
+                                <!-- 状态横幅：成功=绿 / 失败=红，初始隐藏 -->
+                                <div id="cmdStatusBanner" class="cmd-status-banner" style="display:none;"></div>
+                                <!-- 命令回显 + 输出 统一包裹，圆角裁剪 -->
+                                <div class="cmd-terminal">
+                                    <!-- 命令回显区（终端风格，单行截断，点击展开） -->
+                                    <div id="cmdEcho" class="cmd-echo" title="点击展开查看完整命令">
+                                        <span class="text-muted">等待执行命令...</span>
+                                    </div>
+                                    <!-- 执行输出区 -->
+                                    <div id="cmdOutput" class="cmd-output">
+                                        <span class="text-muted">命令执行结果将显示在这里...</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-2"
+                                    id="btnClearOutput"><i class="bi bi-trash3"></i> 清空结果</button>
+                            </div>
+                        </div>
+
+                        <!-- 手动命令 -->
+                        <div class="card">
                             <div class="card-header py-2 d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fs-6">手动命令</h5>
                                 <div class="form-check form-switch form-check-inline mb-0">
@@ -1857,9 +1882,14 @@
                                 </div>
                             </div>
                             <div class="card-body p-2">
-                                <textarea id="manualCommand" class="form-control form-control-sm"
-                                    placeholder="输入命令（Shell模式：输入 shell 命令即可，无需加 shell 前缀）" rows="2"
-                                    style="resize: none; overflow-y: hidden; min-height: 40px;"></textarea>
+                                <div style="position: relative;">
+                                    <textarea id="manualCommand" class="form-control form-control-sm"
+                                        placeholder="输入命令（Shell模式：输入 shell 命令即可，无需加 shell 前缀）" rows="2"
+                                        style="resize: none; overflow-y: hidden; min-height: 40px; padding-right: 30px;"></textarea>
+                                    <button type="button" class="btn-clear-input" id="btnClearManual" title="清空输入">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
                                 <div class="d-flex align-items-center gap-2 mt-2">
                                     <span class="text-muted small me-auto" id="shellHint">
                                         <i class="bi bi-info-circle"></i> Shell 模式已开启
@@ -1875,31 +1905,6 @@
                                         <i class="bi bi-stars"></i> AI
                                     </button>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- 执行结果 -->
-                        <div class="card">
-                            <div class="card-header py-2 d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 fs-6">执行结果</h5>
-                                <small class="text-muted">Ctrl+Alt+C 清空</small>
-                            </div>
-                            <div class="card-body d-flex flex-column p-2">
-                                <!-- 状态横幅：成功=绿 / 失败=红，初始隐藏 -->
-                                <div id="cmdStatusBanner" class="cmd-status-banner" style="display:none;"></div>
-                                <!-- 命令回显 + 输出 统一包裹，圆角裁剪 -->
-                                <div class="cmd-terminal">
-                                    <!-- 命令回显区（终端风格） -->
-                                    <div id="cmdEcho" class="cmd-echo">
-                                        <span class="text-muted">等待执行命令...</span>
-                                    </div>
-                                    <!-- 执行输出区 -->
-                                    <div id="cmdOutput" class="cmd-output">
-                                        <span class="text-muted">命令执行结果将显示在这里...</span>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-2"
-                                    id="btnClearOutput"><i class="bi bi-trash3"></i> 清空结果</button>
                             </div>
                         </div>
                     </div>
