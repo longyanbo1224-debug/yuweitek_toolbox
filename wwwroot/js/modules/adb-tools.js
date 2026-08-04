@@ -6,6 +6,7 @@
     let allCommands = [];
     let sortableInstances = [];
     let selectedNames = new Set(); // 批量选择
+    let _prevCmdTabActive = 'all';  // 记录快捷指令区上次选中的 Tab
     window.currentLogcatPath = null;
 
     // ---------- 自定义 prompt（替代浏览器原生 prompt） ----------
@@ -84,15 +85,19 @@
         const btnContainer = document.getElementById('commandButtons');
         if (!btnContainer) return;
 
-        // 保存当前展开的分组状态
+        // 保存当前展开的分组状态（仅在「全部」Tab 时保留，特定 Tab 时重置）
+        const tabBar = document.getElementById('groupTabBar');
+        const prevActiveTab = _prevCmdTabActive;
         const expandedGroups = new Set();
-        btnContainer.querySelectorAll('.command-group').forEach(el => {
-            const body = el.querySelector('div[id^="cmdGrp_"]');
-            if (body && body.style.display !== 'none') {
-                const name = el.getAttribute('data-group');
-                if (name) expandedGroups.add(name);
-            }
-        });
+        if (prevActiveTab === 'all') {
+            btnContainer.querySelectorAll('.command-group').forEach(el => {
+                const body = el.querySelector('div[id^="cmdGrp_"]');
+                if (body && body.style.display !== 'none') {
+                    const name = el.getAttribute('data-group');
+                    if (name) expandedGroups.add(name);
+                }
+            });
+        }
 
         btnContainer.innerHTML = '';
 
@@ -123,11 +128,40 @@
             return a.localeCompare(b, 'zh-CN');
         });
 
+        // ========== 渲染横向 Tab 标签栏 ==========
+        // 如果当前 activeTab 对应的分组已不存在，回退到 "all"
+        let currentTab = tabBar ? (tabBar.getAttribute('data-active') || 'all') : 'all';
+        if (currentTab !== 'all' && !sortedKeys.includes(currentTab)) {
+            currentTab = 'all';
+            if (tabBar) tabBar.setAttribute('data-active', 'all');
+        }
+        if (tabBar && sortedKeys.length > 0) {
+            let tabHtml = '<span class="group-tab' + (currentTab === 'all' ? ' active' : '') + '" data-group="all">全部<span class="group-tab-count">' + allCommands.length + '</span></span>';
+            sortedKeys.forEach(function(g) {
+                tabHtml += '<span class="group-tab' + (currentTab === g ? ' active' : '') + '" data-group="' + escapeHtml(g) + '">' + escapeHtml(g) + '<span class="group-tab-count">' + groups[g].length + '</span></span>';
+            });
+            tabBar.innerHTML = tabHtml;
+            // 绑定 Tab 点击事件
+            tabBar.querySelectorAll('.group-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    tabBar.setAttribute('data-active', this.getAttribute('data-group'));
+                    renderCommandButtons();
+                });
+            });
+        } else if (tabBar) {
+            tabBar.innerHTML = '';
+        }
+        // 根据当前选中的 Tab 过滤要显示的分组
+        const activeTab = currentTab;
+
         // 销毁旧的 Sortable 实例
         sortableInstances.forEach(s => s.destroy());
         sortableInstances = [];
 
         sortedKeys.forEach(groupName => {
+            // 如果选中了特定 Tab，只渲染该分组
+            if (activeTab !== 'all' && groupName !== activeTab) return;
+
             const wrapper = document.createElement('div');
             wrapper.className = 'command-group mb-2';
             wrapper.setAttribute('data-group', groupName);
@@ -181,8 +215,8 @@
 
             wrapper.appendChild(btnWrap);
 
-            // 恢复之前的展开状态
-            if (expandedGroups.has(groupName)) {
+            // 恢复之前的展开状态（选中特定 Tab 时自动展开）
+            if (activeTab !== 'all' || expandedGroups.has(groupName)) {
                 btnWrap.style.display = 'flex';
                 const icon = title.querySelector('.toggle-icon');
                 if (icon) icon.className = 'bi bi-chevron-down small toggle-icon';
@@ -270,9 +304,13 @@
                     if (g && g !== '未分组') newOrder.push(g);
                 });
                 localStorage.setItem('adb_group_order', JSON.stringify(newOrder));
+                renderCommandButtons();
             }
         });
         sortableInstances.push(groupSortable);
+
+        // 记录本次激活的 Tab，供下次渲染判断"切回全部"
+        _prevCmdTabActive = activeTab;
     }
 
     // ---------- 命令列表（复选框形式） ----------
@@ -330,15 +368,47 @@
             return a.localeCompare(b, 'zh-CN');
         });
 
+        // ========== 渲染列表 Tab 标签栏 ==========
+        const listTabBar = document.getElementById('commandListTabBar');
+        if (listTabBar && !filterText && sortedKeys.length > 0) {
+            let listCurrentTab = listTabBar.getAttribute('data-active') || 'all';
+            if (listCurrentTab !== 'all' && !sortedKeys.includes(listCurrentTab)) {
+                listCurrentTab = 'all';
+                listTabBar.setAttribute('data-active', 'all');
+            }
+            let tabHtml = '<span class="group-tab' + (listCurrentTab === 'all' ? ' active' : '') + '" data-group="all">全部<span class="group-tab-count">' + commands.length + '</span></span>';
+            sortedKeys.forEach(function(g) {
+                tabHtml += '<span class="group-tab' + (listCurrentTab === g ? ' active' : '') + '" data-group="' + escapeHtml(g) + '">' + escapeHtml(g) + '<span class="group-tab-count">' + groups[g].length + '</span></span>';
+            });
+            listTabBar.innerHTML = tabHtml;
+            listTabBar.querySelectorAll('.group-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    listTabBar.setAttribute('data-active', this.getAttribute('data-group'));
+                    renderCommandList();
+                });
+            });
+            var listActiveTab = listCurrentTab;
+        } else {
+            if (listTabBar) listTabBar.innerHTML = '';
+            var listActiveTab = 'all';
+        }
+
+        // 「全部」tab 默认折叠所有分组；搜索/特定tab 时展开
+        var collapseAll = (listActiveTab === 'all' && !filterText);
+
         sortedKeys.forEach(groupName => {
+            // 选中特定 Tab 时跳过其他分组
+            if (listActiveTab !== 'all' && groupName !== listActiveTab) return;
+
             // 分组标题行（可折叠）
+            var groupStartCollapsed = collapseAll;
             const header = document.createElement('div');
             header.className = 'cmd-item d-flex align-items-center gap-1 py-1 px-1 border-bottom cmd-group-header';
             header.style.cursor = 'pointer';
             header.style.userSelect = 'none';
             const listCollapseId = 'cmdListGrp_' + groupName.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_');
             header.innerHTML = `
-                <i class="bi bi-chevron-down small toggle-icon"></i>
+                <i class="bi bi-chevron-${groupStartCollapsed ? 'right' : 'down'} small toggle-icon"></i>
                 <input type="checkbox" class="form-check-input group-check" data-group="${escapeHtml(groupName)}" style="margin:0;">
                 <i class="bi bi-folder2-open text-primary"></i>
                 <strong class="small text-primary">${escapeHtml(groupName)}</strong>
@@ -363,7 +433,8 @@
             header.querySelector('.group-check').addEventListener('change', function () {
                 const checked = this.checked;
                 const group = this.getAttribute('data-group');
-                container.querySelectorAll(`.cmd-check[data-group="${group}"]`).forEach(cb => {
+                const escapedGroup = group.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+                container.querySelectorAll(`.cmd-check[data-group="${escapedGroup}"]`).forEach(cb => {
                     cb.checked = checked;
                     const n = cb.getAttribute('data-name');
                     if (checked) selectedNames.add(n); else selectedNames.delete(n);
@@ -373,6 +444,7 @@
             // 命令行包裹容器（可折叠）
             const groupBody = document.createElement('div');
             groupBody.id = listCollapseId;
+            if (groupStartCollapsed) groupBody.style.display = 'none';
             container.appendChild(groupBody);
 
             // 命令行
@@ -401,6 +473,8 @@
                     document.getElementById('cmdName').value = cmd.name;
                     document.getElementById('cmdText').value = cmd.cmd;
                     document.getElementById('cmdGroup').value = cmd.group || '';
+                    // 触发 textarea 自动撑高
+                    document.getElementById('cmdText').dispatchEvent(new Event('input', { bubbles: true }));
                 });
                 // 复选框事件
                 row.querySelector('.cmd-check').addEventListener('change', function () {
@@ -486,14 +560,15 @@
             }
             allGroups.forEach(g => {
                 const count = allCommands.filter(c => (c.group || '') === g).length;
+                const escG = escapeHtml(g).replace(/'/g, '&#39;');
                 html += `<div class="d-flex align-items-center gap-2 mb-2 p-2 border rounded">
                     <i class="bi bi-folder2 text-primary"></i>
                     <span class="flex-grow-1 fw-medium">${escapeHtml(g)}</span>
                     <span class="badge bg-primary">${count} 条</span>
-                    <button class="btn btn-sm btn-outline-primary" onclick="window._renameGroup('${escapeHtml(g)}')">
+                    <button class="btn btn-sm btn-outline-primary" onclick="window._renameGroup('${escG}')">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="window._deleteGroup('${escapeHtml(g)}')">
+                    <button class="btn btn-sm btn-outline-danger" onclick="window._deleteGroup('${escG}')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>`;
@@ -634,7 +709,23 @@
     };
 
     window._deleteGroup = async function (groupName) {
-        if (!confirm(`确定删除分组 "${groupName}" 吗？\n组内命令将移至"未分组"。`)) return;
+        const count = allCommands.filter(function(c) { return (c.group || '') === groupName; }).length;
+        // 空分组：只存在于 localStorage，直接从本地移除即可
+        if (count === 0) {
+            if (!confirm(`确定删除空分组 "${groupName}" 吗？`)) return;
+            try {
+                var eg = JSON.parse(localStorage.getItem('adb_empty_groups') || '[]');
+                eg = eg.filter(function(g) { return g !== groupName; });
+                localStorage.setItem('adb_empty_groups', JSON.stringify(eg));
+            } catch(e) {}
+            renderCommandButtons();
+            renderCommandList();
+            loadGroupOptions();
+            showGroupManager();
+            return;
+        }
+        // 非空分组：调用后端 API，组内命令将移至"未分组"
+        if (!confirm(`确定删除分组 "${groupName}" 吗？\n组内 ${count} 条命令将移至"未分组"。`)) return;
         try {
             const res = await apiFetch(`${API_BASE}/groups/${encodeURIComponent(groupName)}`, {
                 method: 'DELETE'
@@ -642,9 +733,9 @@
             const data = await res.json();
             if (data.error) { showToast(data.error, 'error'); return; }
             allCommands = data.commands;
-            let emptyGroups = [];
+            var emptyGroups = [];
             try { emptyGroups = JSON.parse(localStorage.getItem('adb_empty_groups') || '[]'); } catch(e) {}
-            emptyGroups = emptyGroups.filter(g => g !== groupName);
+            emptyGroups = emptyGroups.filter(function(g) { return g !== groupName; });
             localStorage.setItem('adb_empty_groups', JSON.stringify(emptyGroups));
             renderCommandButtons();
             renderCommandList();
@@ -680,7 +771,7 @@
                 btnStart.disabled = false;
                 btnStop.disabled = true;
                 filenameInput.disabled = false;
-                statusSpan.innerHTML = '状态：<span id="logcatStatusText" class="badge bg-danger">未运行</span>';
+                if (statusSpan) statusSpan.innerHTML = '状态：<span id="logcatStatusText" class="badge bg-danger">未运行</span>';
                 detailDiv.style.display = 'none';
                 detailDiv.innerHTML = '';
                 window.currentLogcatPath = null;
@@ -775,27 +866,105 @@
         } catch (err) { console.error('加载命令失败', err); }
     }
 
+    // ---------- 自动 shell 开关 ----------
+    function isAutoShellEnabled() {
+        const toggle = document.getElementById('autoShellToggle');
+        return toggle ? toggle.checked : true; // 默认开启
+    }
+
+    // adb 自身子命令（不需要加 shell 前缀的）
+    var ADB_DIRECT_CMDS_RE = /^(adb\s+)?(push|pull|install|uninstall|reboot|root|remount|sync|forward|reverse|usb|tcpip|connect|disconnect|exec-in|exec-out|devices|kill-server|start-server|help|version|wait-for-device|get-state|get-serialno|logcat|emu|backup|restore|bugreport|jdwp|ppp)\b/;
+
+    function applyAutoShellSingle(cmdText) {
+        // 对单条命令做自动 shell 处理
+        var t = cmdText.trim();
+        if (!t) return '';
+        // 已有 shell / adb shell 前缀 —— 不处理
+        if (/^(adb\s+)?shell\b/.test(t)) return t;
+        // 已知的 adb 子命令 —— 不处理
+        if (ADB_DIRECT_CMDS_RE.test(t)) return t;
+        // 以 "adb " 开头但不是已知子命令 → 用户本意是 shell 命令，改写为 shell xxx
+        if (/^adb\s+/.test(t)) return 'shell ' + t.replace(/^adb\s+/, '');
+        // 其余情况自动加 shell
+        return 'shell ' + t;
+    }
+
+    function applyAutoShell(cmdText) {
+        if (!isAutoShellEnabled()) return cmdText;
+        var trimmed = cmdText.trim();
+        // 按 ; & 换行 拆分多命令，逐条处理后再拼回
+        if (/[;&\n]/.test(trimmed)) {
+            var parts = trimmed.split(/[;&\n]+/);
+            return parts.map(function(p) { return applyAutoShellSingle(p); }).filter(function(x) { return x; }).join(';');
+        }
+        return applyAutoShellSingle(trimmed);
+    }
+
     async function sendCommand(cmdText) {
         const device = document.getElementById('deviceSelect').value;
         const outputDiv = document.getElementById('commandOutput');
-        if (!device) { outputDiv.innerText = '错误：请先选择设备'; return; }
-        outputDiv.innerText = '正在执行命令，请稍候...';
+        if (!device) { outputDiv.innerHTML = '<span class="text-danger">错误：请先选择设备</span>'; return; }
+        // 自动加 shell 前缀
+        cmdText = applyAutoShell(cmdText);
+        // 构建完整命令用于显示（去除多余的 adb 前缀，避免显示 "adb -s DEVICE adb shell ..."）
+        let displayCmd = cmdText.trim();
+        if (/^adb\s+/.test(displayCmd)) {
+            displayCmd = displayCmd.replace(/^adb\s+/, '');
+        }
+        // 构建多命令显示：分号分隔时每条命令换行显示
+        const cmdParts = displayCmd.split(';').map(p => p.trim()).filter(p => p);
+        let cmdDisplay;
+        if (cmdParts.length > 1) {
+            cmdDisplay = '[执行命令]\n' + cmdParts.map(p => escapeHtml(`adb -s ${device} ${p}`)).join('\n');
+        } else {
+            cmdDisplay = `[执行命令] ${escapeHtml(`adb -s ${device} ${displayCmd}`)}`;
+        }
+        outputDiv.innerHTML = '<span class="text-muted">正在执行命令，请稍候...</span>';
         try {
             const res = await apiFetch(`${API_BASE}/send_command`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ device, command: cmdText })
+                body: JSON.stringify({ device, command: cmdText, auto_shell: isAutoShellEnabled() })
             });
             const result = await res.json();
-            if (result.error) outputDiv.innerText = '错误：' + result.error;
-            else {
-                let output = '';
-                if (result.stdout) output += result.stdout;
-                if (result.stderr) output += '\n' + result.stderr;
-                if (output.trim() === '') output = '命令执行成功，无输出。';
-                outputDiv.innerText = output;
+            if (result.error) {
+                outputDiv.innerHTML = `${cmdDisplay}\n\n<span class="text-danger fw-bold">错误：${escapeHtml(result.error)}</span>`;
             }
-        } catch (error) { outputDiv.innerText = '请求失败：' + error.message; }
+            else {
+                let output = cmdDisplay + '\n';
+                // 显示返回码：[返回码] 标签为普通文字，状态码带颜色
+                const rc = result.returncode;
+                if (rc === 0) {
+                    output += `[返回码] <span class="text-success fw-bold">${rc} (成功)</span>`;
+                } else {
+                    output += `[返回码] <span class="text-danger fw-bold">${rc} (异常)</span>`;
+                }
+                // 合并 stdout / stderr 显示（adb 很多命令如 push 会把正常输出写到 stderr）
+                const stdout = (result.stdout || '').trim();
+                const stderr = (result.stderr || '').trim();
+                if (rc === 0) {
+                    // 成功时合并输出，不区分 stdout/stderr，值内容标绿色
+                    if (stdout || stderr) {
+                        output += `\n\n[输出]`;
+                        if (stdout) output += `\n${formatOutputLines(stdout)}`;
+                        if (stderr) output += `\n${formatOutputLines(stderr)}`;
+                    } else {
+                        output += `\n\n[输出] (无)`;
+                    }
+                } else {
+                    // 失败时区分显示
+                    if (stdout) {
+                        output += `\n\n[标准输出]\n${escapeHtml(stdout)}`;
+                    } else {
+                        output += `\n\n[标准输出] (无)`;
+                    }
+                    if (stderr) {
+                        output += `\n\n[标准错误]\n${escapeHtml(stderr)}`;
+                    }
+                }
+                outputDiv.innerHTML = output;
+            }
+        } catch (error) { outputDiv.innerHTML = `<span class="text-danger">请求失败：${escapeHtml(error.message)}</span>`; }
     }
 
     async function addCommand() {
@@ -859,21 +1028,35 @@
 
     async function deleteCommand() {
         let name = '';
+        let oldCmd = null;
         if (selectedNames.size === 1) {
             name = [...selectedNames][0];
+            oldCmd = allCommands.find(c => c.name === name);
         } else {
             const nameInput = document.getElementById('cmdName').value.trim();
-            if (allCommands.find(c => c.name === nameInput)) name = nameInput;
+            oldCmd = allCommands.find(c => c.name === nameInput);
+            if (oldCmd) name = nameInput;
         }
         if (!name) return alert('请在列表中选择一条命令，或输入已有命令名称');
         if (!confirm(`确定删除命令"${name}"吗？`)) return;
+        var deletedGroup = (oldCmd && oldCmd.group || '').trim();
         try {
             const res = await apiFetch(`${API_BASE}/commands/${encodeURIComponent(name)}`, {
                 method: 'DELETE'
             });
             const data = await res.json();
             if (data.error) alert(data.error);
-            else { clearForm(); selectedNames.delete(name); allCommands = data.commands; renderCommandButtons(); renderCommandList(); loadGroupOptions(); showToast('命令已删除'); }
+            else {
+                clearForm(); selectedNames.delete(name); allCommands = data.commands;
+                // 如果该分组已无命令，保留到空分组列表
+                if (deletedGroup && !allCommands.some(c => (c.group || '').trim() === deletedGroup)) {
+                    try {
+                        var eg = JSON.parse(localStorage.getItem('adb_empty_groups') || '[]');
+                        if (!eg.includes(deletedGroup)) { eg.push(deletedGroup); localStorage.setItem('adb_empty_groups', JSON.stringify(eg)); }
+                    } catch(e) {}
+                }
+                renderCommandButtons(); renderCommandList(); loadGroupOptions(); showToast('命令已删除');
+            }
         } catch (err) { alert('删除失败：' + err.message); }
     }
 
@@ -881,6 +1064,8 @@
         document.getElementById('cmdName').value = '';
         document.getElementById('cmdText').value = '';
         document.getElementById('cmdGroup').value = '';
+        // 触发 textarea 缩回最小高度
+        document.getElementById('cmdText').dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     // ---------- 批量操作 ----------
@@ -888,6 +1073,12 @@
         const names = [...selectedNames];
         if (names.length === 0) return alert('请先勾选要删除的命令');
         if (!confirm(`确定删除选中的 ${names.length} 条命令吗？`)) return;
+        // 记录将被删除命令的分组
+        var affectedGroups = new Set();
+        names.forEach(function(n) {
+            var c = allCommands.find(function(x) { return x.name === n; });
+            if (c) affectedGroups.add((c.group || '').trim());
+        });
         try {
             const res = await apiFetch(`${API_BASE}/commands/batch_delete`, {
                 method: 'POST',
@@ -896,7 +1087,20 @@
             });
             const data = await res.json();
             if (data.error) alert(data.error);
-            else { selectedNames.clear(); allCommands = data.commands; renderCommandButtons(); renderCommandList(); loadGroupOptions(); showToast(`已批量删除 ${names.length} 条命令`); }
+            else {
+                selectedNames.clear(); allCommands = data.commands;
+                // 保留变为空的分组
+                try {
+                    var eg = JSON.parse(localStorage.getItem('adb_empty_groups') || '[]');
+                    affectedGroups.forEach(function(g) {
+                        if (g && !allCommands.some(function(c) { return (c.group || '').trim() === g; }) && !eg.includes(g)) {
+                            eg.push(g);
+                        }
+                    });
+                    localStorage.setItem('adb_empty_groups', JSON.stringify(eg));
+                } catch(e) {}
+                renderCommandButtons(); renderCommandList(); loadGroupOptions(); showToast(`已批量删除 ${names.length} 条命令`);
+            }
         } catch (err) { alert('批量删除失败：' + err.message); }
     }
 
@@ -953,7 +1157,8 @@
         // 同步分组全选框
         document.querySelectorAll('.group-check').forEach(gc => {
             const group = gc.getAttribute('data-group');
-            const groupCbs = document.querySelectorAll(`.cmd-check[data-group="${group}"]`);
+            const escapedGroup = group.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            const groupCbs = document.querySelectorAll(`.cmd-check[data-group="${escapedGroup}"]`);
             gc.checked = groupCbs.length > 0 && [...groupCbs].every(cb => cb.checked);
         });
     }
@@ -997,7 +1202,7 @@
     }
 
     function clearOutput() {
-        document.getElementById('commandOutput').innerText = '命令执行结果将显示在这里...';
+        document.getElementById('commandOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
     }
 
     // ---------- 工具函数 ----------
@@ -1005,6 +1210,16 @@
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
+    }
+
+    // 将多命令输出中的结果值标为绿色（以 [ 开头的行是命令头，其余行是结果值）
+    function formatOutputLines(text) {
+        return text.split('\n').map(function(line) {
+            var trimmed = line.trim();
+            if (!trimmed) return ''; // 空行保留
+            if (trimmed.startsWith('[')) return escapeHtml(line); // 命令头行，普通颜色
+            return '<span class="text-success fw-bold">' + escapeHtml(line) + '</span>'; // 结果值，绿色
+        }).join('\n');
     }
 
     // ---------- 事件绑定 ----------
@@ -1064,6 +1279,8 @@
                 const data = await res.json();
                 if (data.success && data.command) {
                     document.getElementById('manualCommand').value = data.command;
+                    // 触发 textarea 自动撑高
+                    document.getElementById('manualCommand').dispatchEvent(new Event('input', { bubbles: true }));
                     showToast('AI 指令已生成');
                 } else {
                     showToast('生成失败：' + (data.error || '未知错误'), 'error');
@@ -1093,6 +1310,67 @@
         document.getElementById('btnStopLogcat')?.addEventListener('click', (e) => { e.preventDefault(); stopLogcat(); });
         document.getElementById('btnOpenFolder')?.addEventListener('click', (e) => { e.preventDefault(); openFolder(); });
         document.getElementById('btnClearOutput')?.addEventListener('click', (e) => { e.preventDefault(); clearOutput(); });
+
+        // 日志路径自动补齐尾部反斜杠
+        document.getElementById('logcatFilename')?.addEventListener('blur', function() {
+            var val = this.value.trim();
+            if (val && !val.endsWith('\\')) {
+                this.value = val + '\\';
+            }
+        });
+
+        // ========== Textarea 自动撑高 ==========
+        function autoGrowTextarea(el) {
+            el.style.height = 'auto';
+            var minH = 40; // 最小高度（约2行），防止隐藏状态下计算为0
+            var maxH = 200;
+            var h = Math.max(el.scrollHeight, minH);
+            el.style.height = Math.min(h, maxH) + 'px';
+            el.style.overflowY = h > maxH ? 'auto' : 'hidden';
+        }
+        ['manualCommand', 'cmdText'].forEach(function(id) {
+            var ta = document.getElementById(id);
+            if (ta) {
+                ta.style.resize = 'none';
+                ta.style.overflowY = 'hidden';
+                ta.addEventListener('input', function() { autoGrowTextarea(this); });
+                // 初始化时调整一次
+                autoGrowTextarea(ta);
+            }
+        });
+
+        // ========== Tab 栏拖拽滚动 ==========
+        var tabDragState = null;
+        var tabDragMoved = false;
+        document.addEventListener('mousedown', function(e) {
+            var bar = e.target.closest('.group-tab-bar');
+            if (!bar || e.button !== 0) return;
+            tabDragState = { bar: bar, startX: e.clientX, scrollLeft: bar.scrollLeft };
+            tabDragMoved = false;
+        });
+        document.addEventListener('mousemove', function(e) {
+            if (!tabDragState) return;
+            var dx = e.clientX - tabDragState.startX;
+            if (Math.abs(dx) > 3) {
+                tabDragMoved = true;
+                tabDragState.bar.classList.add('dragging');
+                tabDragState.bar.scrollLeft = tabDragState.scrollLeft - dx;
+            }
+        });
+        document.addEventListener('mouseup', function() {
+            if (tabDragState) {
+                tabDragState.bar.classList.remove('dragging');
+                tabDragState = null;
+            }
+        });
+        // 拖拽后阻止触发标签点击
+        document.addEventListener('click', function(e) {
+            if (tabDragMoved && e.target.closest('.group-tab')) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+            }
+            tabDragMoved = false;
+        }, true);
     }
 
     // ---------- 初始化 ----------
@@ -1102,6 +1380,34 @@
         loadCommands();
         updateLogcatStatus();
         setInterval(updateLogcatStatus, 5000);
-        document.getElementById('commandOutput').innerText = '命令执行结果将显示在这里...';
+        document.getElementById('commandOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
+
+        // 自动 shell 开关：从 localStorage 恢复状态
+        const autoShellToggle = document.getElementById('autoShellToggle');
+        if (autoShellToggle) {
+            const saved = localStorage.getItem('adb_auto_shell');
+            autoShellToggle.checked = saved !== null ? saved === 'true' : true; // 默认开启
+            updateAutoShellUI();
+            autoShellToggle.addEventListener('change', function () {
+                localStorage.setItem('adb_auto_shell', this.checked);
+                updateAutoShellUI();
+            });
+        }
     });
+
+    function updateAutoShellUI() {
+        const enabled = isAutoShellEnabled();
+        const manualCmd = document.getElementById('manualCommand');
+        const shellHint = document.getElementById('shellHint');
+        if (manualCmd) {
+            manualCmd.placeholder = enabled
+                ? '输入命令（Shell模式：输入 shell 命令即可，无需加 shell 前缀）'
+                : '输入完整 adb 命令（如: shell ls /sdcard，Shell 模式已关闭）';
+        }
+        if (shellHint) {
+            shellHint.innerHTML = enabled
+                ? '<i class="bi bi-info-circle"></i> 已开启"Shell 模式"，无需手动输入 shell 前缀'
+                : '<i class="bi bi-info-circle"></i> "Shell 模式"已关闭，shell 命令请手动加 "shell " 前缀';
+        }
+    }
 })();
