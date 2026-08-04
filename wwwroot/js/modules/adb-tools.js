@@ -1492,8 +1492,8 @@
         const shellHint = document.getElementById('shellHint');
         if (manualCmd) {
             manualCmd.placeholder = enabled
-                ? '输入命令（Shell模式：输入 shell 命令即可，无需加 shell 前缀）'
-                : '输入完整 adb 命令（如: shell ls /sdcard，Shell 模式已关闭）';
+                ? '输入命令...'
+                : '输入完整 adb 命令...';
         }
         if (shellHint) {
             shellHint.innerHTML = enabled
