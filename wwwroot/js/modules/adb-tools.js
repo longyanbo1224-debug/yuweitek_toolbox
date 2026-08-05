@@ -8,6 +8,8 @@
     let selectedNames = new Set(); // 批量选择
     let _prevCmdTabActive = 'all';  // 记录快捷指令区上次选中的 Tab
     window.currentLogcatPath = null;
+    let execHistory = [];           // 执行历史
+    let execHistoryId = 0;         // 历史自增 ID
 
     // ---------- 自定义 prompt（替代浏览器原生 prompt） ----------
     function customPrompt(title, defaultValue, callback) {
@@ -64,7 +66,7 @@
                         <div class="modal-body py-3 text-center">
                             <p class="mb-0">${escapeHtml(message)}</p>
                         </div>
-                        <div class="modal-footer py-1">
+                        <div class="modal-footer py-1 justify-content-center">
                             <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">取消</button>
                             <button type="button" class="btn btn-sm ${confirmClass}" id="confirmModalOk">确定</button>
                         </div>
@@ -977,9 +979,10 @@
             if (result.error) {
                 // 错误：红色横幅
                 statusBanner.className = 'cmd-status-banner cmd-status-error';
-                statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行失败</span><span class="cmd-status-rc">' + escapeHtml(result.error) + '</span>';
+                statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行失败</span><span class="cmd-status-ts">' + formatTimestamp() + '</span><span class="cmd-status-rc">' + escapeHtml(result.error) + '</span>';
                 statusBanner.style.display = 'flex';
                 cmdOutput.innerHTML = '';
+                pushHistory(device, cmdText, 'error', -1, '', result.error);
             }
             else {
                 const rc = result.returncode;
@@ -988,8 +991,9 @@
                 if (rc === 0) {
                     // 成功：绿色横幅
                     statusBanner.className = 'cmd-status-banner cmd-status-success';
-                    statusBanner.innerHTML = '<i class="bi bi-check-circle"></i> <span>执行成功</span><span class="cmd-status-rc">返回码: 0</span>';
+                    statusBanner.innerHTML = '<i class="bi bi-check-circle"></i> <span>执行成功</span><span class="cmd-status-ts">' + formatTimestamp() + '</span><span class="cmd-status-rc">返回码: 0</span>';
                     statusBanner.style.display = 'flex';
+                    pushHistory(device, cmdText, 'success', 0, stdout, stderr);
                     // 合并 stdout / stderr（adb 很多命令如 push 会把正常输出写到 stderr）
                     if (stdout || stderr) {
                         let out = '';
@@ -1005,8 +1009,9 @@
                 } else {
                     // 失败：红色横幅
                     statusBanner.className = 'cmd-status-banner cmd-status-error';
-                    statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行异常</span><span class="cmd-status-rc">返回码: ' + rc + '</span>';
+                    statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行异常</span><span class="cmd-status-ts">' + formatTimestamp() + '</span><span class="cmd-status-rc">返回码: ' + rc + '</span>';
                     statusBanner.style.display = 'flex';
+                    pushHistory(device, cmdText, 'error', rc, stdout, stderr);
                     // 区分 stdout / stderr，stderr 标红
                     let out = '';
                     if (stdout) out += escapeHtml(stdout);
@@ -1019,9 +1024,10 @@
             }
         } catch (error) {
             statusBanner.className = 'cmd-status-banner cmd-status-error';
-            statusBanner.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <span>请求失败</span><span class="cmd-status-rc">' + escapeHtml(error.message) + '</span>';
+            statusBanner.innerHTML = '<i class="bi bi-exclamation-triangle"></i> <span>请求失败</span><span class="cmd-status-ts">' + formatTimestamp() + '</span><span class="cmd-status-rc">' + escapeHtml(error.message) + '</span>';
             statusBanner.style.display = 'flex';
             cmdOutput.innerHTML = '';
+            pushHistory(device, cmdText, 'error', -1, '', error.message || 'Network error');
         }
     }
 
@@ -1265,11 +1271,366 @@
         document.getElementById('cmdOutput').innerHTML = '<span class="text-muted">命令执行结果将显示在这里...</span>';
     }
 
+    // ---------- 执行历史 ----------
+    function showExecHistory() {
+        // 清理旧弹窗
+        var old = document.getElementById('execHistoryModal');
+        if (old) old.remove();
+
+        var html = '<div class="modal fade" id="execHistoryModal" tabindex="-1">' +
+            '<div class="modal-dialog modal-lg modal-dialog-centered">' +
+            '<div class="modal-content">' +
+            '<div class="modal-header py-2">' +
+            '<h6 class="modal-title"><i class="bi bi-clock-history me-1"></i>执行历史' +
+            (execHistory.length > 0 ? ' <span class="text-muted small">(' + execHistory.length + ' 条)</span>' : '') +
+            '</h6>' +
+            '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>' +
+            '</div>' +
+            '<div class="modal-body p-0">';
+
+        if (execHistory.length === 0) {
+            html += '<p class="text-center text-muted py-5 mb-0">暂无执行记录</p>';
+        } else {
+            html += '<div class="exec-history-list">';
+            execHistory.forEach(function(entry) {
+                var statusIcon = entry.status === 'success'
+                    ? '<i class="bi bi-check-circle-fill text-success"></i>'
+                    : '<i class="bi bi-x-circle-fill text-danger"></i>';
+                var rcText = entry.returncode >= 0 ? ('返回码: ' + entry.returncode) : '';
+                var shortTime = entry.timestamp.substring(11); // HH:MM:SS
+                // 命令摘要，最多 60 字符
+                var cmdSummary = entry.command.length > 60 ? entry.command.substring(0, 60) + '...' : entry.command;
+                html += '<div class="exec-history-item" data-id="' + entry.id + '" ' +
+                    'title="' + escapeHtml(entry.timestamp) + '&#10;设备: ' + escapeHtml(entry.device) + '&#10;' + escapeHtml(entry.command) + '">' +
+                    '<span class="exec-history-status">' + statusIcon + '</span>' +
+                    '<span class="exec-history-time">' + escapeHtml(shortTime) + '</span>' +
+                    '<span class="exec-history-cmd">' + escapeHtml(cmdSummary) + '</span>' +
+                    '<span class="exec-history-meta">' + escapeHtml(entry.device) + (rcText ? ' | ' + rcText : '') + '</span>' +
+                    '<button class="btn-exec-history-copy" data-id="' + entry.id + '" title="复制执行信息"><i class="bi bi-clipboard"></i></button>' +
+                    '</div>';
+            });
+            html += '</div>';
+        }
+
+        html += '</div>' +
+            '<div class="modal-footer py-2">' +
+            (execHistory.length > 0 ? '<button type="button" class="btn btn-outline-danger btn-sm" id="btnClearHistory"><i class="bi bi-trash3"></i> 清空历史</button>' : '') +
+            '<button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">关闭</button>' +
+            '</div>' +
+            '</div></div></div>';
+
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        document.body.appendChild(wrapper);
+
+        var modalEl = wrapper.querySelector('.modal');
+        var bsModal = new bootstrap.Modal(modalEl);
+        bsModal.show();
+
+        // 悬浮显示简要预览（无滚动内容），点击查看完整详情
+        var hoverPopup = null;
+        var hoverHideTimer = null;
+
+        function showHoverDetail(item, entry) {
+            // 清除隐藏定时器
+            if (hoverHideTimer) { clearTimeout(hoverHideTimer); hoverHideTimer = null; }
+            // 移除旧弹窗
+            if (hoverPopup) { hoverPopup.remove(); hoverPopup = null; }
+
+            var stdout = (entry.stdout || '').trim();
+            var stderr = (entry.stderr || '').trim();
+            var hasOutput = stdout || stderr;
+
+            // 命令截断显示（最长 150 字符）
+            var cmdDisplay = entry.command.length > 150 ? entry.command.substring(0, 150) + '...' : entry.command;
+            // 输出摘要（仅显示前 2 行，每行最多 80 字符）
+            var outputPreview = '';
+            if (stdout) {
+                var lines = stdout.split('\n');
+                var preview = lines.slice(0, 2).map(function(l) { return l.length > 80 ? l.substring(0, 80) + '...' : l; }).join('\n');
+                outputPreview = '<div class="exec-history-popup-row"><span class="exec-history-popup-label">stdout 预览</span><pre class="exec-history-popup-pre exec-history-popup-pre-compact">' + escapeHtml(preview) + '</pre></div>';
+            } else if (stderr) {
+                var lines = stderr.split('\n');
+                var preview = lines.slice(0, 2).map(function(l) { return l.length > 80 ? l.substring(0, 80) + '...' : l; }).join('\n');
+                outputPreview = '<div class="exec-history-popup-row"><span class="exec-history-popup-label">stderr 预览</span><pre class="exec-history-popup-pre exec-history-popup-pre-compact text-danger">' + escapeHtml(preview) + '</pre></div>';
+            }
+
+            var detailHtml = '<div class="exec-history-popup">' +
+                '<div class="exec-history-popup-row"><span class="exec-history-popup-label">时间</span><span>' + escapeHtml(entry.timestamp) + '</span></div>' +
+                '<div class="exec-history-popup-row"><span class="exec-history-popup-label">设备</span><span>' + escapeHtml(entry.device) + '</span></div>' +
+                '<div class="exec-history-popup-row"><span class="exec-history-popup-label">状态</span><span>' + (entry.status === 'success' ? '<span class="text-success">成功</span>' : '<span class="text-danger">失败</span>') + (entry.returncode >= 0 ? ' (返回码: ' + entry.returncode + ')' : '') + '</span></div>' +
+                '<div class="exec-history-popup-row"><span class="exec-history-popup-label">完整命令</span><code class="exec-history-popup-cmd">' + escapeHtml(cmdDisplay) + '</code></div>' +
+                outputPreview +
+                (hasOutput ? '<div class="exec-history-popup-row"><span class="exec-history-popup-click-hint"><i class="bi bi-hand-index-thumb"></i> 点击查看完整输出</span></div>' : '') +
+                '</div>';
+
+            hoverPopup = document.createElement('div');
+            hoverPopup.className = 'exec-history-hover-popup';
+            hoverPopup.innerHTML = detailHtml;
+            document.body.appendChild(hoverPopup);
+
+            // 定位弹窗
+            var rect = item.getBoundingClientRect();
+            var popupW = 420;
+            var left = rect.right + 10;
+            if (left + popupW > window.innerWidth - 10) {
+                left = rect.left - popupW - 10;
+            }
+            if (left < 10) left = 10;
+            var top = rect.top;
+            var maxTop = window.innerHeight - 10;
+            hoverPopup.style.left = left + 'px';
+            hoverPopup.style.top = top + 'px';
+            hoverPopup.style.maxHeight = (maxTop - top) + 'px';
+            hoverPopup.style.display = 'block';
+        }
+
+        function hideHoverDetail() {
+            // 延迟隐藏，给用户时间移动到点击
+            hoverHideTimer = setTimeout(function() {
+                if (hoverPopup) { hoverPopup.remove(); hoverPopup = null; }
+            }, 150);
+        }
+
+        function showHistoryEntryDetail(entry) {
+            // 先隐藏悬浮弹窗
+            if (hoverHideTimer) { clearTimeout(hoverHideTimer); hoverHideTimer = null; }
+            if (hoverPopup) { hoverPopup.remove(); hoverPopup = null; }
+
+            // 移除旧详情弹窗
+            var old = document.getElementById('execHistoryDetailModal');
+            if (old) old.remove();
+
+            var stdout = (entry.stdout || '').trim();
+            var stderr = (entry.stderr || '').trim();
+
+            var html = '<div class="modal fade" id="execHistoryDetailModal" tabindex="-1">' +
+                '<div class="modal-dialog modal-lg modal-dialog-centered">' +
+                '<div class="modal-content">' +
+                '<div class="modal-header py-2">' +
+                '<h6 class="modal-title"><i class="bi bi-terminal me-1"></i>执行详情</h6>' +
+                '<button type="button" class="btn-close" data-bs-dismiss="modal"></button>' +
+                '</div>' +
+                '<div class="modal-body">' +
+                '<div class="exec-detail-section">' +
+                '<div class="exec-detail-row"><span class="exec-detail-label">时间</span><span>' + escapeHtml(entry.timestamp) + '</span></div>' +
+                '<div class="exec-detail-row"><span class="exec-detail-label">设备</span><span>' + escapeHtml(entry.device) + '</span></div>' +
+                '<div class="exec-detail-row"><span class="exec-detail-label">状态</span><span>' + (entry.status === 'success' ? '<span class="text-success fw-bold">成功</span>' : '<span class="text-danger fw-bold">失败</span>') + (entry.returncode >= 0 ? ' (返回码: ' + entry.returncode + ')' : '') + '</span></div>' +
+                '<div class="exec-detail-row"><span class="exec-detail-label">完整命令</span><code class="exec-detail-cmd">' + escapeHtml(entry.command) + '</code></div>' +
+                (stdout ? '<div class="exec-detail-row"><span class="exec-detail-label">stdout</span><pre class="exec-detail-pre">' + escapeHtml(stdout) + '</pre></div>' : '') +
+                (stderr ? '<div class="exec-detail-row"><span class="exec-detail-label">stderr</span><pre class="exec-detail-pre text-danger">' + escapeHtml(stderr) + '</pre></div>' : '') +
+                (!stdout && !stderr ? '<div class="exec-detail-row"><span class="exec-detail-label">输出</span><span class="text-muted">（无输出）</span></div>' : '') +
+                '</div>' +
+                '</div>' +
+                '<div class="modal-footer py-2">' +
+                '<button type="button" class="btn btn-outline-primary btn-sm" id="btnCopyDetail"><i class="bi bi-clipboard"></i> 复制详情</button>' +
+                '<button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">关闭</button>' +
+                '</div>' +
+                '</div></div></div>';
+
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = html;
+            document.body.appendChild(wrapper);
+
+            var modalEl = wrapper.querySelector('.modal');
+            var bsModal = new bootstrap.Modal(modalEl);
+            bsModal.show();
+
+            // 复制按钮
+            wrapper.querySelector('#btnCopyDetail').addEventListener('click', function() {
+                copyHistoryEntry(entry.id);
+                showToast('已复制到剪贴板');
+            });
+
+            modalEl.addEventListener('hidden.bs.modal', function() {
+                wrapper.remove();
+            });
+        }
+
+        wrapper.querySelectorAll('.exec-history-item').forEach(function(item) {
+            var id = parseInt(item.getAttribute('data-id'));
+            var entry = execHistory.find(function(e) { return e.id === id; });
+            if (!entry) return;
+
+            item.addEventListener('mouseenter', function() {
+                showHoverDetail(this, entry);
+            });
+            item.addEventListener('mouseleave', function() {
+                hideHoverDetail();
+            });
+            item.addEventListener('click', function(e) {
+                // 如果点击的是复制按钮，不触发详情
+                if (e.target.closest('.btn-exec-history-copy')) return;
+                showHistoryEntryDetail(entry);
+            });
+        });
+
+        // 复制按钮 → 复制完整执行信息
+        wrapper.querySelectorAll('.btn-exec-history-copy').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var id = parseInt(this.getAttribute('data-id'));
+                copyHistoryEntry(id);
+            });
+        });
+
+        // 清空历史按钮
+        var btnClear = wrapper.querySelector('#btnClearHistory');
+        if (btnClear) {
+            btnClear.addEventListener('click', function() {
+                execHistory = [];
+                execHistoryId = 0;
+                clearOutput();
+                bsModal.hide();
+                showToast('执行历史已清空');
+            });
+        }
+
+        modalEl.addEventListener('hidden.bs.modal', function() {
+            if (hoverPopup) { hoverPopup.remove(); hoverPopup = null; }
+            wrapper.remove();
+        });
+    }
+
+    function copyHistoryEntry(id) {
+        var entry = execHistory.find(function(e) { return e.id === id; });
+        if (!entry) return;
+
+        var text = '';
+        text += '时间: ' + entry.timestamp + '\n';
+        text += '设备: ' + entry.device + '\n';
+        text += '命令: ' + entry.command + '\n';
+        text += '状态: ' + (entry.status === 'success' ? '成功' : '失败') + '\n';
+        text += '返回码: ' + entry.returncode + '\n';
+        text += '--- 标准输出 ---\n';
+        text += (entry.stdout || '(无输出)') + '\n';
+        text += '--- 标准错误 ---\n';
+        text += (entry.stderr || '(无输出)');
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function() {
+                showToast('执行信息已复制到剪贴板');
+            }).catch(function() {
+                fallbackCopy(text);
+            });
+        } else {
+            fallbackCopy(text);
+        }
+    }
+
+    function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+            document.execCommand('copy');
+            showToast('执行信息已复制到剪贴板');
+        } catch (e) {
+            showToast('复制失败，请手动复制', 'error');
+        }
+        document.body.removeChild(ta);
+    }
+
+    function viewHistory(id) {
+        var entry = execHistory.find(function(e) { return e.id === id; });
+        if (!entry) return;
+
+        var statusBanner = document.getElementById('cmdStatusBanner');
+        var cmdEcho = document.getElementById('cmdEcho');
+        var cmdOutput = document.getElementById('cmdOutput');
+
+        // 构建命令回显
+        var device = entry.device;
+        var cmdText = entry.command;
+        var displayCmd = cmdText.trim();
+        if (/^adb\s+/.test(displayCmd)) {
+            displayCmd = displayCmd.replace(/^adb\s+/, '');
+        }
+        var cmdParts = displayCmd.split(';').map(function(p) { return p.trim(); }).filter(function(p) { return p; });
+        var cmdEchoHtml;
+        if (cmdParts.length > 1) {
+            cmdEchoHtml = cmdParts.map(function(p) { return '<span class="cmd-prompt">$</span> ' + escapeHtml('adb -s ' + device + ' ' + p); }).join('\n');
+        } else {
+            cmdEchoHtml = '<span class="cmd-prompt">$</span> ' + escapeHtml('adb -s ' + device + ' ' + displayCmd);
+        }
+        cmdEcho.innerHTML = cmdEchoHtml;
+        cmdEcho.classList.remove('expanded');
+        cmdEcho.title = cmdParts.length > 1 ? '点击展开查看完整命令' : '';
+
+        // 构建状态横幅
+        if (entry.returncode < 0) {
+            // 网络/其他错误
+            statusBanner.className = 'cmd-status-banner cmd-status-error';
+            statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行失败</span><span class="cmd-status-ts">' + escapeHtml(entry.timestamp) + '</span><span class="cmd-status-rc">' + escapeHtml(entry.stderr || '') + '</span>';
+        } else if (entry.status === 'success') {
+            statusBanner.className = 'cmd-status-banner cmd-status-success';
+            statusBanner.innerHTML = '<i class="bi bi-check-circle"></i> <span>执行成功</span><span class="cmd-status-ts">' + escapeHtml(entry.timestamp) + '</span><span class="cmd-status-rc">返回码: ' + entry.returncode + '</span>';
+        } else {
+            statusBanner.className = 'cmd-status-banner cmd-status-error';
+            statusBanner.innerHTML = '<i class="bi bi-x-circle"></i> <span>执行异常</span><span class="cmd-status-ts">' + escapeHtml(entry.timestamp) + '</span><span class="cmd-status-rc">返回码: ' + entry.returncode + '</span>';
+        }
+        statusBanner.style.display = 'flex';
+
+        // 构建输出
+        var stdout = (entry.stdout || '').trim();
+        var stderr = (entry.stderr || '').trim();
+        if (entry.status === 'success') {
+            if (stdout || stderr) {
+                var out = '';
+                if (stdout) out += formatOutputLines(stdout);
+                if (stderr) {
+                    if (out) out += '\n';
+                    out += formatOutputLines(stderr);
+                }
+                cmdOutput.innerHTML = out;
+            } else {
+                cmdOutput.innerHTML = '<span class="text-muted">(无输出)</span>';
+            }
+        } else {
+            var out2 = '';
+            if (stdout) out2 += escapeHtml(stdout);
+            if (stderr) {
+                if (out2) out2 += '\n';
+                out2 += '<span class="text-danger">' + escapeHtml(stderr) + '</span>';
+            }
+            cmdOutput.innerHTML = out2 || '<span class="text-muted">(无输出)</span>';
+        }
+    }
+
     // ---------- 工具函数 ----------
     function escapeHtml(str) {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
+    }
+
+    // 格式化时间戳
+    function formatTimestamp() {
+        var now = new Date();
+        var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
+        return now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate())
+            + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    }
+
+    // 追加执行历史（保留最近 50 条）
+    function pushHistory(device, command, status, returncode, stdout, stderr) {
+        execHistoryId++;
+        execHistory.unshift({
+            id: execHistoryId,
+            timestamp: formatTimestamp(),
+            device: device,
+            command: command,
+            status: status,
+            returncode: returncode,
+            stdout: stdout || '',
+            stderr: stderr || ''
+        });
+        if (execHistory.length > 50) execHistory.pop();
     }
 
     // 将多命令输出中的结果值标为绿色（以 [ 开头的行是命令头，其余行是结果值）
@@ -1384,6 +1745,7 @@
         document.getElementById('btnStopLogcat')?.addEventListener('click', (e) => { e.preventDefault(); stopLogcat(); });
         document.getElementById('btnOpenFolder')?.addEventListener('click', (e) => { e.preventDefault(); openFolder(); });
         document.getElementById('btnClearOutput')?.addEventListener('click', (e) => { e.preventDefault(); clearOutput(); });
+        document.getElementById('btnExecHistory')?.addEventListener('click', (e) => { e.preventDefault(); showExecHistory(); });
 
         // 日志路径自动补齐尾部反斜杠
         document.getElementById('logcatFilename')?.addEventListener('blur', function() {

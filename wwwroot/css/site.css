@@ -521,6 +521,12 @@ body.theme-dark .qa-bubble.assistant {
     background: #f8d7da;
     color: #721c24;
 }
+.cmd-status-ts {
+    margin-left: 12px;
+    font-weight: 400;
+    font-size: 11px;
+    opacity: 0.7;
+}
 .cmd-status-rc {
     margin-left: auto;
     font-weight: 400;
@@ -613,6 +619,188 @@ body.theme-dark .qa-bubble.assistant {
     min-height: 60px;
 }
 
+/* 执行历史弹窗列表 */
+.exec-history-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+.exec-history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background 0.12s;
+    font-size: 13px;
+}
+.exec-history-item:hover {
+    background: #f0f4ff;
+}
+.exec-history-item:last-child {
+    border-bottom: none;
+}
+.exec-history-status {
+    flex-shrink: 0;
+    font-size: 16px;
+}
+.exec-history-time {
+    flex-shrink: 0;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 12px;
+    color: #6c757d;
+    min-width: 70px;
+}
+.exec-history-cmd {
+    flex: 1;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 12px;
+    color: #212529;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.exec-history-meta {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #999;
+}
+.btn-exec-history-copy {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid transparent;
+    color: #6c757d;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    line-height: 1;
+}
+.btn-exec-history-copy:hover {
+    color: #0d6efd;
+    background: rgba(13, 110, 253, 0.08);
+    border-color: rgba(13, 110, 253, 0.3);
+}
+.btn-exec-history-copy:active {
+    color: #0a58ca;
+    background: rgba(13, 110, 253, 0.15);
+}
+
+/* 执行历史悬浮详情弹窗 */
+.exec-history-hover-popup {
+    display: none;
+    position: fixed;
+    z-index: 99999;
+    width: 420px;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    font-size: 13px;
+    pointer-events: none;
+}
+.exec-history-popup {
+    padding: 0;
+}
+.exec-history-popup-row {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+.exec-history-popup-row:last-child {
+    border-bottom: none;
+}
+.exec-history-popup-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+.exec-history-popup-cmd {
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 12px;
+    color: #0d6efd;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+.exec-history-popup-pre {
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 11px;
+    background: #f8f9fa;
+    padding: 6px 8px;
+    border-radius: 4px;
+    margin: 2px 0 0 0;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+/* 悬浮弹窗中的紧凑输出预览（无滚动，仅展示前2行） */
+.exec-history-popup-pre-compact {
+    max-height: none;
+    overflow-y: visible;
+}
+/* 悬浮弹窗中"点击查看完整输出"提示 */
+.exec-history-popup-click-hint {
+    display: block;
+    font-size: 11px;
+    color: #0d6efd;
+    text-align: center;
+    padding: 2px 0;
+}
+
+/* 执行详情弹窗（点击历史条目打开） */
+.exec-detail-section {
+    display: flex;
+    flex-direction: column;
+}
+.exec-detail-row {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.exec-detail-row:last-child {
+    border-bottom: none;
+}
+.exec-detail-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.exec-detail-cmd {
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    color: #0d6efd;
+    background: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    word-break: break-all;
+    white-space: pre-wrap;
+}
+.exec-detail-pre {
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: 12px;
+    background: #f8f9fa;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin: 0;
+    max-height: 350px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
 /* ==================== 深色模式 ==================== */
 body.theme-dark .cmd-terminal {
     border-color: #30363d;
@@ -638,6 +826,65 @@ body.theme-dark .cmd-echo::after {
 body.theme-dark .cmd-output {
     background: #0d1117;
     color: #c9d1d9;
+}
+body.theme-dark .exec-history-item {
+    border-color: #21262d;
+}
+body.theme-dark .exec-history-item:hover {
+    background: #161b22;
+}
+body.theme-dark .exec-history-cmd {
+    color: #c9d1d9;
+}
+body.theme-dark .exec-history-meta {
+    color: #6c757d;
+}
+body.theme-dark .btn-exec-history-copy {
+    color: #484f58;
+}
+body.theme-dark .btn-exec-history-copy:hover {
+    color: #58a6ff;
+    background: rgba(88, 166, 255, 0.1);
+    border-color: rgba(88, 166, 255, 0.25);
+}
+body.theme-dark .btn-exec-history-copy:active {
+    color: #79c0ff;
+    background: rgba(88, 166, 255, 0.18);
+}
+body.theme-dark .exec-history-hover-popup {
+    background: #161b22;
+    border-color: #30363d;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+body.theme-dark .exec-history-popup-row {
+    border-color: #21262d;
+}
+body.theme-dark .exec-history-popup-label {
+    color: #8b949e;
+}
+body.theme-dark .exec-history-popup-cmd {
+    color: #58a6ff;
+    background: #0d1117;
+}
+body.theme-dark .exec-history-popup-pre {
+    background: #0d1117;
+}
+body.theme-dark .exec-history-popup-click-hint {
+    color: #58a6ff;
+}
+/* 深色模式 - 执行详情弹窗 */
+body.theme-dark .exec-detail-row {
+    border-color: #21262d;
+}
+body.theme-dark .exec-detail-label {
+    color: #8b949e;
+}
+body.theme-dark .exec-detail-cmd {
+    color: #58a6ff;
+    background: #0d1117;
+}
+body.theme-dark .exec-detail-pre {
+    background: #0d1117;
 }
 body.theme-dark .btn-clear-input {
     color: #6c757d;
