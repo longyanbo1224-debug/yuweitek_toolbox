@@ -14,7 +14,7 @@ function extract7EPackets(inputText) {
         })
         .filter(line => line.length > 0)
         .join('');
-    const packets = result.match(/7E([0-9A-F]+)7E/gi);
+    const packets = result.match(/7E([0-9A-F]+?)7E/gi);
     if (!packets || packets.length === 0) return null;
     return packets.map(packet => {
         const data = packet.slice(2, -2);

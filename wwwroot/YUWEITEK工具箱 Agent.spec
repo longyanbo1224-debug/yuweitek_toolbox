@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\adb\\adb_server.py'],
+    ['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\adb\\adb_server.py'],
     pathex=[],
     binaries=[],
-    datas=[('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\appsettings.json', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\flask\\ffprobe.exe', '.'), ('index.html', '.'), ('css', 'css'), ('js', 'js'), ('img', 'img'), ('lib', 'lib'), ('app.ico', '.')],
+    datas=[('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\appsettings.json', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\flask\\ffprobe.exe', '.'), ('index.html', '.'), ('css', 'css'), ('js', 'js'), ('img', 'img'), ('lib', 'lib'), ('app.ico', '.')],
     hiddenimports=['pystray', 'PIL', 'tkinter'],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.3（程序启动加载动画，授权工具新增最后更新时间）\\wwwroot\\app.ico'],
+    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.6（修复adb命令调试工具bug，优化adb命令调试工具界面及逻辑）\\wwwroot\\app.ico'],
 )

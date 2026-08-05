@@ -37,6 +37,7 @@ $(document).ready(function () {
         'H264Convert': 'H264转MP4工具 视频转换',
         'AdbTool': 'ADB命令调试工具 安卓调试',
         'RareCharTool': '生僻字指令生成器 点阵',
+        'QrParseTool': '二维码解析工具 QR码 二维码 解析 CCC 设备型号 终端ID',
         'KmNmiConvert': '公里海里转换指令生成工具 海里 公里 km nmi 航海 GPS 指令',
         'TimeCalc': '时间计算器 日期 时间差 推算 单位转换'
     };
@@ -46,7 +47,7 @@ $(document).ready(function () {
         'JT808Parse': '交通解析', 'JT809Parse': '交通解析', 'JT1078Parse': '交通解析',
         'JT19056Parse': '交通解析', 'JT905Parse': '交通解析', 'JTSBParse': '交通解析',
         'HexParse': '数据处理', 'DataTools': '数据处理', 'LatLngQuery': '数据处理', 'H264Convert': '数据处理',
-        'AdbTool': '终端调试', 'RareCharTool': '终端调试',
+        'AdbTool': '终端调试', 'RareCharTool': '终端调试', 'QrParseTool': '终端调试',
         'KmNmiConvert': '终端调试',
         'TimeCalc': '数据处理'
     };

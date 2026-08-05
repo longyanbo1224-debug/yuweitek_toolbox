@@ -61,6 +61,7 @@ def create_tray_icon():
             pystray.MenuItem("云Monitor", lambda: open_external("http://yuweicloud.com:8990/server/mainIndex.action;cm=E73E06307A2BD318BFB317ADEF280CCC")),
             pystray.MenuItem("ADB命令调试工具", lambda: open_page("#AdbTool")),
             pystray.MenuItem("生僻字查询工具", lambda: open_page("#RareCharTool")),
+            pystray.MenuItem("二维码解析工具", lambda: open_page("#QrParseTool")),
             pystray.MenuItem("公里海里转换指令生成工具", lambda: open_page("#KmNmiConvert")),
         )),
         pystray.MenuItem("其他工具(友情链接)", pystray.Menu(
