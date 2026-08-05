@@ -114,13 +114,16 @@ def logcat_start():
 
 @logcat_bp.route('/logcat/stop', methods=['POST'])
 def logcat_stop():
-    """停止当前日志采集"""
+    """停止当前日志采集，支持重命名日志文件"""
     if not is_licensed():
         return jsonify({'error': '未授权，请先激活'}), 401
     global current_logcat_process, current_logcat_device, current_logcat_file
 
     if current_logcat_process is None or current_logcat_process.poll() is not None:
         return jsonify({'error': '没有正在运行的日志采集任务'}), 400
+
+    data = request.get_json() or {}
+    new_filename = data.get('new_filename', '').strip()
 
     try:
         current_logcat_process.terminate()
@@ -133,9 +136,27 @@ def logcat_stop():
         if current_logcat_process.stdout:
             current_logcat_process.stdout.close()
 
+        # 处理重命名
+        final_path = current_logcat_file
+        if new_filename and current_logcat_file:
+            dir_path = os.path.dirname(current_logcat_file)
+            # 如果新文件名不包含扩展名，保留原扩展名
+            old_ext = os.path.splitext(current_logcat_file)[1]
+            if not os.path.splitext(new_filename)[1]:
+                new_filename = new_filename + old_ext
+            new_path = os.path.join(dir_path, new_filename)
+            try:
+                if os.path.exists(current_logcat_file):
+                    os.rename(current_logcat_file, new_path)
+                    final_path = new_path
+            except OSError as e:
+                # 重命名失败不影响停止流程，仅记录
+                pass
+
         result = {
             'message': '日志采集已停止',
-            'file': current_logcat_file
+            'file': os.path.basename(final_path) if final_path else None,
+            'path': final_path
         }
         current_logcat_process = None
         current_logcat_device = None

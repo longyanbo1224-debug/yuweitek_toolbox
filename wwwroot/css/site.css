@@ -748,15 +748,6 @@ body.theme-dark .qa-bubble.assistant {
     max-height: none;
     overflow-y: visible;
 }
-/* 悬浮弹窗中"点击查看完整输出"提示 */
-.exec-history-popup-click-hint {
-    display: block;
-    font-size: 11px;
-    color: #0d6efd;
-    text-align: center;
-    padding: 2px 0;
-}
-
 /* 执行详情弹窗（点击历史条目打开） */
 .exec-detail-section {
     display: flex;
@@ -868,9 +859,6 @@ body.theme-dark .exec-history-popup-cmd {
 }
 body.theme-dark .exec-history-popup-pre {
     background: #0d1117;
-}
-body.theme-dark .exec-history-popup-click-hint {
-    color: #58a6ff;
 }
 /* 深色模式 - 执行详情弹窗 */
 body.theme-dark .exec-detail-row {

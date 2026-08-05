@@ -50,11 +50,18 @@
         modal.addEventListener('hidden.bs.modal', () => wrapper.remove());
     }
 
-    function showConfirmModal(title, message, onConfirm, confirmClass) {
+    function showConfirmModal(title, message, onConfirm, confirmClass, inputConfig) {
         confirmClass = confirmClass || 'btn-danger';
         const old = document.getElementById('confirmModal');
         if (old) old.remove();
         const wrapper = document.createElement('div');
+        const inputHtml = inputConfig ? `
+            <div class="mt-3 text-start">
+                <label class="form-label small mb-1">${escapeHtml(inputConfig.label || '')}</label>
+                <input type="text" class="form-control form-control-sm" id="confirmModalInput"
+                    value="${escapeHtml(inputConfig.value || '')}"
+                    placeholder="${escapeHtml(inputConfig.placeholder || '')}">
+            </div>` : '';
         wrapper.innerHTML = `
             <div class="modal fade" id="confirmModal" tabindex="-1">
                 <div class="modal-dialog modal-sm modal-dialog-centered">
@@ -63,8 +70,9 @@
                             <h6 class="modal-title">${escapeHtml(title)}</h6>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-                        <div class="modal-body py-3 text-center">
-                            <p class="mb-0">${escapeHtml(message)}</p>
+                        <div class="modal-body py-3">
+                            <p class="mb-0 text-center">${escapeHtml(message)}</p>
+                            ${inputHtml}
                         </div>
                         <div class="modal-footer py-1 justify-content-center">
                             <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -79,8 +87,18 @@
         bsModal.show();
         document.getElementById('confirmModalOk').addEventListener('click', function () {
             bsModal.hide();
-            if (onConfirm) onConfirm();
+            const inputVal = inputConfig ? document.getElementById('confirmModalInput').value.trim() : undefined;
+            if (onConfirm) onConfirm(inputVal);
         });
+        // 输入框回车确认
+        if (inputConfig) {
+            document.getElementById('confirmModalInput').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('confirmModalOk').click();
+                }
+            });
+        }
         modal.addEventListener('hidden.bs.modal', () => wrapper.remove());
     }
 
@@ -844,12 +862,22 @@
 
     async function stopLogcat() {
         if (logcatBusy) return;
-        showConfirmModal('停止日志采集', '确定停止日志采集吗？', async function () {
+        // 获取当前日志文件名供重命名
+        var currentFilename = '';
+        if (window.currentLogcatPath) {
+            currentFilename = window.currentLogcatPath.replace(/^.*[\\/]/, '');
+        }
+        showConfirmModal('停止日志采集', '确定停止日志采集吗？', async function (newFilename) {
             logcatBusy = true;
             try {
+                var body = {};
+                if (newFilename && newFilename !== currentFilename) {
+                    body.new_filename = newFilename;
+                }
                 const res = await apiFetch(`${API_BASE}/logcat/stop`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
                 });
                 const data = await res.json();
                 if (data.error) showToast('停止失败：' + data.error, 'error');
@@ -860,6 +888,10 @@
                 }
             } catch (err) { showToast('请求失败：' + err.message, 'error'); }
             finally { logcatBusy = false; }
+        }, 'btn-danger', {
+            label: '日志文件名（可编辑）',
+            value: currentFilename,
+            placeholder: '输入新的日志文件名'
         });
     }
 
@@ -1361,7 +1393,6 @@
                 '<div class="exec-history-popup-row"><span class="exec-history-popup-label">状态</span><span>' + (entry.status === 'success' ? '<span class="text-success">成功</span>' : '<span class="text-danger">失败</span>') + (entry.returncode >= 0 ? ' (返回码: ' + entry.returncode + ')' : '') + '</span></div>' +
                 '<div class="exec-history-popup-row"><span class="exec-history-popup-label">完整命令</span><code class="exec-history-popup-cmd">' + escapeHtml(cmdDisplay) + '</code></div>' +
                 outputPreview +
-                (hasOutput ? '<div class="exec-history-popup-row"><span class="exec-history-popup-click-hint"><i class="bi bi-hand-index-thumb"></i> 点击查看完整输出</span></div>' : '') +
                 '</div>';
 
             hoverPopup = document.createElement('div');
