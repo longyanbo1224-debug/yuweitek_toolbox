@@ -12,15 +12,17 @@ import atexit
 from config import ADB_PATH, LOG_DIR, USER_DATA_DIR
 from services.license import is_licensed
 from state import current_logcat_process, current_logcat_device, current_logcat_file
+from state import current_logcat_keywords, current_logcat_reader_thread
 
 logcat_bp = Blueprint('logcat', __name__)
 
 @logcat_bp.route('/logcat/start', methods=['POST'])
 def logcat_start():
-    """启动 logcat 日志采集"""
+    """启动 logcat 日志采集，支持关键字过滤"""
     if not is_licensed():
         return jsonify({'error': '未授权，请先激活'}), 401
     global current_logcat_process, current_logcat_device, current_logcat_file
+    global current_logcat_keywords, current_logcat_reader_thread
 
     if current_logcat_process and current_logcat_process.poll() is None:
         return jsonify({'error': '已有日志采集任务正在运行，请先停止'}), 400
@@ -29,10 +31,8 @@ def logcat_start():
     device = data.get('device')
     if not device:
         return jsonify({'error': '缺少 device 参数'}), 400
-    # 需要获取设备列表的函数，可以临时导入或从 adb 模块调用，这里简单写一个内部函数
-    # 为避免循环导入，直接调用 adb 模块中的 get_devices，但可能会导致循环依赖。
-    # 因此在此处重新实现一个简单的设备检测（或者从 services.adb_client 导入，但 services 尚未完成）
-    # 简化：使用 subprocess 直接调用 ADB 检查设备是否存在
+
+    # 验证设备是否存在
     startupinfo = None
     if sys.platform == 'win32':
         startupinfo = subprocess.STARTUPINFO()
@@ -51,12 +51,24 @@ def logcat_start():
     except Exception:
         return jsonify({'error': '无法获取设备列表'}), 500
 
+    # 解析关键字过滤参数
+    keywords_raw = data.get('keywords')
+    keywords = None
+    if keywords_raw:
+        if isinstance(keywords_raw, list):
+            # 前端直接传数组
+            keywords = [str(k).strip() for k in keywords_raw if str(k).strip()]
+        elif isinstance(keywords_raw, str):
+            # 兼容字符串格式：支持 ; ； , 分隔
+            import re
+            keywords = [k.strip() for k in re.split(r'[;；,]', keywords_raw) if k.strip()]
+        if keywords and len(keywords) == 0:
+            keywords = None
+
     # 处理文件名
     filename_input = data.get('filename', '').strip()
     if filename_input:
-        # 判断是否为目录（以路径分隔符结尾）
         if filename_input.endswith(os.path.sep) or filename_input.endswith('/'):
-            # 意图是目录，在该目录下生成默认文件名
             dir_path = os.path.abspath(filename_input)
             try:
                 os.makedirs(dir_path, exist_ok=True)
@@ -66,7 +78,6 @@ def logcat_start():
             filename = f"logcat_{device}_{timestamp}.txt"
             filepath = os.path.join(dir_path, filename)
         else:
-            # 作为文件路径处理
             filepath = os.path.abspath(filename_input)
             dirname = os.path.dirname(filepath)
             if dirname and not os.path.exists(dirname):
@@ -75,39 +86,83 @@ def logcat_start():
                 except Exception as e:
                     return jsonify({'error': f'无法创建目录 {dirname}: {str(e)}'}), 400
     else:
-        # 默认保存到 LOG_DIR
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         filename = f"logcat_{device}_{timestamp}.txt"
         filepath = os.path.join(LOG_DIR, filename)
 
-    # 确保文件所在目录存在（再次确认）
+    # 确保文件所在目录存在
     dir_path = os.path.dirname(filepath)
     try:
         os.makedirs(dir_path, exist_ok=True)
     except Exception as e:
         return jsonify({'error': f'无法创建日志目录 {dir_path}: {str(e)}'}), 500
 
-    # 启动 logcat 进程
+    # 启动 logcat 进程（带关键字过滤）
     cmd = [ADB_PATH, '-s', device, 'logcat']
     try:
-        f = open(filepath, 'wb')
-        process = subprocess.Popen(
-            cmd,
-            stdout=f,
-            stderr=subprocess.STDOUT,
-            stdin=subprocess.DEVNULL,
-            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
-        )
+        creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == 'win32' else 0
+
+        if keywords:
+            # 关键字过滤模式：管道读取 + Python 过滤写入
+            import threading
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL,
+                creationflags=creationflags
+            )
+            # 先创建空文件
+            with open(filepath, 'wb') as _:
+                pass
+            # 后台线程逐行读取、过滤、写入
+            def _filter_writer():
+                try:
+                    with open(filepath, 'ab') as f:
+                        for line in iter(process.stdout.readline, b''):
+                            if not line:
+                                break
+                            try:
+                                line_str = line.decode('utf-8', errors='replace')
+                                if any(kw in line_str for kw in keywords):
+                                    f.write(line)
+                                    f.flush()
+                            except Exception:
+                                f.write(line)
+                                f.flush()
+                except (ValueError, OSError, IOError):
+                    pass
+                except Exception:
+                    pass
+
+            reader_thread = threading.Thread(target=_filter_writer, daemon=True)
+            reader_thread.start()
+            current_logcat_reader_thread = reader_thread
+        else:
+            # 无关键字：直接写入文件
+            f = open(filepath, 'wb')
+            process = subprocess.Popen(
+                cmd,
+                stdout=f,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL,
+                creationflags=creationflags
+            )
+            current_logcat_reader_thread = None
+
         current_logcat_process = process
         current_logcat_device = device
         current_logcat_file = filepath
+        current_logcat_keywords = keywords
         atexit.register(lambda p=process: p.terminate() if p.poll() is None else None)
 
+        keyword_info = f'，过滤关键字: {"|".join(keywords)}' if keywords else ''
         return jsonify({
-            'message': '日志采集已启动',
+            'message': '日志采集已启动' + keyword_info,
             'file': os.path.basename(filepath),
             'path': filepath,
-            'pid': process.pid
+            'pid': process.pid,
+            'keywords': keywords
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -118,6 +173,7 @@ def logcat_stop():
     if not is_licensed():
         return jsonify({'error': '未授权，请先激活'}), 401
     global current_logcat_process, current_logcat_device, current_logcat_file
+    global current_logcat_keywords, current_logcat_reader_thread
 
     if current_logcat_process is None or current_logcat_process.poll() is not None:
         return jsonify({'error': '没有正在运行的日志采集任务'}), 400
@@ -161,6 +217,8 @@ def logcat_stop():
         current_logcat_process = None
         current_logcat_device = None
         current_logcat_file = None
+        current_logcat_keywords = None
+        current_logcat_reader_thread = None
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -174,7 +232,8 @@ def logcat_status():
         return jsonify({
             'running': True,
             'device': current_logcat_device,
-            'file': os.path.basename(current_logcat_file) if current_logcat_file else None
+            'file': os.path.basename(current_logcat_file) if current_logcat_file else None,
+            'keywords': current_logcat_keywords
         })
     else:
         return jsonify({'running': False})
@@ -208,7 +267,13 @@ def open_folder():
 
     try:
         if sys.platform == 'win32':
-            os.startfile(path)
+            # 使用 Shell.Application COM 对象打开文件夹，确保窗口在前台显示
+            norm_path = os.path.normpath(path)
+            subprocess.Popen(
+                ['powershell', '-NoProfile', '-Command',
+                 f'(New-Object -ComObject Shell.Application).Open("{norm_path}")'],
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
         elif sys.platform == 'darwin':
             subprocess.run(['open', path])
         else:

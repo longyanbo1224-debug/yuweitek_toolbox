@@ -1748,6 +1748,10 @@
                                 <input type="text" id="logcatFilename" class="form-control form-control-sm"
                                     placeholder="保存路径（可选，如 D:\logs\logcat.txt，默认自动生成）">
                             </div>
+                            <div class="mb-2">
+                                <input type="text" id="logcatKeywords" class="form-control form-control-sm"
+                                    placeholder="过滤关键字（多个用;分隔，如 7e0200;7e0002，留空不过滤）">
+                            </div>
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <span id="logcatStatus" class="text-muted">状态：<span id="logcatStatusText" class="badge bg-danger">未运行</span></span>
                                 <small class="text-muted">快捷键: Ctrl+Alt+S/X/F</small>
@@ -1806,6 +1810,7 @@
                                     <i class="bi bi-info-circle"></i> 已开启"Shell 模式"，无需手动输入 shell 前缀
                                 </small>
                                 <button type="button" class="btn btn-primary btn-sm" id="btnAddCommand">添加</button>
+                                <button type="button" class="btn btn-success btn-sm" id="btnCopyCommand">复制</button>
                                 <button type="button" class="btn btn-secondary btn-sm" id="btnUpdateCommand">修改</button>
                                 <button type="button" class="btn btn-danger btn-sm" id="btnDeleteCommand">删除</button>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" id="btnClearForm">清除</button>

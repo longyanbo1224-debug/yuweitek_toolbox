@@ -16,7 +16,7 @@ STATIC_DIR = get_static_dir()
 @static_bp.route('/api/health')
 def health_check():
     """健康检查接口，供前端轮询判断后端是否就绪"""
-    return jsonify({'status': 'ok', 'version': '1.3.2'})
+    return jsonify({'status': 'ok', 'version': '1.3.8'})
 
 @static_bp.route('/', defaults={'path': ''})
 @static_bp.route('/<path:path>')
@@ -58,7 +58,13 @@ def open_folder():
 
     try:
         if sys.platform == 'win32':
-            os.startfile(path)
+            # 使用 Shell.Application COM 对象打开文件夹，确保窗口在前台显示
+            norm_path = os.path.normpath(path)
+            subprocess.Popen(
+                ['powershell', '-NoProfile', '-Command',
+                 f'(New-Object -ComObject Shell.Application).Open("{norm_path}")'],
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
         elif sys.platform == 'darwin':
             subprocess.run(['open', path])
         else:

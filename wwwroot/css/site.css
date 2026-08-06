@@ -687,67 +687,6 @@ body.theme-dark .qa-bubble.assistant {
     background: rgba(13, 110, 253, 0.15);
 }
 
-/* 执行历史悬浮详情弹窗 */
-.exec-history-hover-popup {
-    display: none;
-    position: fixed;
-    z-index: 99999;
-    width: 420px;
-    max-height: 80vh;
-    overflow-y: auto;
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-    font-size: 13px;
-    pointer-events: none;
-}
-.exec-history-popup {
-    padding: 0;
-}
-.exec-history-popup-row {
-    display: flex;
-    flex-direction: column;
-    padding: 6px 12px;
-    border-bottom: 1px solid #f0f0f0;
-}
-.exec-history-popup-row:last-child {
-    border-bottom: none;
-}
-.exec-history-popup-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #6c757d;
-    text-transform: uppercase;
-    margin-bottom: 2px;
-}
-.exec-history-popup-cmd {
-    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
-    font-size: 12px;
-    color: #0d6efd;
-    background: #f8f9fa;
-    padding: 4px 8px;
-    border-radius: 4px;
-    word-break: break-all;
-    white-space: pre-wrap;
-}
-.exec-history-popup-pre {
-    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
-    font-size: 11px;
-    background: #f8f9fa;
-    padding: 6px 8px;
-    border-radius: 4px;
-    margin: 2px 0 0 0;
-    max-height: 200px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-break: break-all;
-}
-/* 悬浮弹窗中的紧凑输出预览（无滚动，仅展示前2行） */
-.exec-history-popup-pre-compact {
-    max-height: none;
-    overflow-y: visible;
-}
 /* 执行详情弹窗（点击历史条目打开） */
 .exec-detail-section {
     display: flex;
@@ -842,24 +781,6 @@ body.theme-dark .btn-exec-history-copy:active {
     color: #79c0ff;
     background: rgba(88, 166, 255, 0.18);
 }
-body.theme-dark .exec-history-hover-popup {
-    background: #161b22;
-    border-color: #30363d;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-}
-body.theme-dark .exec-history-popup-row {
-    border-color: #21262d;
-}
-body.theme-dark .exec-history-popup-label {
-    color: #8b949e;
-}
-body.theme-dark .exec-history-popup-cmd {
-    color: #58a6ff;
-    background: #0d1117;
-}
-body.theme-dark .exec-history-popup-pre {
-    background: #0d1117;
-}
 /* 深色模式 - 执行详情弹窗 */
 body.theme-dark .exec-detail-row {
     border-color: #21262d;
@@ -920,7 +841,8 @@ body.theme-dark #cmdGroup,
 body.theme-dark #cmdText,
 body.theme-dark #commandSearch,
 body.theme-dark #commandInstruction,
-body.theme-dark #logcatFilename {
+body.theme-dark #logcatFilename,
+body.theme-dark #logcatKeywords {
     background-color: var(--bg-input) !important;
     border-color: var(--border-color) !important;
     color: var(--text-primary) !important;
@@ -2003,6 +1925,45 @@ body.theme-dark .cmd-row:hover {
 /* ADB 命令行 code 颜色 */
 body.theme-dark .cmd-row code {
     color: var(--text-secondary) !important;
+}
+
+/* 命令行复制按钮（hover 浮现） */
+.btn-cmd-copy {
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid transparent;
+    color: #adb5bd;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s, border-color 0.15s;
+    line-height: 1;
+    opacity: 0;
+}
+.cmd-row:hover .btn-cmd-copy {
+    opacity: 1;
+}
+.btn-cmd-copy:hover {
+    color: #198754;
+    background: rgba(25, 135, 84, 0.08);
+    border-color: rgba(25, 135, 84, 0.3);
+}
+.btn-cmd-copy:active {
+    color: #146c43;
+    background: rgba(25, 135, 84, 0.15);
+}
+body.theme-dark .btn-cmd-copy {
+    color: #484f58;
+}
+body.theme-dark .btn-cmd-copy:hover {
+    color: #3fb950;
+    background: rgba(63, 185, 80, 0.12);
+    border-color: rgba(63, 185, 80, 0.3);
+}
+body.theme-dark .btn-cmd-copy:active {
+    color: #56d364;
+    background: rgba(63, 185, 80, 0.2);
 }
 
 /* ==================== 生僻字指令生成器 ==================== */

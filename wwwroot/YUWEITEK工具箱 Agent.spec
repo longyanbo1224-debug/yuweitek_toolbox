@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\adb\\adb_server.py'],
+    ['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\adb\\adb_server.py'],
     pathex=[],
     binaries=[],
-    datas=[('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\appsettings.json', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\flask\\ffprobe.exe', '.'), ('index.html', '.'), ('css', 'css'), ('js', 'js'), ('img', 'img'), ('lib', 'lib'), ('app.ico', '.')],
+    datas=[('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\appsettings.json', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\flask\\ffprobe.exe', '.'), ('index.html', '.'), ('css', 'css'), ('js', 'js'), ('img', 'img'), ('lib', 'lib'), ('app.ico', '.')],
     hiddenimports=['pystray', 'PIL', 'tkinter'],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.7（多条adb命令时执行失败中断执行、执行结果增加时间戳及查看执行命令历史记录、UI界面优化）\\wwwroot\\app.ico'],
+    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集支持关键字过滤）\\wwwroot\\app.ico'],
 )
