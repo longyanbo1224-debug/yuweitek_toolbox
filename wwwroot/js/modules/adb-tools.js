@@ -62,9 +62,10 @@
                     value="${escapeHtml(inputConfig.value || '')}"
                     placeholder="${escapeHtml(inputConfig.placeholder || '')}">
             </div>` : '';
+        const dialogClass = inputConfig ? 'modal-dialog modal-dialog-centered' : 'modal-dialog modal-sm modal-dialog-centered';
         wrapper.innerHTML = `
             <div class="modal fade" id="confirmModal" tabindex="-1">
-                <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="${dialogClass}">
                     <div class="modal-content">
                         <div class="modal-header py-2">
                             <h6 class="modal-title">${escapeHtml(title)}</h6>

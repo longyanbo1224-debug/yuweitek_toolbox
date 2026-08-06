@@ -1851,7 +1851,9 @@
                         <div class="card mb-3">
                             <div class="card-header py-2 d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0 fs-6">执行结果</h5>
-                                <small class="text-muted">Ctrl+Alt+C 清空</small>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnExecHistory" title="执行历史">
+                                    <i class="bi bi-clock-history"></i>
+                                </button>
                             </div>
                             <div class="card-body d-flex flex-column p-2">
                                 <!-- 状态横幅：成功=绿 / 失败=红，初始隐藏 -->
@@ -1868,7 +1870,7 @@
                                     </div>
                                 </div>
                                 <button type="button" class="btn btn-outline-danger btn-sm w-100 mt-2"
-                                    id="btnClearOutput"><i class="bi bi-trash3"></i> 清空结果</button>
+                                    id="btnClearOutput"><i class="bi bi-trash3"></i> 清空结果（Ctrl+Alt+C）</button>
                             </div>
                         </div>
 

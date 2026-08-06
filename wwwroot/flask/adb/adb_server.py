@@ -137,7 +137,7 @@ def show_splash_screen(splash_ready_callback):
                                      fill='#cbd5e1', font=('Microsoft YaHei UI', 9))
 
     # ---------- 版权 ----------
-    canvas.create_text(cx, win_h - 25, text='Powered by YUWEITEK · v1.3.6',
+    canvas.create_text(cx, win_h - 25, text='Powered by YUWEITEK · v1.3.7',
                        fill='#475569', font=('Microsoft YaHei UI', 8))
 
     # ---------- 动画状态 ----------
