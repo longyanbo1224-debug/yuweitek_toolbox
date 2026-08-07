@@ -11,6 +11,9 @@
 - **打开文件夹窗口前置**：后端改用 PowerShell `Shell.Application` COM 对象打开文件夹，替代 `explorer.exe` / `os.startfile()`，窗口直接弹出到前台。
 
 ### 修复
+- **Shell模式 devices 等子命令被包裹 shell 前缀**：前后端 auto_shell 逻辑不一致——前端正确识别 `devices`/`push` 等 ADB 子命令不加 `shell`，但后端仅检查 `shell|adb` 前缀，又给加上了 `shell`，导致 `adb shell devices` 执行失败。修复：后端扩展为完整 28 项 ADB 子命令列表，与前端 `ADB_DIRECT_CMDS_RE` 保持一致。
+- **多命令拆分符 `&` 误判**：前端 `applyAutoShell` 拆分用 `/[;&\n]+/`，单 `&` 也会被错误当作分隔符。改为 `/\s*(?:&&|;)\s*|\s*\n+\s*/`，与后端完全一致，`&&` 短路语义正确保留。
+- **Shell模式 `adb -s DEVICE shell ls` 解析异常**：前端 `^(adb\s+)?shell\b` 正则无法匹配带 `-s` 设备序列号的完整 adb shell 命令，导致被错误改写为 `shell -s DEVICE shell ls`。修复：扩展为 `^(adb\s+(?:-s\s+\S+\s+)?)?shell\b`，与后端 `is_adb_shell` 检测逻辑对齐。
 - **分组内按钮拖拽后命令列表不同步**：非活跃分组命令未渲染到 DOM 导致保存不完整，改为从 `allCommands` 补全不可见分组命令后统一保存。
 - **分组拖拽后命令列表不同步**：分组排序后管理命令列表未同步，Sortable 回调中增加 `renderCommandList()` 调用修复。
 - **健康检查版本号修正**：`/api/health` 接口版本号从硬编码 `1.3.2` 同步为 `1.3.8`。

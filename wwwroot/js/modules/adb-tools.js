@@ -998,8 +998,8 @@
         // 对单条命令做自动 shell 处理
         var t = cmdText.trim();
         if (!t) return '';
-        // 已有 shell / adb shell 前缀 —— 不处理
-        if (/^(adb\s+)?shell\b/.test(t)) return t;
+        // 已有 shell / adb shell / adb -s DEVICE shell 前缀 —— 不处理
+        if (/^(adb\s+(?:-s\s+\S+\s+)?)?shell\b/.test(t)) return t;
         // 已知的 adb 子命令 —— 不处理
         if (ADB_DIRECT_CMDS_RE.test(t)) return t;
         // 以 "adb " 开头但不是已知子命令 → 用户本意是 shell 命令，改写为 shell xxx
