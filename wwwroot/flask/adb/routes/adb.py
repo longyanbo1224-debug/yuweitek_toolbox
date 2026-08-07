@@ -9,7 +9,7 @@ import json
 import os
 import sys
 import shutil
-from config import ADB_PATH, ADB_EXISTS, COMMANDS_FILE
+from config import ADB_PATH, ADB_EXISTS, COMMANDS_FILE, EXEC_HISTORY_FILE
 from services.license import is_licensed
 
 adb_bp = Blueprint('adb', __name__)
@@ -218,6 +218,36 @@ def import_commands():
             item['group'] = ''
     save_commands(data)
     return jsonify({'message': '导入成功', 'commands': data})
+
+# ---------- 执行历史持久化 ----------
+@adb_bp.route('/exec_history', methods=['GET'])
+def get_exec_history():
+    """从文件加载执行历史"""
+    if not is_licensed():
+        return jsonify({'error': '未授权'}), 401
+    if os.path.exists(EXEC_HISTORY_FILE):
+        try:
+            with open(EXEC_HISTORY_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return jsonify(data)
+        except Exception:
+            return jsonify({'history': [], 'nextId': 0})
+    return jsonify({'history': [], 'nextId': 0})
+
+@adb_bp.route('/exec_history', methods=['POST'])
+def save_exec_history():
+    """保存执行历史到文件"""
+    if not is_licensed():
+        return jsonify({'error': '未授权'}), 401
+    data = request.get_json()
+    if not isinstance(data, dict):
+        return jsonify({'error': '数据格式错误'}), 400
+    try:
+        with open(EXEC_HISTORY_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        return jsonify({'message': '保存成功'})
+    except Exception as e:
+        return jsonify({'error': f'保存失败: {str(e)}'}), 500
 
 # ---------- 发送命令 ----------
 @adb_bp.route('/send_command', methods=['POST'])

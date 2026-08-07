@@ -96,6 +96,9 @@ LICENSE_FILE = os.path.join(USER_DATA_DIR, 'license.dat')
 # 命令存储文件
 COMMANDS_FILE = os.path.join(USER_DATA_DIR, 'commands.json')
 
+# 执行历史存储文件
+EXEC_HISTORY_FILE = os.path.join(USER_DATA_DIR, 'exec_history.json')
+
 # 日志存储目录
 LOG_DIR = os.path.join(USER_DATA_DIR, 'log')
 os.makedirs(LOG_DIR, exist_ok=True)

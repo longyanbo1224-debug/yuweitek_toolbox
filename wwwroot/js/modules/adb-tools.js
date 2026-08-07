@@ -1532,10 +1532,8 @@
         // 清空历史按钮
         var btnClear = wrapper.querySelector('#btnClearHistory');
         if (btnClear) {
-            btnClear.addEventListener('click', function() {
-                execHistory = [];
-                execHistoryId = 0;
-                try { localStorage.removeItem(EXEC_HISTORY_KEY); } catch(e) {}
+            btnClear.addEventListener('click', async function() {
+                await clearHistory();
                 clearOutput();
                 bsModal.hide();
                 showToast('执行历史已清空');
@@ -1687,8 +1685,61 @@
             stderr: stderr || ''
         });
         if (execHistory.length > 50) execHistory.pop();
-        // 持久化到 localStorage
-        try { localStorage.setItem(EXEC_HISTORY_KEY, JSON.stringify({ history: execHistory, nextId: execHistoryId })); } catch(e) {}
+        // 持久化到 localStorage 和后端文件
+        saveHistory();
+    }
+
+    // 保存执行历史：同时写入 localStorage 和后端文件
+    function saveHistory() {
+        var data = { history: execHistory, nextId: execHistoryId };
+        try { localStorage.setItem(EXEC_HISTORY_KEY, JSON.stringify(data)); } catch(e) {}
+        // 异步保存到后端文件（静默失败，不影响主流程）
+        try {
+            apiFetch(API_BASE + '/exec_history', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            }).catch(function() { /* 静默失败 */ });
+        } catch(e) {}
+    }
+
+    // 从后端加载执行历史（失败时回退到 localStorage）
+    async function loadHistory() {
+        try {
+            var res = await apiFetch(API_BASE + '/exec_history');
+            if (res.ok) {
+                var data = await res.json();
+                if (data && Array.isArray(data.history) && data.history.length > 0) {
+                    execHistory = data.history;
+                    execHistoryId = data.nextId || data.history.length;
+                    // 同步到 localStorage 作为缓存
+                    try { localStorage.setItem(EXEC_HISTORY_KEY, JSON.stringify(data)); } catch(e) {}
+                    return;
+                }
+            }
+        } catch(e) { /* 后端不可用时回退到 localStorage */ }
+        // 回退：从 localStorage 加载
+        try {
+            var saved = JSON.parse(localStorage.getItem(EXEC_HISTORY_KEY));
+            if (saved && Array.isArray(saved.history)) {
+                execHistory = saved.history;
+                execHistoryId = saved.nextId || saved.history.length;
+            }
+        } catch(e) {}
+    }
+
+    // 清空执行历史（同时清除后端文件）
+    async function clearHistory() {
+        execHistory = [];
+        execHistoryId = 0;
+        try { localStorage.removeItem(EXEC_HISTORY_KEY); } catch(e) {}
+        try {
+            await apiFetch(API_BASE + '/exec_history', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ history: [], nextId: 0 })
+            });
+        } catch(e) { /* 静默失败 */ }
     }
 
     // 将多命令输出中的结果值标为绿色（以 [ 开头的行是命令头，其余行是结果值）
@@ -1875,14 +1926,8 @@
         loadCommands();
         updateLogcatStatus();
 
-        // 从 localStorage 恢复执行历史
-        try {
-            const saved = JSON.parse(localStorage.getItem(EXEC_HISTORY_KEY));
-            if (saved && Array.isArray(saved.history)) {
-                execHistory = saved.history;
-                execHistoryId = saved.nextId || saved.history.length;
-            }
-        } catch(e) {}
+        // 从后端文件恢复执行历史（失败时回退到 localStorage）
+        loadHistory();
         setInterval(updateLogcatStatus, 5000);
         document.getElementById('cmdStatusBanner').style.display = 'none';
         document.getElementById('cmdEcho').innerHTML = '<span class="text-muted">等待执行命令...</span>';
