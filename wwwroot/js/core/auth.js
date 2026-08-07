@@ -315,14 +315,13 @@ $('#checkUpdateBtnMobile').on('click', function () {
     $('#checkUpdateBtn').trigger('click');
 });
 
-// ===== 历史版本链接：复制链接到剪贴板并打开 akams 代理 =====
+// ===== 历史版本链接：复制链接到剪贴板并打开 akams 代理（带预填URL） =====
 $('.history-version-link, .history-version-link-mobile').on('click', function () {
     var url = $(this).data('url');
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url);
     }
-    window.open('https://github.akams.cn/', '_blank');
-    showHistoryVersionGuide();
+    window.open('https://github.akams.cn/?url=' + encodeURIComponent(url), '_blank');
 });
 
 function showLatestVersionModal(version) {
