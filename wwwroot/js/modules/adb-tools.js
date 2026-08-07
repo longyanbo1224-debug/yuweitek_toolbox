@@ -1011,9 +1011,9 @@
     function applyAutoShell(cmdText) {
         if (!isAutoShellEnabled()) return cmdText;
         var trimmed = cmdText.trim();
-        // 按 ; & 换行 拆分多命令，逐条处理后再拼回
+        // 按 ; && 换行 拆分多命令，逐条处理后再拼回
         if (/[;&\n]/.test(trimmed)) {
-            var parts = trimmed.split(/[;&\n]+/);
+            var parts = trimmed.split(/\s*(?:&&|;)\s*|\s*\n+\s*/);
             return parts.map(function(p) { return applyAutoShellSingle(p); }).filter(function(x) { return x; }).join(';');
         }
         return applyAutoShellSingle(trimmed);
@@ -1037,8 +1037,8 @@
         if (/^adb\s+/.test(displayCmd)) {
             displayCmd = displayCmd.replace(/^adb\s+/, '');
         }
-        // 构建多命令显示：分号分隔时每条命令换行显示
-        const cmdParts = displayCmd.split(';').map(p => p.trim()).filter(p => p);
+        // 构建多命令显示：拆分后每条命令换行显示
+        const cmdParts = displayCmd.split(/\s*(?:&&|;)\s*|\s*\n+\s*/).map(p => p.trim()).filter(p => p);
         let cmdEchoHtml;
         if (cmdParts.length > 1) {
             cmdEchoHtml = cmdParts.map(p => `<span class="cmd-prompt">$</span> ${escapeHtml(`adb -s ${device} ${p}`)}`).join('\n');
@@ -1605,7 +1605,7 @@
         if (/^adb\s+/.test(displayCmd)) {
             displayCmd = displayCmd.replace(/^adb\s+/, '');
         }
-        var cmdParts = displayCmd.split(';').map(function(p) { return p.trim(); }).filter(function(p) { return p; });
+        var cmdParts = displayCmd.split(/\s*(?:&&|;)\s*|\s*\n+\s*/).map(function(p) { return p.trim(); }).filter(function(p) { return p; });
         var cmdEchoHtml;
         if (cmdParts.length > 1) {
             cmdEchoHtml = cmdParts.map(function(p) { return '<span class="cmd-prompt">$</span> ' + escapeHtml('adb -s ' + device + ' ' + p); }).join('\n');
