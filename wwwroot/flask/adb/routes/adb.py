@@ -318,8 +318,9 @@ def send_command():
             all_stderr.append('[跳过] 不支持纯 shell 交互命令：shell')
             continue
 
-        # 自动添加 shell 前缀（仅当前端开关开启且原始不带 adb 前缀、且非 shell 开头的命令时执行）
-        if auto_shell and not had_adb_prefix and not re.match(r'^(shell|adb)\b', sub_cmd.strip()):
+        # 自动添加 shell 前缀（当前端开关开启、原始不带 adb 前缀、非已知 ADB 子命令时执行）
+        _ADB_DIRECT_CMDS = r'^(shell|adb|push|pull|install|uninstall|reboot|root|remount|sync|forward|reverse|usb|tcpip|connect|disconnect|exec-in|exec-out|devices|kill-server|start-server|help|version|wait-for-device|get-state|get-serialno|logcat|emu|backup|restore|bugreport|jdwp|ppp)\b'
+        if auto_shell and not had_adb_prefix and not re.match(_ADB_DIRECT_CMDS, sub_cmd.strip()):
             sub_cmd = 'shell ' + sub_cmd.strip()
 
         full_cmd_str = f'"{ADB_PATH}" -s {device} {sub_cmd}'
