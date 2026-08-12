@@ -91,7 +91,9 @@ $(document).ready(function () {
                 var input = $("#" + hexId).val();
                 var format = $("#" + toolId + "_PacketFormat").val();
                 var extracted = "";
-                if (format === "7E") {
+                if (format === "remote-monitor") {
+                    extracted = extractRemoteMonitorData(input);
+                } else if (format === "7E") {
                     extracted = extract7EPackets(input);
                     if (!extracted) extracted = extract2323Data(input);
                 } else {

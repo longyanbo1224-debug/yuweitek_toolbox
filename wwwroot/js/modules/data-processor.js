@@ -1,5 +1,5 @@
 // js/modules/data-processor.js
-// 数据字段处理工具（7E/2323 提取）
+// 数据字段处理工具（7E/2323/远程Monitor 提取）
 
 function extract7EPackets(inputText) {
     const result = inputText.split('\n')
@@ -82,9 +82,61 @@ function formatHexData(hexString) {
     return cleanData.match(/.{2}/g).join(' ');
 }
 
+function extractRemoteMonitorData(inputText) {
+    const lines = inputText.split('\n');
+    let hexData = '';
+
+    for (const line of lines) {
+        // Match remote monitor Text lines with line numbers: 远程 ... Text NN:HEXDATA...
+        const match = line.match(/远程.*?Text\s+(\d{1,2}):(.+)/i);
+        if (match) {
+            const hexPart = match[2]
+                .replace(/-/g, '')
+                .replace(/[^0-9A-Fa-f]/g, '');
+            if (hexPart.length > 0) {
+                hexData += hexPart.toUpperCase();
+            }
+        }
+    }
+
+    if (hexData.length === 0) return null;
+
+    // Try to find 7E packets
+    const packets = hexData.match(/7E([0-9A-F]+?)7E/gi);
+    if (packets && packets.length > 0) {
+        return packets.map(packet => {
+            const data = packet.slice(2, -2);
+            const formatted = data.match(/.{2}/g).join(' ');
+            return '7E ' + formatted + ' 7E';
+        }).join('\n');
+    }
+
+    // Try 2323 format
+    const idx2323 = hexData.indexOf('2323');
+    if (idx2323 >= 0) {
+        return hexData.substring(idx2323).match(/.{2}/g).join(' ');
+    }
+
+    // Fallback: plain formatted hex
+    return hexData.match(/.{2}/g).join(' ');
+}
+
 function processText() {
     const inputText = document.getElementById('input').value;
     const format = document.getElementById('packetFormat').value;
+
+    // 远程Monitor模式：提取带行号的远程Text数据
+    if (format === 'remote-monitor') {
+        const result = extractRemoteMonitorData(inputText);
+        if (result) {
+            document.getElementById('output').value = result;
+            return;
+        }
+        showToast('未找到有效的远程Monitor数据', 'warning');
+        document.getElementById('output').value = '';
+        return;
+    }
+
     if (format === '7E') {
         const result7E = extract7EPackets(inputText);
         if (result7E) { document.getElementById('output').value = result7E; return; }

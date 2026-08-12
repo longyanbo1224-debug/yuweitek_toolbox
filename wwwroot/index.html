@@ -305,6 +305,7 @@
                         <select id="JT808_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
                             <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
                             <option value="2323">优先提取 2323 格式（自定义）</option>
+                            <option value="remote-monitor">远程Monitor数据提取</option>
                         </select>
                     </div>
                 </div>
@@ -375,6 +376,7 @@
                         <select id="JT809_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
                             <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
                             <option value="2323">优先提取 2323 格式（自定义）</option>
+                            <option value="remote-monitor">远程Monitor数据提取</option>
                         </select>
                     </div>
                 </div>
@@ -412,6 +414,7 @@
                         <select id="JT1078_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
                             <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
                             <option value="2323">优先提取 2323 格式（自定义）</option>
+                            <option value="remote-monitor">远程Monitor数据提取</option>
                         </select>
                     </div>
                 </div>
@@ -499,6 +502,7 @@
                         <select id="JT19056_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
                             <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
                             <option value="2323">优先提取 2323 格式（自定义）</option>
+                            <option value="remote-monitor">远程Monitor数据提取</option>
                         </select>
                     </div>
                 </div>
@@ -538,6 +542,7 @@
                         <select id="JT905_PacketFormat" class="form-select form-select-sm" style="width:auto;display:inline-block;">
                             <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
                             <option value="2323">优先提取 2323 格式（自定义）</option>
+                            <option value="remote-monitor">远程Monitor数据提取</option>
                         </select>
                     </div>
                 </div>
@@ -579,6 +584,7 @@
                         <select class="form-select form-select-sm" id="JTSB_PacketFormat">
                             <option value="7E">优先提取 7E 格式（JT808等）</option>
                             <option value="2323">优先提取 2323 格式（自定义）</option>
+                            <option value="remote-monitor">远程Monitor数据提取</option>
                         </select>
                     </div>
                 </div>
@@ -869,7 +875,7 @@
         <div class="container hide" id="DataTools">
             <div class="tool-header mb-4">
                 <h2><i class="bi bi-file-spreadsheet"></i> 数据字段处理工具 V5.2</h2>
-                <p class="text-muted">7E / 2323 数据包智能提取、空格去除、结果一键复制</p>
+                <p class="text-muted">7E / 2323 / 远程Monitor 数据包智能提取、空格去除、结果一键复制</p>
             </div>
             <div class="data-tools-container d-flex flex-column">
                 <!-- 新增：数据包格式选择 -->
@@ -878,6 +884,7 @@
                     <select id="packetFormat" class="form-select form-select-sm" style="width: auto;">
                         <option value="7E" selected>优先提取 7E 格式（JT808等）</option>
                         <option value="2323">优先提取 2323 格式（自定义）</option>
+                        <option value="remote-monitor">远程Monitor数据提取</option>
                     </select>
                     <span class="text-muted small">根据数据包类型选择提取顺序</span>
                 </div>
