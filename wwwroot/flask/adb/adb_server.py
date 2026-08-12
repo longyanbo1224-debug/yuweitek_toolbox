@@ -26,6 +26,7 @@ from app import create_app
 from services.dotnet import start_dotnet_backend, cleanup_dotnet
 from services.openclaw import start_openclaw, stop_openclaw
 from tray import create_tray_icon
+from config import APP_VERSION
 
 
 # ========== 启动 Splash 窗口 ==========
@@ -137,7 +138,7 @@ def show_splash_screen(splash_ready_callback):
                                      fill='#cbd5e1', font=('Microsoft YaHei UI', 9))
 
     # ---------- 版权 ----------
-    canvas.create_text(cx, win_h - 25, text='Powered by YUWEITEK · v1.3.8',
+    canvas.create_text(cx, win_h - 25, text=f'Powered by YUWEITEK · v{APP_VERSION}',
                        fill='#475569', font=('Microsoft YaHei UI', 8))
 
     # ---------- 动画状态 ----------

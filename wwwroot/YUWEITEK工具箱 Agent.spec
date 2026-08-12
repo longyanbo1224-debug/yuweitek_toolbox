@@ -2,10 +2,10 @@
 
 
 a = Analysis(
-    ['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\adb\\adb_server.py'],
+    ['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\adb\\adb_server.py'],
     pathex=[],
     binaries=[],
-    datas=[('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\appsettings.json', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\flask\\ffprobe.exe', '.'), ('index.html', '.'), ('css', 'css'), ('js', 'js'), ('img', 'img'), ('lib', 'lib'), ('app.ico', '.')],
+    datas=[('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\adb\\adb.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\adb\\AdbWinApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\adb\\AdbWinUsbApi.dll', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\JTTools.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\appsettings.json', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\ffmpeg.exe', '.'), ('E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\flask\\ffprobe.exe', '.'), ('index.html', '.'), ('css', 'css'), ('js', 'js'), ('img', 'img'), ('lib', 'lib'), ('app.ico', '.')],
     hiddenimports=['pystray', 'PIL', 'tkinter'],
     hookspath=[],
     hooksconfig={},
@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.8（日志采集关键字过滤、弹窗统一、历史持久化、命令复制）\\wwwroot\\app.ico'],
+    icon=['E:\\Users\\yw\\Desktop\\YUWEITEK工具箱 Agent v1.3.9（数据字段处理工具支持处理远程monitor行号）\\wwwroot\\app.ico'],
 )

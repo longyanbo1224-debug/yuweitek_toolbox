@@ -20,7 +20,9 @@ def get_current_version(root):
     return "unknown"
 
 def update_version(root, new_version):
-    """更新三个文件的版本号"""
+    """更新需直接写入版本号的文件（installer.iss, config.py, config.js, update.json）
+    注：static.py 和 adb_server.py 已改为 from config import APP_VERSION，
+    只需更新 config.py 即可自动同步。"""
     replacements = [
         (
             os.path.join(root, "installer.iss"),
@@ -38,13 +40,21 @@ def update_version(root, new_version):
             "config.js → FRONTEND_VERSION",
         ),
         (
-            os.path.join(root, "flask", "adb", "adb_server.py"),
-            r"(Powered by YUWEITEK · v)(\d+\.\d+\.\d+)([\"'])",
-            "adb_server.py → Splash 版本号",
+            os.path.join(root, "update.json"),
+            r'("version"\s*:\s*")([^"]+)(")',
+            "update.json → version",
+        ),
+        (
+            os.path.join(root, "update.json"),
+            r'(/download/v)(\d+\.\d+\.\d+)(/YUWEITEK\.Agent_)(\d+\.\d+\.\d+)(_Setup\.exe)',
+            "update.json → download_url",
+            rf'\g<1>{new_version}\g<3>{new_version}\g<5>',
         ),
     ]
     ok = 0
-    for file_path, pattern, label in replacements:
+    for entry in replacements:
+        file_path, pattern, label = entry[0], entry[1], entry[2]
+        repl = entry[3] if len(entry) > 3 else rf'\g<1>{new_version}\g<3>'
         if not os.path.isfile(file_path):
             print(f"  [SKIP] {label}")
             continue
@@ -59,7 +69,7 @@ def update_version(root, new_version):
             print(f"  [OK]   {label}  已是 {new_version}")
             ok += 1
             continue
-        new_content = re.sub(pattern, rf'\g<1>{new_version}\g<3>', content)
+        new_content = re.sub(pattern, repl, content)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(new_content)
         print(f"  [OK]   {label}  {old_ver} → {new_version}")

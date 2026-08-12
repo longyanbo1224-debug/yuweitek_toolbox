@@ -7,7 +7,7 @@ from flask import Blueprint, send_from_directory, jsonify, request
 import os
 import sys
 import subprocess
-from config import get_static_dir, LOG_DIR, USER_DATA_DIR
+from config import get_static_dir, LOG_DIR, USER_DATA_DIR, APP_VERSION
 from services.license import is_licensed
 
 static_bp = Blueprint('static', __name__)
@@ -16,7 +16,7 @@ STATIC_DIR = get_static_dir()
 @static_bp.route('/api/health')
 def health_check():
     """健康检查接口，供前端轮询判断后端是否就绪"""
-    return jsonify({'status': 'ok', 'version': '1.3.8'})
+    return jsonify({'status': 'ok', 'version': APP_VERSION})
 
 @static_bp.route('/', defaults={'path': ''})
 @static_bp.route('/<path:path>')
