@@ -182,7 +182,7 @@ def main():
     pyi_cmd = (
         f'{sys.executable} -m PyInstaller --onefile --windowed '
         f'--name "YUWEITEK工具箱 Agent" {icon_arg} --clean '
-        f'--distpath "{dist_dir}" --hidden-import pystray --hidden-import PIL --hidden-import tkinter '
+        f'--distpath "{dist_dir}" --hidden-import pystray --hidden-import PIL '
         f'{add_data_str} "{os.path.join(adb_dir, "adb_server.py")}"'
     )
 

@@ -1,4 +1,25 @@
+## [1.4.1] - 2026-11-16
+
+### 修复
+- **授权检查接口 500 / 机器码不显示**：`/api/check_license` 在 Flask 多线程的请求线程内调用 `get_hardware_id()`，而 WMI 走 COM、`pythoncom` 只在主线程初始化过，抛出 `x_wmi_uninitialised_thread: WMI returned a syntax error: you are probably running inside a thread without first calling pythoncom.CoInitialize[Ex]`，接口返回 500；前端 `checkLicenseOnly()` 的 `.catch()` 只执行 `console.error('授权检查失败:', ...)`，既不提示也不弹窗，表现为「识别不到机器码」。
+- **WMI 线程安全封装**：`utils.py` 新增 `_call_with_com()`（调用前 `pythoncom.CoInitialize()`，结束时不做 `CoUninitialize`，避免退出阶段释放 WMI 对象报 `Win32 exception occurred releasing IUnknown`），`get_hardware_id()` / `get_hardware_id_legacy()` 改为经其执行并增加进程内双检锁缓存。
+- **机器码算法未变更**：固定盘判定（`Win32_DiskDrive` + `MediaType == 'Fixed hard disk media'`）与哈希输入 `主板序列号|硬盘序列号` 一字未改，已发出的授权不受影响。
+
+### 新增
+- **`get_machine_code.py` 独立取码工具**：不启动整包即可打印主板序列号、固定硬盘序列号、物理介质序列号及新旧两版机器码，便于现场排障与授权登记。
+
+---
+
 ﻿## [1.3.9] - 2026-08-12
+
+## [1.4.0] - 2026-09-27
+
+### 更新
+- **更新源仓库信息更新**：GitHub Releases API 兜底源与 jsDelivr 备用更新源切换至新仓库 `longyanbo1224-debug/yuweitek_toolbox`；检查更新、强制更新/推荐更新弹窗的复制链接及桌面/移动端「历史版本」入口同步切换至新 Releases 地址。
+
+---
+
+## [1.3.9] - 2026-08-12
 
 ### 新增
 - **数据字段处理工具 - 远程Monitor数据提取**：新增「远程Monitor数据提取」模式，支持从远程 `Text NN:HEXDATA...` 格式日志中自动提取数据包，兼容 7E 协议包、2323 格式及纯十六进制回退。

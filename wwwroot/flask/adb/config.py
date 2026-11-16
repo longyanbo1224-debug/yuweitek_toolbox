@@ -46,18 +46,18 @@ else:
 # ============================================================
 
 # ---------- 版本控制 ----------
-APP_VERSION = "1.3.9"               # 当前程序版本
+APP_VERSION = "1.4.1"               # 当前程序版本
 MIN_REQUIRED_VERSION = "1.3.8"      # 最低支持版本，低于此版本强制更新
 
 # ---------- 更新配置 ----------
 # GitHub 仓库信息（用于从 Releases API 获取最新版本）
-GITHUB_OWNER = "longyanbo1224"
-GITHUB_REPO = "yuweitek-toolbox"
+GITHUB_OWNER = "longyanbo1224-debug"
+GITHUB_REPO = "yuweitek_toolbox"
 # 更新信息源（可精确控制 min_required 和 changelog）
 # 主源：Gitee（国内访问快）
 UPDATE_INFO_URL = "https://gitee.com/loong1224/yuweitek-toolbox---update/raw/master/update.json"
 # 备用：GitHub CDN（jsDelivr）
-UPDATE_INFO_URL_BACKUP = "https://cdn.jsdelivr.net/gh/longyanbo1224/yuweitek-toolbox@main/update.json"
+UPDATE_INFO_URL_BACKUP = "https://cdn.jsdelivr.net/gh/longyanbo1224-debug/yuweitek_toolbox@main/update.json"
 
 # ---------- 授权开关 ----------
 # 设置环境变量 DISABLE_LICENSE=1 可关闭授权验证（仅用于开发调试）

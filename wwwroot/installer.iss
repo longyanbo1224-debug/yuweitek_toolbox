@@ -1,4 +1,4 @@
-#define MyAppVersion "1.3.9"
+#define MyAppVersion "1.4.1"
 #define MyAppName "YUWEITEK工具箱 Agent"
 #define MyAppPublisher "龙彦博"
 #define MyAppExeName "YUWEITEK工具箱 Agent.exe"

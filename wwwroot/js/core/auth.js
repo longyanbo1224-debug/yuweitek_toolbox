@@ -53,8 +53,10 @@ function checkVersionAndProceed() {
 
 function showForceUpdateModal(updateUrl, changelog, guideImage) {
     if ($('#forceUpdateModal').length) $('#forceUpdateModal').remove();
-    const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
-    const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
+    const releasesUrl = updateUrl || 'https://github.com/longyanbo1224-debug/yuweitek_toolbox/releases';
+    const akamsUrl = releasesUrl.indexOf('github.com') !== -1
+        ? 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl)
+        : releasesUrl;
     const changelogHtml = changelog ? `
         <div class="update-changelog">
             <strong>📝 更新内容</strong>
@@ -121,8 +123,10 @@ function fallbackCopyText(text) {
 
 function showRecommendUpdateModal(updateUrl, changelog, latestVersion, guideImage) {
     if ($('#recommendUpdateModal').length) return;
-    const releasesUrl = 'https://github.com/longyanbo1224/yuweitek-toolbox/releases';
-    const akamsUrl = 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl);
+    const releasesUrl = updateUrl || 'https://github.com/longyanbo1224-debug/yuweitek_toolbox/releases';
+    const akamsUrl = releasesUrl.indexOf('github.com') !== -1
+        ? 'https://github.akams.cn/?url=' + encodeURIComponent(releasesUrl)
+        : releasesUrl;
     const changelogHtml = changelog ? `
         <div class="update-changelog">
             <strong>📝 更新内容</strong>

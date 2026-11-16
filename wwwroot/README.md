@@ -243,7 +243,7 @@ python app.py
 客户端通过多节点容错策略检查更新：
 
 1. **主节点（Gitee）**：`https://gitee.com/loong1224/yuweitek-toolbox---update/raw/master/update.json`
-2. **备用节点（jsDelivr CDN）**：`https://cdn.jsdelivr.net/gh/longyanbo1224/yuweitek-toolbox@main/update.json`
+2. **备用节点（jsDelivr CDN）**：`https://cdn.jsdelivr.net/gh/longyanbo1224-debug/yuweitek_toolbox@main/update.json`
 3. **兜底节点（GitHub Raw）**：直接从 GitHub raw 获取
 
 `update.json` 中可配置 `min_required` 字段实现远程强制更新，所有节点均失败时回退到本地编译时版本号。
@@ -272,7 +272,9 @@ python app.py
 10. **Git LFS**：大文件（exe/dll/so）通过 LFS 追踪，克隆前确保 `git lfs install`
 11. **OpenClaw 锁文件**：启动时自动清理残留锁文件，避免异常退出后网关无法启动
 12. **CSS 主题**：主题色通过 `:root` CSS 变量控制，`[data-theme="dark"]` 切换暗色变量值
+13. **机器码取不到 / 激活弹窗不弹出**：`/api/check_license` 返回 500，多为 WMI 在 Flask 请求线程中未初始化 COM（`x_wmi_uninitialised_thread`）。`flask/adb/utils.py` 已用 `_call_with_com()` 包裹 `pythoncom.CoInitialize()` 并做进程内缓存；现场排障可执行 `python get_machine_code.py` 直接取码核对。
+14. **机器码与硬件绑定**：机器码 = `sha256(主板序列号|固定硬盘序列号)`，换硬盘/换主板即变化，需重新授权；排序键沿用 `int(d.Index) if d.Index else 999`，勿改为 `is not None`，否则选盘结果变化会让整批机器码漂移。
 
 ---
 
-*文档更新时间：2026-05-26*
+*文档更新时间：2026-11-16*

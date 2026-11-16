@@ -10,6 +10,7 @@ import os
 import ctypes
 import webbrowser
 import shutil
+import subprocess
 from threading import Timer, Thread
 import time
 import atexit
@@ -59,17 +60,9 @@ def show_splash_screen(splash_ready_callback):
                        bg='#0f172a', highlightthickness=0)
     canvas.pack()
 
-    # ---------- 圆角矩形背景 ----------
-    def rounded_rect(cv, x1, y1, x2, y2, r, **kw):
-        points = [
-            x1+r, y1, x2-r, y1, x2, y1, x2, y1+r,
-            x2, y2-r, x2, y2, x2-r, y2, x1+r, y2,
-            x1, y2, x1, y2-r, x1, y1+r, x1, y1
-        ]
-        return cv.create_polygon(points, smooth=True, **kw)
-
-    rounded_rect(canvas, 8, 8, win_w-8, win_h-8, 24,
-                 fill='#1e293b', outline='#334155', width=1)
+    # ---------- 背景 ----------
+    canvas.create_rectangle(8, 8, win_w-8, win_h-8,
+                            fill='#1e293b', outline='#334155', width=1)
 
     # ---------- Logo 圆环动画 ----------
     cx, cy = win_w // 2, 105
@@ -95,29 +88,12 @@ def show_splash_screen(splash_ready_callback):
             item = canvas.create_oval(x1, y1, x2, y2, fill=color, outline='')
             ring_items.append(item)
 
-    # Logo 中心图标（加载真实 logo 图片）
-    logo_img_obj = None
-    try:
-        from PIL import Image, ImageTk
-        if getattr(sys, 'frozen', False):
-            logo_base = sys._MEIPASS
-        else:
-            logo_base = os.path.dirname(os.path.abspath(__file__))
-        logo_path = os.path.join(logo_base, 'img', 'favicon.png')
-        if os.path.exists(logo_path):
-            pil_img = Image.open(logo_path).convert('RGBA').resize((72, 72), Image.LANCZOS)
-            logo_img_obj = ImageTk.PhotoImage(pil_img)
-            canvas.logo_img_obj = logo_img_obj  # 防止 GC 回收
-            canvas.create_image(cx, cy, image=logo_img_obj)
-        else:
-            raise FileNotFoundError("logo not found")
-    except Exception:
-        # 回退：用 Canvas 绘制简陋 logo
-        canvas.create_rectangle(cx-20, cy-16, cx+20, cy+16,
-                                fill='#3b82f6', outline='#60a5fa', width=2)
-        canvas.create_arc(cx-10, cy-24, cx+10, cy-8,
-                          start=180, extent=180, style='arc',
-                          outline='#60a5fa', width=2)
+    # Logo 中心图标（使用 Canvas 绘制，避免 ImageTk/Tk 兼容问题）
+    canvas.create_rectangle(cx-20, cy-16, cx+20, cy+16,
+                            fill='#3b82f6', outline='#60a5fa', width=2)
+    canvas.create_arc(cx-10, cy-24, cx+10, cy-8,
+                      start=180, extent=180, style='arc',
+                      outline='#60a5fa', width=2)
 
     # ---------- 文字 ----------
     canvas.create_text(cx, 175, text='YUWEITEK工具箱',
@@ -232,6 +208,92 @@ def show_splash_screen(splash_ready_callback):
     root.protocol('WM_DELETE_WINDOW', on_splash_close)
     root.mainloop()
 
+SPLASH_PS1 = r'''param([int]$Port=5000)
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+$script:Port = $Port
+
+$script:form = New-Object System.Windows.Forms.Form
+$script:form.FormBorderStyle = 'None'
+$script:form.StartPosition = 'CenterScreen'
+$script:form.TopMost = $true
+$script:form.ShowInTaskbar = $false
+$script:form.BackColor = [System.Drawing.Color]::FromArgb(15,23,42)
+$script:form.Size = New-Object System.Drawing.Size(460,340)
+
+$title = New-Object System.Windows.Forms.Label
+$title.Text = 'YUWEITEK工具箱'
+$title.ForeColor = [System.Drawing.Color]::FromArgb(226,232,240)
+$title.Font = New-Object System.Drawing.Font('Microsoft YaHei UI', 18, [System.Drawing.FontStyle]::Bold)
+$title.AutoSize = $false
+$title.TextAlign = 'MiddleCenter'
+$title.Size = New-Object System.Drawing.Size(440,60)
+$title.Location = New-Object System.Drawing.Point(10,90)
+$script:form.Controls.Add($title)
+
+$sub = New-Object System.Windows.Forms.Label
+$sub.Text = '正在启动服务，请稍候...'
+$sub.ForeColor = [System.Drawing.Color]::FromArgb(148,163,184)
+$sub.Font = New-Object System.Drawing.Font('Microsoft YaHei UI', 10)
+$sub.AutoSize = $false
+$sub.TextAlign = 'MiddleCenter'
+$sub.Size = New-Object System.Drawing.Size(440,30)
+$sub.Location = New-Object System.Drawing.Point(10,210)
+$script:form.Controls.Add($sub)
+
+$bar = New-Object System.Windows.Forms.ProgressBar
+$bar.Style = 'Marquee'
+$bar.MarqueeAnimationSpeed = 30
+$bar.Size = New-Object System.Drawing.Size(220,10)
+$bar.Location = New-Object System.Drawing.Point(120,250)
+$script:form.Controls.Add($bar)
+
+$script:ready = $false
+$script:timer = New-Object System.Windows.Forms.Timer
+$script:timer.Interval = 200
+$script:timer.Add_Tick({
+    if (-not $script:ready) {
+        $client = New-Object System.Net.Sockets.TcpClient
+        try {
+            $client.Connect('127.0.0.1', $script:Port)
+            $script:ready = $client.Connected
+        } catch {}
+        $client.Close()
+    }
+    if ($script:ready) {
+        $script:timer.Stop()
+        $script:form.Close()
+    }
+})
+
+$script:timer.Start()
+[void]$script:form.ShowDialog()
+$script:timer.Stop()
+$script:form.Dispose()
+'''
+
+
+def launch_powershell_splash(port):
+    """启动非 Tcl 的原生启动动画窗口（PowerShell WinForms 子进程）"""
+    try:
+        ps1_path = os.path.join(os.environ.get('TEMP', '.'), 'yuweitek_splash.ps1')
+        with open(ps1_path, 'w', encoding='utf-8') as f:
+            f.write(SPLASH_PS1)
+        startupinfo = None
+        creationflags = 0
+        if sys.platform == 'win32':
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
+            creationflags = subprocess.CREATE_NO_WINDOW
+        return subprocess.Popen([
+            'powershell.exe', '-NoProfile', '-ExecutionPolicy', 'Bypass',
+            '-WindowStyle', 'Hidden', '-File', ps1_path, '-Port', str(port)
+        ], startupinfo=startupinfo, creationflags=creationflags)
+    except Exception as e:
+        print(f"启动 Splash 失败: {e}")
+        return None
+
 # ========== 单实例检查（防止重复启动出现多个系统托盘） ==========
 MUTEX_NAME = "Global\\YUWEITEK_TOOLBOX_MUTEX"
 mutex_handle = ctypes.windll.kernel32.CreateMutexW(None, True, MUTEX_NAME)
@@ -288,21 +350,16 @@ if __name__ == '__main__':
     flask_thread.daemon = True
     flask_thread.start()
 
-    # ========== 3. 显示 Splash 启动动画（阻塞直到 Flask 就绪或超时） ==========
-    browser_opened = [False]
+    # ========== 3. 等待 Flask 就绪后直接打开浏览器（不使用启动动画） ==========
+    _wait_start = time.time()
+    while time.time() - _wait_start < 15.0:
+        try:
+            requests.get(f'http://127.0.0.1:{port}/api/health', timeout=0.5)
+            break
+        except Exception:
+            time.sleep(0.2)
 
-    def on_splash_ready():
-        """Splash 关闭后打开浏览器"""
-        if not browser_opened[0]:
-            browser_opened[0] = True
-            print("Splash 关闭，打开浏览器")
-            webbrowser.open(f'http://127.0.0.1:{port}')
-
-    show_splash_screen(on_splash_ready)
-
-    # 如果 splash 因异常未打开浏览器，兜底打开
-    if not browser_opened[0]:
-        webbrowser.open(f'http://127.0.0.1:{port}')
+    webbrowser.open(f'http://127.0.0.1:{port}')
 
     # ========== 4. 最后创建系统托盘（会阻塞主线程） ==========
     create_tray_icon()

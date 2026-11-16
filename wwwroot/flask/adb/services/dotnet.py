@@ -11,6 +11,9 @@ from state import dotnet_process
 
 def start_dotnet_backend():
     global dotnet_process
+    if sys.platform == 'win32':
+        # 清理上次异常退出遗留的 JTTools，避免 18889 端口被占用导致新实例绑定失败
+        subprocess.run('taskkill /F /IM JTTools.exe', shell=True, capture_output=True, timeout=5)
     if getattr(sys, 'frozen', False):
         base_dir = sys._MEIPASS
     else:

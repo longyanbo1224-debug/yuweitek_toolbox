@@ -4,6 +4,7 @@
 """
 
 import hashlib
+import threading
 import wmi
 import requests
 from datetime import datetime, timedelta
@@ -13,8 +14,27 @@ from config import GITHUB_OWNER, GITHUB_REPO
 cached_update_info = None
 cache_expire_time = None
 
-def get_hardware_id():
-    """获取本机硬件唯一标识（主板序列号 + 系统硬盘序列号，排除U盘等可移动介质）"""
+# 机器码缓存：WMI 查询较慢，且必须在初始化过 COM 的线程里执行
+_hwid_lock = threading.Lock()
+_hwid_cache = {}
+
+
+def _call_with_com(func):
+    """在任意线程中安全执行 WMI 调用。
+
+    Flask 的 app.run(threaded=True) 会给每个请求开新线程，而 pywin32 只在
+    导入 pythoncom 的那个线程初始化过 COM，直接在请求线程里调用 wmi.WMI()
+    会抛 x_wmi_uninitialised_thread（表现为 /api/check_license 返回 500）。
+    """
+    import pythoncom
+    pythoncom.CoInitialize()
+    # 不调用 CoUninitialize：WMI 的 COM 对象要到函数返回后才释放，
+    # 提前反初始化会在退出时打出 "Win32 exception occurred releasing IUnknown"。
+    # 线程结束时 Windows 会自动回收该线程的 COM 初始化。
+    return func()
+
+
+def _read_hardware_id():
     c = wmi.WMI()
     try:
         motherboard_serial = c.Win32_BaseBoard()[0].SerialNumber.strip()
@@ -34,8 +54,8 @@ def get_hardware_id():
     raw = f"{motherboard_serial}|{disk_serial}"
     return hashlib.sha256(raw.encode()).hexdigest()
 
-def get_hardware_id_legacy():
-    """旧版机器码算法（兼容已授权用户）"""
+
+def _read_hardware_id_legacy():
     c = wmi.WMI()
     try:
         motherboard_serial = c.Win32_BaseBoard()[0].SerialNumber.strip()
@@ -47,6 +67,26 @@ def get_hardware_id_legacy():
         disk_serial = "Unknown"
     raw = f"{motherboard_serial}|{disk_serial}"
     return hashlib.sha256(raw.encode()).hexdigest()
+
+
+def get_hardware_id():
+    """获取本机硬件唯一标识（主板序列号 + 系统硬盘序列号，排除U盘等可移动介质）"""
+    if _hwid_cache.get('new'):
+        return _hwid_cache['new']
+    with _hwid_lock:
+        if not _hwid_cache.get('new'):
+            _hwid_cache['new'] = _call_with_com(_read_hardware_id)
+        return _hwid_cache['new']
+
+
+def get_hardware_id_legacy():
+    """旧版机器码算法（兼容已授权用户）"""
+    if _hwid_cache.get('legacy'):
+        return _hwid_cache['legacy']
+    with _hwid_lock:
+        if not _hwid_cache.get('legacy'):
+            _hwid_cache['legacy'] = _call_with_com(_read_hardware_id_legacy)
+        return _hwid_cache['legacy']
 
 def _parse_version_tag(tag_name):
     """从 tag 名称中提取版本号（去除 v 前缀）"""
